@@ -12,11 +12,11 @@
         <span class="icon-[tabler--home] size-5"></span>
         <span>Home</span>
       </a>
-      <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white font-medium">
+      <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--users] size-5"></span>
         <span>Users</span>
       </a>
-      <a href="{{ route('admin.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white font-medium">
         <span class="icon-[tabler--checklist] size-5"></span>
         <span>Tasks</span>
       </a>
@@ -55,12 +55,12 @@
     <div class="bg-gradient-to-r from-primary to-primary-focus">
       <div class="px-4 md:px-8 py-8">
         <div class="flex items-center gap-4">
-          <a href="{{ route('admin.users') }}" class="btn btn-ghost btn-circle">
+          <a href="{{ route('admin.tasks') }}" class="btn btn-ghost btn-circle">
             <span class="icon-[tabler--arrow-left] size-6 text-white"></span>
           </a>
           <div>
-            <h1 class="text-3xl font-bold text-white">User Details</h1>
-            <p class="text-white/80 text-sm">Detailed user information and statistics</p>
+            <h1 class="text-3xl font-bold text-white">Task Details</h1>
+            <p class="text-white/80 text-sm">Task information and statistics</p>
           </div>
         </div>
       </div>
@@ -69,17 +69,15 @@
     <!-- Main Content -->
     <div class="flex-1 px-4 md:px-8 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <!-- User Profile Card -->
+        <!-- Task Info Card -->
         <div class="lg:col-span-1">
           <div class="card bg-base-100 shadow-md">
             <div class="card-body items-center text-center">
-              <div class="avatar placeholder mb-4">
-                <div class="bg-primary text-white rounded-full w-24">
-                  <span class="text-3xl">{{ substr($user['name'], 0, 1) }}</span>
-                </div>
+              <div class="bg-primary/10 rounded-lg p-4 mb-4">
+                <span class="icon-[tabler--checklist] size-12 text-primary"></span>
               </div>
-              <h2 class="card-title text-2xl">{{ $user['name'] }}</h2>
-              <p class="text-base-content/60">{{ $user['email'] }}</p>
+              <h2 class="card-title text-2xl">{{ $task['name'] }}</h2>
+              <p class="text-base-content/60 text-sm">Task ID: #{{ str_pad($task['id'], 4, '0', STR_PAD_LEFT) }}</p>
               <div class="divider my-2"></div>
               <div class="w-full space-y-2">
                 <div class="flex justify-between">
@@ -90,63 +88,62 @@
                   </div>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-base-content/60">Member Since:</span>
-                  <span class="font-semibold">{{ $user['joined_date'] }}</span>
+                  <span class="text-base-content/60">Task Fee:</span>
+                  <span class="font-semibold text-success">${{ number_format($task['fee'], 2) }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-base-content/60">Count:</span>
+                  <span class="font-semibold">{{ $task['count'] }}</span>
                 </div>
               </div>
               <div class="card-actions w-full mt-4">
                 <button class="btn btn-primary btn-block gap-2">
                   <span class="icon-[tabler--pencil] size-5"></span>
-                  Edit User
+                  Edit Task
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- User Statistics -->
+        <!-- Task Statistics -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Earnings Card -->
+          <!-- Task Details Card -->
           <div class="card bg-base-100 shadow-md">
             <div class="card-body">
-              <h3 class="card-title text-lg">Financial Overview</h3>
-              <div class="grid grid-cols-2 gap-4 mt-4">
-                <div>
-                  <p class="text-base-content/60 text-sm mb-1">Total Earnings</p>
-                  <p class="text-2xl font-bold text-success">${{ number_format($user['earnings'], 2) }}</p>
-                </div>
-                <div>
-                  <p class="text-base-content/60 text-sm mb-1">This Month</p>
-                  <p class="text-2xl font-bold text-primary">$450.50</p>
-                </div>
-              </div>
+              <h3 class="card-title text-lg">Task Description</h3>
+              <p class="text-base-content/60 mt-4">
+                {{ $task['description'] }}
+              </p>
               <div class="mt-4 bg-base-200 rounded-lg p-4">
-                <p class="text-sm text-base-content/60">Average Monthly</p>
-                <p class="text-xl font-bold">${{ number_format($user['earnings'] / 6, 2) }}</p>
+                <p class="text-sm text-base-content/60 mb-2">Full Description</p>
+                <p class="text-base">
+                  This task involves comprehensive {{ strtolower($task['name']) }} services. It requires professional expertise and attention to detail to ensure high-quality deliverables that meet client expectations and industry standards.
+                </p>
               </div>
             </div>
           </div>
 
-          <!-- Account Information -->
+          <!-- Task Metrics -->
           <div class="card bg-base-100 shadow-md">
             <div class="card-body">
-              <h3 class="card-title text-lg">Account Information</h3>
-              <div class="space-y-3 mt-4">
-                <div class="flex justify-between border-b border-base-300 pb-2">
-                  <span class="text-base-content/60">Email Address</span>
-                  <span class="font-semibold">{{ $user['email'] }}</span>
+              <h3 class="card-title text-lg">Task Metrics</h3>
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="bg-success/10 rounded-lg p-3">
+                  <p class="text-base-content/60 text-sm mb-1">Total Fee</p>
+                  <p class="text-2xl font-bold text-success">${{ number_format($task['fee'], 2) }}</p>
                 </div>
-                <div class="flex justify-between border-b border-base-300 pb-2">
-                  <span class="text-base-content/60">Phone Number</span>
-                  <span class="font-semibold">+1 (555) 123-4567</span>
+                <div class="bg-info/10 rounded-lg p-3">
+                  <p class="text-base-content/60 text-sm mb-1">Task Count</p>
+                  <p class="text-2xl font-bold text-info">{{ $task['count'] }}</p>
                 </div>
-                <div class="flex justify-between border-b border-base-300 pb-2">
-                  <span class="text-base-content/60">Country</span>
-                  <span class="font-semibold">United States</span>
+                <div class="bg-warning/10 rounded-lg p-3">
+                  <p class="text-base-content/60 text-sm mb-1">Avg. Per Item</p>
+                  <p class="text-2xl font-bold text-warning">${{ number_format($task['fee'] / max(1, $task['count']), 2) }}</p>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-base-content/60">Timezone</span>
-                  <span class="font-semibold">EST (UTC-5)</span>
+                <div class="bg-primary/10 rounded-lg p-3">
+                  <p class="text-base-content/60 text-sm mb-1">Priority</p>
+                  <p class="text-2xl font-bold text-primary">High</p>
                 </div>
               </div>
             </div>
@@ -154,61 +151,48 @@
         </div>
       </div>
 
-      <!-- Activity History -->
+      <!-- Task Progress/Timeline -->
       <div class="card bg-base-100 shadow-md">
         <div class="card-body">
-          <h3 class="card-title text-lg mb-4">Recent Activity</h3>
+          <h3 class="card-title text-lg mb-4">Recent Updates</h3>
           <div class="space-y-3">
             <div class="flex items-center justify-between border-b border-base-300 pb-3">
               <div class="flex items-center gap-3">
                 <div class="bg-primary/10 rounded-lg p-2">
-                  <span class="icon-[tabler--login] size-5 text-primary"></span>
+                  <span class="icon-[tabler--check] size-5 text-primary"></span>
                 </div>
                 <div>
-                  <p class="font-semibold">Logged in</p>
-                  <p class="text-base-content/60 text-sm">Today at 9:30 AM</p>
+                  <p class="font-semibold">Task Created</p>
+                  <p class="text-base-content/60 text-sm">Initial setup completed</p>
                 </div>
               </div>
-              <span class="text-success text-sm">Successful</span>
+              <span class="text-success text-sm">Today</span>
             </div>
 
             <div class="flex items-center justify-between border-b border-base-300 pb-3">
               <div class="flex items-center gap-3">
                 <div class="bg-success/10 rounded-lg p-2">
-                  <span class="icon-[tabler--shopping-cart] size-5 text-success"></span>
+                  <span class="icon-[tabler--check-circle] size-5 text-success"></span>
                 </div>
                 <div>
-                  <p class="font-semibold">Made a purchase</p>
-                  <p class="text-base-content/60 text-sm">Yesterday at 2:15 PM</p>
+                  <p class="font-semibold">{{ $task['count'] }} Items Assigned</p>
+                  <p class="text-base-content/60 text-sm">Distributed to team members</p>
                 </div>
               </div>
-              <span class="badge badge-success">$250.00</span>
-            </div>
-
-            <div class="flex items-center justify-between border-b border-base-300 pb-3">
-              <div class="flex items-center gap-3">
-                <div class="bg-info/10 rounded-lg p-2">
-                  <span class="icon-[tabler--user-check] size-5 text-info"></span>
-                </div>
-                <div>
-                  <p class="font-semibold">Updated profile</p>
-                  <p class="text-base-content/60 text-sm">3 days ago</p>
-                </div>
-              </div>
-              <span class="text-info text-sm">Completed</span>
+              <span class="text-success text-sm">Yesterday</span>
             </div>
 
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="bg-warning/10 rounded-lg p-2">
-                  <span class="icon-[tabler--mail] size-5 text-warning"></span>
+                <div class="bg-info/10 rounded-lg p-2">
+                  <span class="icon-[tabler--info-circle] size-5 text-info"></span>
                 </div>
                 <div>
-                  <p class="font-semibold">Email verification</p>
-                  <p class="text-base-content/60 text-sm">1 week ago</p>
+                  <p class="font-semibold">Updated Details</p>
+                  <p class="text-base-content/60 text-sm">Task description updated</p>
                 </div>
               </div>
-              <span class="text-warning text-sm">Verified</span>
+              <span class="text-info text-sm">3 days ago</span>
             </div>
           </div>
         </div>

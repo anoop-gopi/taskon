@@ -16,11 +16,15 @@
         <span class="icon-[tabler--users] size-5"></span>
         <span>Users</span>
       </a>
-      <a href="#tasks" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--checklist] size-5"></span>
         <span>Tasks</span>
       </a>
-      <a href="#finance" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.approvals') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+        <span class="icon-[tabler--checkbox] size-5"></span>
+        <span>Approvals</span>
+      </a>
+      <a href="{{ route('admin.finance') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--wallet] size-5"></span>
         <span>Finance</span>
       </a>

@@ -12,7 +12,7 @@
         <span class="icon-[tabler--home] size-5"></span>
         <span>Home</span>
       </a>
-      <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white font-medium">
+      <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--users] size-5"></span>
         <span>Users</span>
       </a>
@@ -20,7 +20,7 @@
         <span class="icon-[tabler--checklist] size-5"></span>
         <span>Tasks</span>
       </a>
-      <a href="{{ route('admin.approvals') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.approvals') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white font-medium">
         <span class="icon-[tabler--checkbox] size-5"></span>
         <span>Approvals</span>
       </a>
@@ -56,14 +56,14 @@
       <div class="px-4 md:px-8 py-12">
         <div class="flex flex-col md:flex-row items-center justify-between">
           <div>
-            <h1 class="text-4xl font-bold text-white mb-2">Users Management</h1>
-            <p class="text-white/80">Manage and view all system users</p>
+            <h1 class="text-4xl font-bold text-white mb-2">Task Approvals</h1>
+            <p class="text-white/80">Review and approve completed user tasks</p>
           </div>
           <div class="mt-6 md:mt-0">
-            <button class="btn btn-secondary gap-2">
-              <span class="icon-[tabler--plus] size-5"></span>
-              Add User
-            </button>
+            <div class="badge badge-warning gap-2">
+              <span class="icon-[tabler--alert-circle] size-4"></span>
+              8 Pending
+            </div>
           </div>
         </div>
       </div>
@@ -71,7 +71,7 @@
 
     <!-- Main Content -->
     <div class="flex-1 px-4 md:px-8 py-8">
-      <livewire:users-list />
+      <livewire:approvals-list />
     </div>
   </div>
 </div>
