@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
         <title>{{ config('app.name', 'Taskon') }} - Dashboard</title>
 
@@ -11,44 +12,41 @@
         @endif
 
         <style>
-            .modal {
+            .auth-modal {
                 display: none;
                 position: fixed;
-                z-index: 1000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-            }
-
-            .modal.modal-open {
-                display: flex;
-                align-items: center;
+                inset: 0;
+                z-index: 9999;
                 justify-content: center;
-            }
-
-            .modal-backdrop {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
+                align-items: center;
                 background-color: rgba(0, 0, 0, 0.5);
-                display: none;
-                z-index: 999;
             }
 
-            .modal.modal-open .modal-backdrop {
-                display: block;
+            .auth-modal.active {
+                display: flex;
             }
 
-            .modal-box {
+            .auth-modal-content {
                 background-color: var(--color-base-100, white);
                 border-radius: 0.5rem;
-                position: relative;
+                width: 100%;
+                max-width: 28rem;
                 max-height: 90vh;
                 overflow-y: auto;
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                position: relative;
+                animation: slideIn 0.3s ease-out;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
         </style>
 
@@ -297,113 +295,92 @@
         </footer>
 
         <!-- Auth Modal -->
-        <div class="modal" id="auth_modal">
-            <div class="modal-backdrop" onclick="document.getElementById('auth_modal').classList.remove('modal-open')"></div>
-            <div class="modal-box w-11/12 max-w-md">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="document.getElementById('auth_modal').classList.remove('modal-open')">✕</button>
+        <div id="auth_modal" class="auth-modal" onclick="if(event.target === this) closeAuthModal()">
+            <div class="auth-modal-content">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeAuthModal()">✕</button>
                 
-                <!-- Tabs -->
-                <div class="tabs tabs-bordered mb-6" role="tablist">
-                    <input type="radio" name="auth_tabs" role="tab" class="tab" aria-label="Sign In" checked onchange="switchAuthTab('signin')" />
-                    <div role="tabpanel" class="tab-content">
-                        <h3 class="font-bold text-lg mb-6">Sign In to Taskon</h3>
-                        
-                        <div class="space-y-4 mb-6">
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">Email</span>
-                                </label>
-                                <input type="email" placeholder="your@email.com" class="input input-bordered" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">Password</span>
-                                </label>
-                                <input type="password" placeholder="••••••••" class="input input-bordered" />
-                            </div>
-                            <button class="btn btn-primary w-full">Sign In</button>
-                        </div>
-
-                        <div class="divider text-xs">OR</div>
-
-                        <!-- Social Login -->
-                        <div class="space-y-3 mb-6">
-                            <button class="btn btn-outline w-full gap-2">
-                                <span class="icon-[tabler--brand-google] size-5"></span>
-                                Sign in with Google
-                            </button>
-                            <button class="btn btn-outline w-full gap-2">
-                                <span class="icon-[tabler--brand-facebook] size-5"></span>
-                                Sign in with Facebook
-                            </button>
-                        </div>
-
-                        <!-- Links -->
-                        <div class="flex flex-col gap-3 text-center text-sm">
-                            <a href="#" class="link link-primary">Forgot your password?</a>
-                            <p class="text-base-content/70">Don't have an account? <a href="#" class="link link-primary font-semibold">Sign up</a></p>
-                        </div>
+                <h3 class="font-bold text-lg mb-6" style="padding: 1.5rem 1.5rem 0 1.5rem;">Sign In to Taskon</h3>
+                
+                <div class="space-y-4 mb-6" style="padding: 0 1.5rem;">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Email</span>
+                        </label>
+                        <input type="email" placeholder="your@email.com" class="input input-bordered" />
                     </div>
-
-                    <input type="radio" name="auth_tabs" role="tab" class="tab" aria-label="Sign Up" onchange="switchAuthTab('signup')" />
-                    <div role="tabpanel" class="tab-content">
-                        <h3 class="font-bold text-lg mb-6">Create Your Account</h3>
-                        
-                        <div class="space-y-4 mb-6">
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">Full Name</span>
-                                </label>
-                                <input type="text" placeholder="John Doe" class="input input-bordered" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">Email</span>
-                                </label>
-                                <input type="email" placeholder="your@email.com" class="input input-bordered" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">Password</span>
-                                </label>
-                                <input type="password" placeholder="••••••••" class="input input-bordered" />
-                            </div>
-                            <button class="btn btn-primary w-full">Create Account</button>
-                        </div>
-
-                        <div class="divider text-xs">OR</div>
-
-                        <!-- Social Signup -->
-                        <div class="space-y-3 mb-6">
-                            <button class="btn btn-outline w-full gap-2">
-                                <span class="icon-[tabler--brand-google] size-5"></span>
-                                Sign up with Google
-                            </button>
-                            <button class="btn btn-outline w-full gap-2">
-                                <span class="icon-[tabler--brand-facebook] size-5"></span>
-                                Sign up with Facebook
-                            </button>
-                        </div>
-
-                        <!-- Links -->
-                        <p class="text-center text-sm text-base-content/70">Already have an account? <a href="#" class="link link-primary font-semibold">Sign in</a></p>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Password</span>
+                        </label>
+                        <input type="password" placeholder="••••••••" class="input input-bordered" />
                     </div>
+                    <button class="btn btn-primary w-full">Sign In</button>
+                </div>
+
+                <div class="divider text-xs" style="margin: 1.5rem;">OR</div>
+
+                <!-- Social Login -->
+                <div class="space-y-3 mb-6" style="padding: 0 1.5rem;">
+                    <button class="btn btn-outline w-full gap-2">
+                        <span class="icon-[tabler--brand-google] size-5"></span>
+                        Sign in with Google
+                    </button>
+                    <button class="btn btn-outline w-full gap-2">
+                        <span class="icon-[tabler--brand-facebook] size-5"></span>
+                        Sign in with Facebook
+                    </button>
+                </div>
+
+                <!-- Links -->
+                <div class="flex flex-col gap-3 text-center text-sm" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                    <a href="#" class="link link-primary">Forgot your password?</a>
+                    <p class="text-base-content/70">Don't have an account? <a href="javascript:void(0);" onclick="closeAuthModal(); openSignupModal(event)" class="link link-primary font-semibold">Sign up</a></p>
                 </div>
             </div>
         </div>
 
         <script>
             function openAuthModal(event) {
-                event.preventDefault();
+                if (event) event.preventDefault();
                 const modal = document.getElementById('auth_modal');
                 if (modal) {
-                    modal.classList.add('modal-open');
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
                 }
             }
 
-            function switchAuthTab(tab) {
-                // Tab switching is handled by the radio button's onchange event
+            function closeAuthModal() {
+                const modal = document.getElementById('auth_modal');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
             }
+
+            function openSignupModal(event) {
+                if (event) event.preventDefault();
+                const modal = document.getElementById('signup_modal');
+                if (modal) {
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            function closeSignupModal() {
+                const modal = document.getElementById('signup_modal');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+
+            // Close modals with Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeAuthModal();
+                    closeSignupModal();
+                }
+            });
         </script>
 
         <livewire:scripts />
