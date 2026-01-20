@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
         <title>{{ config('app.name', 'Taskon') }} - Earn Money Online</title>
@@ -48,6 +49,78 @@
                     transform: translateY(0);
                 }
             }
+
+            /* Toast Notification Styles */
+            .toast-container {
+                position: fixed;
+                top: 1.5rem;
+                right: 1.5rem;
+                z-index: 10000;
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .toast {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 1rem 1.25rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                animation: slideInRight 0.3s ease-out;
+                min-width: 300px;
+            }
+
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+            }
+
+            .toast.success {
+                background-color: #10b981;
+                color: white;
+            }
+
+            .toast.error {
+                background-color: #ef4444;
+                color: white;
+            }
+
+            .toast.info {
+                background-color: #3b82f6;
+                color: white;
+            }
+
+            .toast-close {
+                margin-left: auto;
+                cursor: pointer;
+                font-size: 1.25rem;
+                line-height: 1;
+                opacity: 0.7;
+                transition: opacity 0.2s;
+            }
+
+            .toast-close:hover {
+                opacity: 1;
+            }
         </style>
     </head>
     <body class="bg-base-100 min-h-screen">
@@ -76,15 +149,32 @@
                     </button>
                 </div>
 
-                <!-- Sign In -->
-                <a href="javascript:void(0);" onclick="openAuthModal(event)" class="text-base-content/80 hover:text-primary transition hidden md:inline">
-                    Sign In
-                </a>
+                <!-- Auth Container: Sign In or User Menu -->
+                <div class="flex items-center gap-4">
+                    <!-- Sign In (shown when not logged in) -->
+                    <a id="signin_link" href="javascript:void(0);" onclick="openAuthModal(event)" class="text-base-content/80 hover:text-primary transition hidden md:inline">
+                        Sign In
+                    </a>
 
-                <!-- Mobile Sign In -->
-                <button class="btn btn-ghost btn-circle md:hidden" onclick="openAuthModal(event)">
-                    <span class="icon-[tabler--login] size-5"></span>
-                </button>
+                    <!-- Mobile Sign In (shown when not logged in) -->
+                    <button id="signin_btn_mobile" class="btn btn-ghost btn-circle md:hidden" onclick="openAuthModal(event)">
+                        <span class="icon-[tabler--login] size-5"></span>
+                    </button>
+
+                    <!-- User Menu (shown when logged in) -->
+                    <div id="user_menu" class="hidden items-center gap-3">
+                        <div class="dropdown dropdown-end">
+                            <button class="btn btn-ghost gap-2" tabindex="0">
+                                <span class="icon-[tabler--user-circle] size-5"></span>
+                                <span id="user_name" class="hidden md:inline">User</span>
+                            </button>
+                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                                <li><a href="{{ route('dashboard.profile') }}">Profile</a></li>
+                                <li><a href="javascript:void(0);" onclick="handleLogout(event)">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Mobile Menu -->
@@ -198,21 +288,23 @@
                 
                 <h3 class="font-bold text-lg mb-6" style="padding: 1.5rem 1.5rem 0 1.5rem;">Sign In to Taskon</h3>
                 
-                <div class="space-y-4 mb-6" style="padding: 0 1.5rem;">
+                <form id="signin_form" onsubmit="handleSignin(event)" class="space-y-4 mb-6" style="padding: 0 1.5rem;">
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Email</span>
                         </label>
-                        <input type="email" placeholder="your@email.com" class="input input-bordered" />
+                        <input type="email" id="signin_email" name="email" placeholder="your@email.com" class="input input-bordered" required />
+                        <span class="text-error text-sm hidden" id="signin_email_error"></span>
                     </div>
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Password</span>
                         </label>
-                        <input type="password" placeholder="••••••••" class="input input-bordered" />
+                        <input type="password" id="signin_password" name="password" placeholder="••••••••" class="input input-bordered" required />
+                        <span class="text-error text-sm hidden" id="signin_password_error"></span>
                     </div>
-                    <button class="btn btn-primary w-full">Sign In</button>
-                </div>
+                    <button type="submit" class="btn btn-primary w-full" id="signin_btn">Sign In</button>
+                </form>
 
                 <div class="divider text-xs" style="margin: 1.5rem;">OR</div>
 
@@ -236,7 +328,93 @@
             </div>
         </div>
 
+        <!-- Signup Modal -->
+        <div id="signup_modal" class="auth-modal" onclick="if(event.target === this) closeSignupModal()">
+            <div class="auth-modal-content">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeSignupModal()">✕</button>
+                
+                <h3 class="font-bold text-lg mb-6" style="padding: 1.5rem 1.5rem 0 1.5rem;">Create Your Account</h3>
+                
+                <form id="signup_form" onsubmit="handleSignup(event)" class="space-y-4 mb-6" style="padding: 0 1.5rem;">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Full Name</span>
+                        </label>
+                        <input type="text" id="signup_name" name="name" placeholder="John Doe" class="input input-bordered" required />
+                        <span class="text-error text-sm hidden" id="signup_name_error"></span>
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Email</span>
+                        </label>
+                        <input type="email" id="signup_email" name="email" placeholder="your@email.com" class="input input-bordered" required />
+                        <span class="text-error text-sm hidden" id="signup_email_error"></span>
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Password</span>
+                        </label>
+                        <input type="password" id="signup_password" name="password" placeholder="••••••••" class="input input-bordered" required />
+                        <span class="text-error text-sm hidden" id="signup_password_error"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full" id="signup_btn">Create Account</button>
+                </form>
+
+                <div class="divider text-xs" style="margin: 1.5rem;">OR</div>
+
+                <!-- Social Signup -->
+                <div class="space-y-3 mb-6" style="padding: 0 1.5rem;">
+                    <button class="btn btn-outline w-full gap-2">
+                        <span class="icon-[tabler--brand-google] size-5"></span>
+                        Sign up with Google
+                    </button>
+                    <button class="btn btn-outline w-full gap-2">
+                        <span class="icon-[tabler--brand-facebook] size-5"></span>
+                        Sign up with Facebook
+                    </button>
+                </div>
+
+                <!-- Links -->
+                <p class="text-center text-sm text-base-content/70" style="padding: 0 1.5rem 1.5rem 1.5rem;">Already have an account? <a href="javascript:void(0);" onclick="closeSignupModal(); openAuthModal(event)" class="link link-primary font-semibold">Sign in</a></p>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast_container" class="toast-container"></div>
+
         <script>
+            // Toast Notification Function
+            function showToast(message, type = 'success', duration = 4000) {
+                const container = document.getElementById('toast_container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                let icon = '';
+                if (type === 'success') {
+                    icon = '<span class="icon-[tabler--check] size-5"></span>';
+                } else if (type === 'error') {
+                    icon = '<span class="icon-[tabler--x] size-5"></span>';
+                } else if (type === 'info') {
+                    icon = '<span class="icon-[tabler--info-circle] size-5"></span>';
+                }
+                
+                toast.innerHTML = `
+                    ${icon}
+                    <span>${message}</span>
+                    <span class="toast-close" onclick="this.parentElement.remove()">✕</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                // Auto remove after duration
+                if (duration > 0) {
+                    setTimeout(() => {
+                        toast.style.animation = 'slideOutRight 0.3s ease-out forwards';
+                        setTimeout(() => toast.remove(), 300);
+                    }, duration);
+                }
+            }
+
             function openAuthModal(event) {
                 if (event) event.preventDefault();
                 const modal = document.getElementById('auth_modal');
@@ -271,12 +449,224 @@
                 }
             }
 
+            async function handleSignin(event) {
+                event.preventDefault();
+                
+                const email = document.getElementById('signin_email').value;
+                const password = document.getElementById('signin_password').value;
+                const btn = document.getElementById('signin_btn');
+                
+                // Clear previous errors
+                document.getElementById('signin_email_error').classList.add('hidden');
+                document.getElementById('signin_password_error').classList.add('hidden');
+                
+                // Disable button
+                btn.disabled = true;
+                const originalText = btn.textContent;
+                btn.textContent = 'Signing in...';
+                
+                try {
+                    const response = await fetch('{{ route("auth.signin") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password,
+                        }),
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Store user data in localStorage
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        // Update header to show user name
+                        updateUserMenu(data.user);
+                        // Success - show toast and redirect
+                        showToast('Signed in successfully!', 'success', 2000);
+                        closeAuthModal();
+                        document.getElementById('signin_form').reset();
+                        // Redirect to dashboard after 1.5 seconds
+                        setTimeout(() => {
+                            window.location.href = '{{ route("dashboard.home") }}';
+                        }, 1500);
+                    } else {
+                        // Show error
+                        showToast(data.message || 'Sign in failed', 'error', 3000);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('An error occurred. Please try again.', 'error', 3000);
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            }
+
+            async function handleSignup(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('signup_name').value;
+                const email = document.getElementById('signup_email').value;
+                const password = document.getElementById('signup_password').value;
+                const btn = document.getElementById('signup_btn');
+                
+                // Clear previous errors
+                document.getElementById('signup_name_error').classList.add('hidden');
+                document.getElementById('signup_email_error').classList.add('hidden');
+                document.getElementById('signup_password_error').classList.add('hidden');
+                
+                // Disable button
+                btn.disabled = true;
+                const originalText = btn.textContent;
+                btn.textContent = 'Creating...';
+                
+                try {
+                    const response = await fetch('{{ route("auth.signup") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            email: email,
+                            password: password,
+                        }),
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Success - show toast instead of alert
+                        showToast('Account created successfully!', 'success', 3000);
+                        closeSignupModal();
+                        document.getElementById('signup_form').reset();
+                        // Redirect to dashboard or home after 2 seconds
+                        setTimeout(() => {
+                            window.location.href = '{{ route("public.home") }}';
+                        }, 2000);
+                    } else {
+                        // Show errors
+                        if (data.errors) {
+                            if (data.errors.name) {
+                                document.getElementById('signup_name_error').textContent = data.errors.name[0];
+                                document.getElementById('signup_name_error').classList.remove('hidden');
+                            }
+                            if (data.errors.email) {
+                                document.getElementById('signup_email_error').textContent = data.errors.email[0];
+                                document.getElementById('signup_email_error').classList.remove('hidden');
+                            }
+                            if (data.errors.password) {
+                                document.getElementById('signup_password_error').textContent = data.errors.password[0];
+                                document.getElementById('signup_password_error').classList.remove('hidden');
+                            }
+                            showToast('Please fix the errors above', 'error', 3000);
+                        } else {
+                            showToast(data.message || 'Signup failed', 'error', 3000);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('An error occurred. Please try again.', 'error', 3000);
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            }
+
+            // Update user menu in header
+            function updateUserMenu(user) {
+                const signinLink = document.getElementById('signin_link');
+                const signinBtnMobile = document.getElementById('signin_btn_mobile');
+                const userMenu = document.getElementById('user_menu');
+                const userName = document.getElementById('user_name');
+                
+                if (signinLink) signinLink.style.display = 'none';
+                if (signinBtnMobile) signinBtnMobile.style.display = 'none';
+                if (userMenu) {
+                    userMenu.style.display = 'flex';
+                }
+                
+                // Set user name
+                if (userName) userName.textContent = user.name;
+            }
+
+            // Check if user is logged in on page load
+            function checkLoginStatus() {
+                const user = localStorage.getItem('user');
+                if (user) {
+                    try {
+                        const userData = JSON.parse(user);
+                        updateUserMenu(userData);
+                    } catch (e) {
+                        console.error('Error parsing user data:', e);
+                        localStorage.removeItem('user');
+                    }
+                }
+            }
+
+            // Logout function
+            async function handleLogout(event) {
+                event.preventDefault();
+                
+                try {
+                    const response = await fetch('{{ route("auth.logout") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        },
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Clear user data from localStorage
+                        localStorage.removeItem('user');
+                        // Reset header
+                        resetUserMenu();
+                        // Show toast
+                        showToast('Logged out successfully!', 'success', 2000);
+                        // Redirect to home
+                        setTimeout(() => {
+                            window.location.href = '{{ route("public.home") }}';
+                        }, 1500);
+                    } else {
+                        showToast('Logout failed', 'error', 3000);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('An error occurred. Please try again.', 'error', 3000);
+                }
+            }
+
+            // Reset user menu back to sign in
+            function resetUserMenu() {
+                const signinLink = document.getElementById('signin_link');
+                const signinBtnMobile = document.getElementById('signin_btn_mobile');
+                const userMenu = document.getElementById('user_menu');
+                
+                // Show sign in, hide user menu
+                if (signinLink) signinLink.style.display = '';
+                if (signinBtnMobile) signinBtnMobile.style.display = '';
+                if (userMenu) userMenu.style.display = 'none';
+            }
+
             // Close modals with Escape key
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
                     closeAuthModal();
                     closeSignupModal();
                 }
+            });
+
+            // Check login status on page load
+            window.addEventListener('DOMContentLoaded', function() {
+                checkLoginStatus();
             });
         </script>
 

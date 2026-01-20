@@ -1,6 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+
+// Auth Routes
+Route::post('/auth/signup', [AuthController::class, 'signup'])->name('auth.signup');
+Route::post('/auth/signin', [AuthController::class, 'signin'])->name('auth.signin');
+Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 Route::get('/', function () {
     return view('public.home');
