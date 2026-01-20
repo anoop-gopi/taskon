@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{ config('app.name', 'Taskon') }} - Earn Money Online</title>
+        <title>{{ config('app.name', 'Taskon') }} - Dashboard</title>
 
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -51,8 +51,10 @@
                 box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             }
         </style>
+
+        <livewire:styles />
     </head>
-    <body class="bg-base-100 min-h-screen">
+    <body class="bg-base-100 min-h-screen flex flex-col">
         <!-- Navigation Header -->
         <nav class="bg-base-100 shadow-lg sticky top-0 z-50">
             <div class="container mx-auto px-4 flex items-center justify-between h-16">
@@ -100,12 +102,107 @@
             </div>
         </nav>
 
-        <main>
-            {{ $slot }}
-        </main>
+        <!-- Main Content with Sidebar -->
+        <div class="flex flex-1">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-base-200 shadow-lg hidden md:flex flex-col border-r border-base-300">
+                <!-- Navigation Menu -->
+                <nav class="flex-1 px-4 py-6 overflow-y-auto">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="{{ route('dashboard.home') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.home') ? 'bg-primary text-white' : 'text-base-content' }}">
+                                <span class="icon-[tabler--home] size-5"></span>
+                                <span class="font-semibold">Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('dashboard.profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.profile') ? 'bg-primary text-white' : 'text-base-content' }}">
+                                <span class="icon-[tabler--user] size-5"></span>
+                                <span class="font-semibold">Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('dashboard.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.tasks') ? 'bg-primary text-white' : 'text-base-content' }}">
+                                <span class="icon-[tabler--clipboard-list] size-5"></span>
+                                <span class="font-semibold">Tasks</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('dashboard.earnings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.earnings') ? 'bg-primary text-white' : 'text-base-content' }}">
+                                <span class="icon-[tabler--wallet] size-5"></span>
+                                <span class="font-semibold">Earnings</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('dashboard.activity') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.activity') ? 'bg-primary text-white' : 'text-base-content' }}">
+                                <span class="icon-[tabler--history] size-5"></span>
+                                <span class="font-semibold">My Activity</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Logout -->
+                <div class="p-4 border-t border-base-300">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-error/20 text-error transition">
+                        <span class="icon-[tabler--logout] size-5"></span>
+                        <span class="font-semibold">Logout</span>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Mobile Sidebar Toggle -->
+            <div class="md:hidden fixed bottom-4 right-4 z-40">
+                <button class="btn btn-circle btn-primary" onclick="document.getElementById('mobile_sidebar').classList.toggle('hidden')">
+                    <span class="icon-[tabler--menu-2] size-6"></span>
+                </button>
+            </div>
+
+            <!-- Mobile Sidebar -->
+            <div id="mobile_sidebar" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden" onclick="document.getElementById('mobile_sidebar').classList.add('hidden')"></div>
+            <div id="mobile_sidebar" class="hidden fixed left-0 top-0 h-screen w-64 bg-base-200 shadow-lg z-40 md:hidden flex flex-col">
+                <nav class="flex-1 px-4 py-6 overflow-y-auto">
+                    <ul class="space-y-2">
+                        <li><a href="{{ route('dashboard.home') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                            <span class="icon-[tabler--home] size-5"></span>
+                            <span class="font-semibold">Dashboard</span>
+                        </a></li>
+                        <li><a href="{{ route('dashboard.profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                            <span class="icon-[tabler--user] size-5"></span>
+                            <span class="font-semibold">Profile</span>
+                        </a></li>
+                        <li><a href="{{ route('dashboard.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                            <span class="icon-[tabler--clipboard-list] size-5"></span>
+                            <span class="font-semibold">Tasks</span>
+                        </a></li>
+                        <li><a href="{{ route('dashboard.earnings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                            <span class="icon-[tabler--wallet] size-5"></span>
+                            <span class="font-semibold">Earnings</span>
+                        </a></li>
+                        <li><a href="{{ route('dashboard.activity') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                            <span class="icon-[tabler--history] size-5"></span>
+                            <span class="font-semibold">My Activity</span>
+                        </a></li>
+                    </ul>
+                </nav>
+                <div class="p-4 border-t border-base-300">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-error/20 text-error">
+                        <span class="icon-[tabler--logout] size-5"></span>
+                        <span class="font-semibold">Logout</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-auto">
+                <div class="p-6 md:p-8">
+                    {{ $slot }}
+                </div>
+            </main>
+        </div>
 
         <!-- Footer -->
-        <footer class="bg-base-200 text-base-content pt-12 pb-6 mt-20">
+        <footer class="bg-base-200 text-base-content pt-12 pb-6">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <!-- Company Info -->
@@ -171,7 +268,7 @@
                             <span class="icon-[tabler--mail] size-6 text-primary"></span>
                             <div>
                                 <p class="text-xs text-base-content/60">Email</p>
-                                <p class="font-semibold">support@flyon.com</p>
+                                <p class="font-semibold">support@taskon.com</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
@@ -189,6 +286,12 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Bottom Footer -->
+                <div class="border-t border-base-300 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-base-content/70">
+                    <p>&copy; 2026 Taskon. All rights reserved.</p>
+                    <p>Made with <span class="text-error">♥</span> for freelancers and task seekers</p>
                 </div>
             </div>
         </footer>
@@ -291,7 +394,6 @@
 
         <script>
             function openAuthModal(event) {
-                
                 event.preventDefault();
                 const modal = document.getElementById('auth_modal');
                 if (modal) {

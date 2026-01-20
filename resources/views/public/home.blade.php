@@ -27,7 +27,7 @@
   <section id="earn" class="py-16 bg-base-100">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Why Choose Flyon?</h2>
+        <h2 class="text-4xl font-bold mb-4">Why Choose Taskon?</h2>
         <p class="text-xl text-base-content/70">Start earning with the most trusted platform for flexible work</p>
       </div>
 

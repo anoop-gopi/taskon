@@ -6,6 +6,52 @@ Route::get('/', function () {
     return view('public.home');
 })->name('public.home');
 
+Route::get('/earn-money', function () {
+    return view('public.earn-money');
+})->name('public.earn-money');
+
+Route::get('/how-it-works', function () {
+    return view('public.how-it-works');
+})->name('public.how-it-works');
+
+Route::get('/learn', function () {
+    return view('public.learn');
+})->name('public.learn');
+
+Route::get('/dashboard', function () {
+    return view('dashboard.home');
+})->name('dashboard.home');
+
+Route::get('/dashboard/profile', function () {
+    return view('dashboard.profile');
+})->name('dashboard.profile');
+
+Route::get('/dashboard/tasks', function () {
+    return view('dashboard.tasks');
+})->name('dashboard.tasks');
+
+Route::get('/dashboard/earnings', function () {
+    return view('dashboard.earnings');
+})->name('dashboard.earnings');
+
+Route::get('/dashboard/activity', function () {
+    return view('dashboard.activity');
+})->name('dashboard.activity');
+
+Route::get('/dashboard/task/{taskId}', function ($taskId) {
+    return view('dashboard.task-detail', ['taskId' => $taskId]);
+})->name('dashboard.task.show');
+
+Route::get('/dashboard/task/{taskId}/complete', function ($taskId) {
+    return view('dashboard.task-complete', ['taskId' => $taskId]);
+})->name('dashboard.task.complete.form');
+
+Route::post('/dashboard/task/{taskId}/complete', function ($taskId) {
+    // Handle task completion submission
+    // This would save to database, send email, etc.
+    return redirect()->route('dashboard.home')->with('success', 'Task submission received! We will review and process your completion.');
+})->name('dashboard.task.complete');
+
 Route::get('/components', function () {
     return view('components.flyonui-components');
 })->name('components');
