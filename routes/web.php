@@ -102,6 +102,10 @@ Route::get('/admin/tasks', function () {
     return view('admin.tasks.index');
 })->name('admin.tasks');
 
+Route::get('/admin/tasks/create', function () {
+    return view('admin.tasks.create');
+})->name('admin.tasks.create');
+
 Route::get('/admin/tasks/{id}', function ($id) {
     // Mock task data - in production, fetch from database
     $tasks = [

@@ -32,12 +32,18 @@ class AdminAuthController extends Controller
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $user = Auth::user();
             
-            // Check if user is admin (you can add a role column or check email domain)
-            // For now, we'll just check if they can authenticate
+            // Check if user is an admin
+            if (!$user->is_admin) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'You do not have admin privileges.',
+                ])->onlyInput('email');
+            }
+            
             $request->session()->regenerate();
 
             return redirect()->intended(route('admin.dashboard'))
-                ->with('success', 'Welcome back!');
+                ->with('success', 'Welcome back, Admin!');
         }
 
         return back()->withErrors([

@@ -41,7 +41,7 @@
                 @endif
 
                 <!-- Login Form -->
-                <form method="POST" action="{{ route('admin.login') }}">
+                <form method="POST" action="{{ route('admin.login.post') }}">
                     @csrf
 
                     <!-- Email Input -->

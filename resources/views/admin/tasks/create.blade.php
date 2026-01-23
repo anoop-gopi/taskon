@@ -56,14 +56,8 @@
       <div class="px-4 md:px-8 py-12">
         <div class="flex flex-col md:flex-row items-center justify-between">
           <div>
-            <h1 class="text-4xl font-bold text-white mb-2">Tasks Management</h1>
-            <p class="text-white/80">Manage all available tasks</p>
-          </div>
-          <div class="mt-6 md:mt-0">
-            <a href="{{ route('admin.tasks.create') }}" class="btn btn-secondary gap-2">
-              <span class="icon-[tabler--plus] size-5"></span>
-              Add Task
-            </a>
+            <h1 class="text-4xl font-bold text-white mb-2">Create New Task</h1>
+            <p class="text-white/80">Add a new task for users to complete</p>
           </div>
         </div>
       </div>
@@ -71,7 +65,13 @@
 
     <!-- Main Content -->
     <div class="flex-1 px-4 md:px-8 py-8">
-      <livewire:tasks-list />
+      <div class="max-w-3xl mx-auto">
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <livewire:create-task />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
