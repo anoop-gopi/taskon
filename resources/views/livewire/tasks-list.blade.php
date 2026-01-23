@@ -46,7 +46,7 @@
                 <td>
                   <div class="badge badge-success gap-2">
                     <span class="icon-[tabler--currency-dollar] size-3"></span>
-                    {{ number_format($task['fee'], 2) }}
+                    {{ number_format($task['earning'], 2) }}
                   </div>
                 </td>
                 <td>

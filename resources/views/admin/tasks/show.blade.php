@@ -89,7 +89,7 @@
                 </div>
                 <div class="flex justify-between">
                   <span class="text-base-content/60">Task Fee:</span>
-                  <span class="font-semibold text-success">${{ number_format($task['fee'], 2) }}</span>
+                  <span class="font-semibold text-success">${{ number_format(, 2) }}</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-base-content/60">Count:</span>
@@ -131,7 +131,7 @@
               <div class="grid grid-cols-2 gap-4 mt-4">
                 <div class="bg-success/10 rounded-lg p-3">
                   <p class="text-base-content/60 text-sm mb-1">Total Fee</p>
-                  <p class="text-2xl font-bold text-success">${{ number_format($task['fee'], 2) }}</p>
+                  <p class="text-2xl font-bold text-success">${{ number_format($task['earning'], 2) }}</p>
                 </div>
                 <div class="bg-info/10 rounded-lg p-3">
                   <p class="text-base-content/60 text-sm mb-1">Task Count</p>
@@ -139,7 +139,7 @@
                 </div>
                 <div class="bg-warning/10 rounded-lg p-3">
                   <p class="text-base-content/60 text-sm mb-1">Avg. Per Item</p>
-                  <p class="text-2xl font-bold text-warning">${{ number_format($task['fee'] / max(1, $task['count']), 2) }}</p>
+                  <p class="text-2xl font-bold text-warning">${{ number_format($task['earning'] / max(1, $task['count']), 2) }}</p>
                 </div>
                 <div class="bg-primary/10 rounded-lg p-3">
                   <p class="text-base-content/60 text-sm mb-1">Priority</p>
