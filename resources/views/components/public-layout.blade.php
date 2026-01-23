@@ -124,6 +124,11 @@
         </style>
     </head>
     <body class="bg-base-100 min-h-screen">
+        <!-- Pass Laravel auth state to JavaScript -->
+        <script>
+            window.laravelUser = @json(auth()->check() ? auth()->user() : null);
+        </script>
+        
         <!-- Navigation Header -->
         <nav class="bg-base-100 shadow-lg sticky top-0 z-50">
             <div class="container mx-auto px-4 flex items-center justify-between h-16">
@@ -162,15 +167,25 @@
                     </button>
 
                     <!-- User Menu (shown when logged in) -->
-                    <div id="user_menu" class="hidden items-center gap-3">
-                        <div class="dropdown dropdown-end">
-                            <button class="btn btn-ghost gap-2" tabindex="0">
-                                <span class="icon-[tabler--user-circle] size-5"></span>
-                                <span id="user_name" class="hidden md:inline">User</span>
+                    <div id="user_menu" class="hidden">
+                        <div class="dropdown">
+                            <button class="text-base-content hover:text-primary transition font-semibold flex items-center gap-1" type="button" id="user-dropdown" data-dropdown-toggle="user-dropdown-menu" aria-haspopup="true" aria-expanded="false">
+                                <span id="user_name">User</span>
+                                <span class="icon-[tabler--chevron-down] size-4"></span>
                             </button>
-                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                                <li><a href="{{ route('dashboard.profile') }}">Profile</a></li>
-                                <li><a href="javascript:void(0);" onclick="handleLogout(event)">Logout</a></li>
+                            <ul id="user-dropdown-menu" class="dropdown-menu dropdown-open:opacity-100 hidden" role="menu">
+                                <li>
+                                    <a class="dropdown-item text-sm" href="{{ route('dashboard.profile') }}">
+                                        <span class="icon-[tabler--user] size-4"></span>
+                                        Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-sm" href="javascript:void(0);" onclick="handleLogout(event)">
+                                        <span class="icon-[tabler--logout] size-4"></span>
+                                        Logout
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -183,7 +198,18 @@
                     <a href="{{ route('public.earn-money') }}" class="text-base-content/80 hover:text-primary transition">Earn Money</a>
                     <a href="{{ route('public.how-it-works') }}" class="text-base-content/80 hover:text-primary transition">How It Works</a>
                     <a href="{{ route('public.learn') }}" class="text-base-content/80 hover:text-primary transition">Learn</a>
-                    <a href="javascript:void(0);" onclick="openAuthModal(event)" class="text-base-content/80 hover:text-primary transition">Sign In</a>
+                    
+                    <!-- Mobile Sign In link (shown when not logged in) -->
+                    <a id="mobile_signin_link" href="javascript:void(0);" onclick="openAuthModal(event)" class="text-base-content/80 hover:text-primary transition">Sign In</a>
+                    
+                    <!-- Mobile User Menu (shown when logged in) -->
+                    <div id="mobile_user_menu" class="hidden flex flex-col gap-2 border-t border-base-300 pt-2">
+                        <div class="text-base-content font-medium px-2 py-1">
+                            <span id="mobile_user_name">User</span>
+                        </div>
+                        <a href="{{ route('dashboard.profile') }}" class="text-base-content/80 hover:text-primary transition px-2">Profile</a>
+                        <a href="javascript:void(0);" onclick="handleLogout(event)" class="text-base-content/80 hover:text-primary transition px-2">Logout</a>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -472,6 +498,7 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                         },
+                        credentials: 'same-origin',
                         body: JSON.stringify({
                             email: email,
                             password: password,
@@ -531,6 +558,7 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                         },
+                        credentials: 'same-origin',
                         body: JSON.stringify({
                             name: name,
                             email: email,
@@ -584,19 +612,41 @@
                 const signinBtnMobile = document.getElementById('signin_btn_mobile');
                 const userMenu = document.getElementById('user_menu');
                 const userName = document.getElementById('user_name');
+                const mobileSigninLink = document.getElementById('mobile_signin_link');
+                const mobileUserMenu = document.getElementById('mobile_user_menu');
+                const mobileUserName = document.getElementById('mobile_user_name');
                 
-                if (signinLink) signinLink.style.display = 'none';
-                if (signinBtnMobile) signinBtnMobile.style.display = 'none';
+                // Hide sign in elements
+                if (signinLink) signinLink.classList.add('!hidden');
+                if (signinBtnMobile) signinBtnMobile.classList.add('!hidden');
+                if (mobileSigninLink) mobileSigninLink.classList.add('!hidden');
+                
+                // Show user menu elements
                 if (userMenu) {
-                    userMenu.style.display = 'flex';
+                    userMenu.classList.remove('hidden');
+                    userMenu.classList.add('flex', 'items-center');
+                }
+                if (mobileUserMenu) {
+                    mobileUserMenu.classList.remove('hidden');
+                    mobileUserMenu.classList.add('flex');
                 }
                 
                 // Set user name
                 if (userName) userName.textContent = user.name;
+                if (mobileUserName) mobileUserName.textContent = user.name;
             }
 
             // Check if user is logged in on page load
             function checkLoginStatus() {
+                // First check if Laravel has an authenticated user
+                if (window.laravelUser) {
+                    // Sync Laravel session to localStorage
+                    localStorage.setItem('user', JSON.stringify(window.laravelUser));
+                    updateUserMenu(window.laravelUser);
+                    return;
+                }
+                
+                // Otherwise check localStorage
                 const user = localStorage.getItem('user');
                 if (user) {
                     try {
@@ -606,6 +656,9 @@
                         console.error('Error parsing user data:', e);
                         localStorage.removeItem('user');
                     }
+                } else {
+                    // Ensure sign in is visible if no user
+                    resetUserMenu();
                 }
             }
 
@@ -620,6 +673,7 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                         },
+                        credentials: 'same-origin',
                     });
                     
                     const data = await response.json();
@@ -649,11 +703,23 @@
                 const signinLink = document.getElementById('signin_link');
                 const signinBtnMobile = document.getElementById('signin_btn_mobile');
                 const userMenu = document.getElementById('user_menu');
+                const mobileSigninLink = document.getElementById('mobile_signin_link');
+                const mobileUserMenu = document.getElementById('mobile_user_menu');
                 
-                // Show sign in, hide user menu
-                if (signinLink) signinLink.style.display = '';
-                if (signinBtnMobile) signinBtnMobile.style.display = '';
-                if (userMenu) userMenu.style.display = 'none';
+                // Show sign in elements
+                if (signinLink) signinLink.classList.remove('!hidden');
+                if (signinBtnMobile) signinBtnMobile.classList.remove('!hidden');
+                if (mobileSigninLink) mobileSigninLink.classList.remove('!hidden');
+                
+                // Hide user menu elements
+                if (userMenu) {
+                    userMenu.classList.add('hidden');
+                    userMenu.classList.remove('flex', 'items-center');
+                }
+                if (mobileUserMenu) {
+                    mobileUserMenu.classList.add('hidden');
+                    mobileUserMenu.classList.remove('flex');
+                }
             }
 
             // Close modals with Escape key
@@ -667,6 +733,11 @@
             // Check login status on page load
             window.addEventListener('DOMContentLoaded', function() {
                 checkLoginStatus();
+                
+                // Initialize FlyonUI dropdowns if library is available
+                if (typeof HSDropdown !== 'undefined') {
+                    HSDropdown.autoInit();
+                }
             });
         </script>
 

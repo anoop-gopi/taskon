@@ -31,6 +31,9 @@ class AuthController extends Controller
 
             // Log the user in
             auth()->login($user);
+            
+            // Regenerate session for security
+            request()->session()->regenerate();
 
             return response()->json([
                 'success' => true,
@@ -75,6 +78,9 @@ class AuthController extends Controller
 
             // Log the user in
             auth()->login($user);
+            
+            // Regenerate session for security
+            request()->session()->regenerate();
 
             return response()->json([
                 'success' => true,
@@ -101,6 +107,12 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         auth()->logout();
+        
+        // Invalidate the session
+        $request->session()->invalidate();
+        
+        // Regenerate CSRF token
+        $request->session()->regenerateToken();
 
         return response()->json([
             'success' => true,
