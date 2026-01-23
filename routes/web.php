@@ -31,7 +31,10 @@ Route::get('/learn', function () {
 })->name('public.learn');
 
 Route::get('/dashboard', function () {
-    return view('dashboard.home');
+    // Fetch only non-deleted tasks (SoftDeletes automatically filters deleted_at IS NULL)
+    $tasks = \App\Models\Task::orderBy('created_at', 'desc')->limit(6)->get();
+    
+    return view('dashboard.home', ['tasks' => $tasks]);
 })->name('dashboard.home');
 
 Route::get('/dashboard/profile', function () {
@@ -51,7 +54,8 @@ Route::get('/dashboard/activity', function () {
 })->name('dashboard.activity');
 
 Route::get('/dashboard/task/{taskId}', function ($taskId) {
-    return view('dashboard.task-detail', ['taskId' => $taskId]);
+    $task = \App\Models\Task::findOrFail($taskId);
+    return view('dashboard.task-detail', ['task' => $task]);
 })->name('dashboard.task.show');
 
 Route::get('/dashboard/task/{taskId}/complete', function ($taskId) {

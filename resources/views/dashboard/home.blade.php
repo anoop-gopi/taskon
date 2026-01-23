@@ -73,118 +73,33 @@
 
       <!-- Task Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Task 1 -->
+        @forelse($tasks as $task)
         <div class="card bg-base-100 shadow-lg border border-primary/20 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-            <span class="icon-[tabler--pencil] size-16 text-white/50"></span>
+          <figure class="h-40 bg-gradient-to-br from-{{ ['blue', 'purple', 'pink', 'green', 'yellow', 'orange'][($loop->index) % 6] }}-400 to-{{ ['blue', 'purple', 'pink', 'green', 'yellow', 'orange'][($loop->index) % 6] }}-600 flex items-center justify-center">
+            <span class="icon-[tabler--checklist] size-16 text-white/50"></span>
           </figure>
           <div class="card-body">
-            <h3 class="card-title text-lg">Write Product Description</h3>
-            <p class="text-base-content/70 text-sm mb-2">Write an engaging product description for an e-commerce website. 500-700 words required.</p>
+            <h3 class="card-title text-lg">{{ $task->name }}</h3>
+            <p class="text-base-content/70 text-sm mb-2">{{ Str::limit($task->description, 100) }}</p>
             <div class="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
               <div>
                 <p class="text-xs text-base-content/60">Earnings</p>
-                <p class="text-xl font-bold text-primary">$25</p>
+                <p class="text-xl font-bold text-primary">${{ number_format($task->earning, 2) }}</p>
               </div>
-              <a href="{{ route('dashboard.task.show', 1) }}" class="btn btn-sm btn-primary">Start Task</a>
+              <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-sm btn-primary">Start Task</a>
             </div>
           </div>
         </div>
-
-        <!-- Task 2 -->
-        <div class="card bg-base-100 shadow-lg border border-primary/20 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-            <span class="icon-[tabler--code] size-16 text-white/50"></span>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">Build a React Component</h3>
-            <p class="text-base-content/70 text-sm mb-2">Create a reusable React component for data visualization. Must include TypeScript.</p>
-            <div class="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
-              <div>
-                <p class="text-xs text-base-content/60">Earnings</p>
-                <p class="text-xl font-bold text-primary">$150</p>
-              </div>
-              <a href="{{ route('dashboard.task.show', 2) }}" class="btn btn-sm btn-primary">Start Task</a>
-            </div>
-          </div>
+        @empty
+        <div class="col-span-full text-center py-12">
+          <p class="text-base-content/60 text-lg">No tasks available at the moment. Check back soon!</p>
         </div>
-
-        <!-- Task 3 -->
-        <div class="card bg-base-100 shadow-lg border border-primary/20 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center">
-            <span class="icon-[tabler--brush] size-16 text-white/50"></span>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">Design Mobile App UI</h3>
-            <p class="text-base-content/70 text-sm mb-2">Design mockups for a mobile app UI including 5 key screens. Figma files required.</p>
-            <div class="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
-              <div>
-                <p class="text-xs text-base-content/60">Earnings</p>
-                <p class="text-xl font-bold text-primary">$200</p>
-              </div>
-              <a href="{{ route('dashboard.task.show', 3) }}" class="btn btn-sm btn-primary">Start Task</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Task 4 -->
-        <div class="card bg-base-100 shadow-lg border border-primary/20 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-            <span class="icon-[tabler--volume] size-16 text-white/50"></span>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">Social Media Marketing Post</h3>
-            <p class="text-base-content/70 text-sm mb-2">Create engaging social media content for Instagram and TikTok. 3 posts with captions.</p>
-            <div class="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
-              <div>
-                <p class="text-xs text-base-content/60">Earnings</p>
-                <p class="text-xl font-bold text-primary">$50</p>
-              </div>
-              <a href="{{ route('dashboard.task.show', 4) }}" class="btn btn-sm btn-primary">Start Task</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Task 5 -->
-        <div class="card bg-base-100 shadow-lg border border-primary/20 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-            <span class="icon-[tabler--analytics] size-16 text-white/50"></span>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">Data Analysis Report</h3>
-            <p class="text-base-content/70 text-sm mb-2">Analyze sales data and create comprehensive report with visualizations and insights.</p>
-            <div class="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
-              <div>
-                <p class="text-xs text-base-content/60">Earnings</p>
-                <p class="text-xl font-bold text-primary">$175</p>
-              </div>
-              <a href="{{ route('dashboard.task.show', 5) }}" class="btn btn-sm btn-primary">Start Task</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Task 6 -->
-        <div class="card bg-base-100 shadow-lg border border-primary/20 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
-            <span class="icon-[tabler--video] size-16 text-white/50"></span>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">YouTube Video Editing</h3>
-            <p class="text-base-content/70 text-sm mb-2">Edit raw footage into polished YouTube video with transitions, effects, and subtitles.</p>
-            <div class="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
-              <div>
-                <p class="text-xs text-base-content/60">Earnings</p>
-                <p class="text-xl font-bold text-primary">$120</p>
-              </div>
-              <a href="{{ route('dashboard.task.show', 6) }}" class="btn btn-sm btn-primary">Start Task</a>
-            </div>
-          </div>
-        </div>
+        @endforelse
       </div>
 
       <!-- Load More Button -->
       <div class="text-center mt-12">
-        <button class="btn btn-outline btn-lg">Load More Tasks</button>
+        <a href="{{ route('dashboard.tasks') }}" class="btn btn-outline btn-lg">View All Tasks</a>
       </div>
     </div>
   </section>
