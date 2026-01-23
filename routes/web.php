@@ -59,12 +59,28 @@ Route::get('/dashboard/task/{taskId}', function ($taskId) {
 })->name('dashboard.task.show');
 
 Route::get('/dashboard/task/{taskId}/complete', function ($taskId) {
-    return view('dashboard.task-complete', ['taskId' => $taskId]);
+    $task = \App\Models\Task::findOrFail($taskId);
+    return view('dashboard.task-complete', ['task' => $task]);
 })->name('dashboard.task.complete.form');
 
-Route::post('/dashboard/task/{taskId}/complete', function ($taskId) {
-    // Handle task completion submission
-    // This would save to database, send email, etc.
+Route::post('/dashboard/task/{taskId}/complete', function (\Illuminate\Http\Request $request, $taskId) {
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+        'notes' => 'nullable|string',
+    ]);
+
+    // Store the uploaded image
+    $imagePath = $request->file('image')->store('task_completions', 'public');
+
+    // Create task completion record
+    \App\Models\TaskCompleted::create([
+        'task_id' => $taskId,
+        'user_id' => auth()->id(),
+        'image_path' => $imagePath,
+        'notes' => $request->notes,
+        'date_time' => now(),
+    ]);
+
     return redirect()->route('dashboard.home')->with('success', 'Task submission received! We will review and process your completion.');
 })->name('dashboard.task.complete');
 

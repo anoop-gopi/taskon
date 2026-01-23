@@ -1,72 +1,19 @@
-@php
-$tasks = [
-    1 => [
-        'id' => 1,
-        'title' => 'Write Product Description',
-        'earnings' => 25,
-        'category' => 'Writing',
-        'difficulty' => 'Beginner',
-    ],
-    2 => [
-        'id' => 2,
-        'title' => 'Build a React Component',
-        'earnings' => 150,
-        'category' => 'Development',
-        'difficulty' => 'Intermediate',
-    ],
-    3 => [
-        'id' => 3,
-        'title' => 'Design Mobile App UI',
-        'earnings' => 200,
-        'category' => 'Design',
-        'difficulty' => 'Advanced',
-    ],
-    4 => [
-        'id' => 4,
-        'title' => 'Social Media Marketing Post',
-        'earnings' => 50,
-        'category' => 'Marketing',
-        'difficulty' => 'Beginner',
-    ],
-    5 => [
-        'id' => 5,
-        'title' => 'Data Analysis Report',
-        'earnings' => 175,
-        'category' => 'Analytics',
-        'difficulty' => 'Intermediate',
-    ],
-    6 => [
-        'id' => 6,
-        'title' => 'YouTube Video Editing',
-        'earnings' => 120,
-        'category' => 'Video Production',
-        'difficulty' => 'Intermediate',
-    ]
-];
-
-$task = $tasks[$taskId] ?? null;
-
-if (!$task) {
-    abort(404);
-}
-@endphp
-
 <x-dashboard-layout>
   <!-- Hero Section -->
   <section class="bg-primary text-white py-12">
     <div class="container mx-auto px-4">
-      <a href="{{ route('dashboard.task.show', $taskId) }}" class="inline-flex items-center text-white/80 hover:text-white mb-6 transition">
+      <a href="{{ route('dashboard.task.show', $task->id) }}" class="inline-flex items-center text-white/80 hover:text-white mb-6 transition">
         <span class="icon-[tabler--arrow-left] size-5 mr-2"></span>
         Back to Task Details
       </a>
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <p class="text-white/80 text-sm mb-2 uppercase tracking-wide">Submit Your Work</p>
-          <h1 class="text-4xl md:text-5xl font-bold">{{ $task['title'] }}</h1>
+          <h1 class="text-4xl md:text-5xl font-bold">{{ $task->name }}</h1>
         </div>
         <div class="text-right">
           <p class="text-white/80 text-sm mb-1">You Will Earn</p>
-          <p class="text-5xl font-bold">${{ $task['earnings'] }}</p>
+          <p class="text-5xl font-bold">${{ number_format($task->earning, 2) }}</p>
         </div>
       </div>
     </div>
@@ -79,39 +26,36 @@ if (!$task) {
         <div class="card-body">
           <h2 class="text-2xl font-bold mb-8">Submit Your Work</h2>
           
-          <form method="POST" action="{{ route('dashboard.task.complete', $taskId) }}" enctype="multipart/form-data">
+          <form method="POST" action="{{ route('dashboard.task.complete', $task->id) }}" enctype="multipart/form-data">
             @csrf
             
-            <!-- Screenshot Upload -->
+            <!-- Image Upload -->
             <div class="form-control mb-8">
               <label class="label">
-                <span class="label-text font-semibold text-base">Upload Screenshot or File</span>
+                <span class="label-text font-semibold text-base">Upload Image File</span>
                 <span class="label-text-alt text-error">*</span>
               </label>
-              <div class="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/60 transition cursor-pointer" onclick="document.getElementById('screenshot_input').click()">
-                <input type="file" id="screenshot_input" name="screenshot" accept="image/*,.pdf,.doc,.docx,.zip" class="hidden" required />
+              <div class="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/60 transition cursor-pointer" onclick="document.getElementById('image_input').click()">
+                <input type="file" id="image_input" name="image" accept="image/jpeg,image/png,image/jpg,image/gif" class="hidden" required onchange="displayFileName(this)" />
                 <div class="flex justify-center mb-4">
                   <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                     <span class="icon-[tabler--cloud-upload] size-6 text-primary"></span>
                   </div>
                 </div>
                 <p class="text-base-content font-semibold mb-1">Click to upload or drag and drop</p>
-                <p class="text-sm text-base-content/70">PNG, JPG, PDF, DOC, DOCX, ZIP up to 10MB</p>
+                <p class="text-sm text-base-content/70">JPG, PNG, GIF up to 10MB</p>
               </div>
+              <div id="file_name_display" class="mt-2 text-sm text-primary font-semibold hidden">
+                <span class="icon-[tabler--file] size-4 inline-block"></span>
+                <span id="file_name_text"></span>
+              </div>
+              @error('image')
+                <label class="label">
+                  <span class="label-text-alt text-error">{{ $message }}</span>
+                </label>
+              @enderror
               <label class="label">
-                <span class="label-text-alt text-base-content/70">Supported formats: PNG, JPG, PDF, DOC, DOCX, ZIP</span>
-              </label>
-            </div>
-
-            <!-- Completion Date/Time -->
-            <div class="form-control mb-8">
-              <label class="label">
-                <span class="label-text font-semibold text-base">Completion Date & Time</span>
-                <span class="label-text-alt text-error">*</span>
-              </label>
-              <input type="datetime-local" name="completion_date" class="input input-bordered w-full" required />
-              <label class="label">
-                <span class="label-text-alt text-base-content/70">When did you complete this task?</span>
+                <span class="label-text-alt text-base-content/70">Supported formats: JPG, PNG, GIF</span>
               </label>
             </div>
 
@@ -120,7 +64,12 @@ if (!$task) {
               <label class="label">
                 <span class="label-text font-semibold text-base">Comments & Notes (Optional)</span>
               </label>
-              <textarea name="comments" class="textarea textarea-bordered w-full" rows="5" placeholder="Share any notes about this task completion, challenges you faced, or any additional information..."></textarea>
+              <textarea name="notes" class="textarea textarea-bordered w-full" rows="5" placeholder="Share any notes about this task completion, challenges you faced, or any additional information..."></textarea>
+              @error('notes')
+                <label class="label">
+                  <span class="label-text-alt text-error">{{ $message }}</span>
+                </label>
+              @enderror
               <label class="label">
                 <span class="label-text-alt text-base-content/70">This helps us understand your work better and provide feedback</span>
               </label>
@@ -128,7 +77,7 @@ if (!$task) {
 
             <!-- Form Actions -->
             <div class="flex gap-3 justify-end pt-6 border-t border-base-300">
-              <a href="{{ route('dashboard.task.show', $taskId) }}" class="btn btn-ghost">Cancel</a>
+              <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-ghost">Cancel</a>
               <button type="submit" class="btn btn-primary gap-2">
                 <span class="icon-[tabler--send] size-5"></span>
                 Submit Completion
@@ -172,4 +121,18 @@ if (!$task) {
       </div>
     </div>
   </section>
+
+  <script>
+    function displayFileName(input) {
+      const fileNameDisplay = document.getElementById('file_name_display');
+      const fileNameText = document.getElementById('file_name_text');
+      
+      if (input.files && input.files[0]) {
+        fileNameText.textContent = input.files[0].name;
+        fileNameDisplay.classList.remove('hidden');
+      } else {
+        fileNameDisplay.classList.add('hidden');
+      }
+    }
+  </script>
 </x-dashboard-layout>
