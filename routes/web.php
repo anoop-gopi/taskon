@@ -157,23 +157,23 @@ Route::get('/admin/approvals', function () {
 })->name('admin.approvals');
 
 Route::get('/admin/approvals/{id}', function ($id) {
-    // Mock approval data - in production, fetch from database
-    $approvals = [
-        1 => ['id' => 1, 'user_email' => 'john@example.com', 'task_name' => 'Website Design', 'task_id' => 'TASK-001', 'completion_date' => '2024-01-19 14:30:00', 'amount' => 500.00],
-        2 => ['id' => 2, 'user_email' => 'sarah@example.com', 'task_name' => 'API Development', 'task_id' => 'TASK-002', 'completion_date' => '2024-01-18 11:45:00', 'amount' => 750.00],
-        3 => ['id' => 3, 'user_email' => 'mike@example.com', 'task_name' => 'Database Setup', 'task_id' => 'TASK-003', 'completion_date' => '2024-01-17 09:20:00', 'amount' => 300.00],
-        4 => ['id' => 4, 'user_email' => 'emily@example.com', 'task_name' => 'Mobile App', 'task_id' => 'TASK-004', 'completion_date' => '2024-01-16 16:15:00', 'amount' => 1200.00],
-        5 => ['id' => 5, 'user_email' => 'robert@example.com', 'task_name' => 'Content Writing', 'task_id' => 'TASK-005', 'completion_date' => '2024-01-15 13:00:00', 'amount' => 150.00],
-        6 => ['id' => 6, 'user_email' => 'jessica@example.com', 'task_name' => 'SEO Optimization', 'task_id' => 'TASK-006', 'completion_date' => '2024-01-14 10:30:00', 'amount' => 400.00],
-        7 => ['id' => 7, 'user_email' => 'david@example.com', 'task_name' => 'Testing & QA', 'task_id' => 'TASK-007', 'completion_date' => '2024-01-13 15:45:00', 'amount' => 350.00],
-        8 => ['id' => 8, 'user_email' => 'amanda@example.com', 'task_name' => 'Deployment', 'task_id' => 'TASK-008', 'completion_date' => '2024-01-12 12:00:00', 'amount' => 200.00],
-    ];
-    
-    $approval = $approvals[$id] ?? null;
-    
-    if (!$approval) {
-        abort(404, 'Approval not found');
-    }
+    $approval = \App\Models\TaskCompleted::with(['task', 'user', 'taskStatus'])->findOrFail($id);
     
     return view('admin.approvals.show', ['approval' => $approval]);
 })->name('admin.approval.show');
+
+// Approve task completion
+Route::post('/admin/approvals/{id}/approve', function ($id) {
+    $approval = \App\Models\TaskCompleted::findOrFail($id);
+    $approval->update(['status' => 2]); // 2 = Accepted
+    
+    return redirect()->route('admin.approvals')->with('success', 'Task completion approved successfully!');
+})->name('admin.approval.approve');
+
+// Reject task completion
+Route::post('/admin/approvals/{id}/reject', function ($id) {
+    $approval = \App\Models\TaskCompleted::findOrFail($id);
+    $approval->update(['status' => 3]); // 3 = Rejected
+    
+    return redirect()->route('admin.approvals')->with('success', 'Task completion rejected.');
+})->name('admin.approval.reject');

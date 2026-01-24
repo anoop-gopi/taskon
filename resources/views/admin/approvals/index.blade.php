@@ -71,6 +71,13 @@
 
     <!-- Main Content -->
     <div class="flex-1 px-4 md:px-8 py-8">
+      @if(session('success'))
+        <div class="alert alert-success mb-6 shadow-lg">
+          <span class="icon-[tabler--check] size-5"></span>
+          <span>{{ session('success') }}</span>
+        </div>
+      @endif
+      
       <livewire:approvals-list />
     </div>
   </div>

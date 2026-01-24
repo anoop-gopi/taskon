@@ -78,22 +78,34 @@
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                   <p class="text-base-content/60 text-xs mb-1">Task ID</p>
-                  <p class="font-semibold text-primary">{{ $approval['task_id'] }}</p>
+                  <p class="font-semibold text-primary">{{ $approval->task_id }}</p>
                 </div>
                 <div>
                   <p class="text-base-content/60 text-xs mb-1">Task Name</p>
-                  <p class="font-semibold">{{ $approval['task_name'] }}</p>
+                  <p class="font-semibold">{{ $approval->task->name }}</p>
                 </div>
                 <div>
                   <p class="text-base-content/60 text-xs mb-1">Amount</p>
-                  <p class="font-semibold text-success">${{ number_format($approval['amount'], 2) }}</p>
+                  <p class="font-semibold text-success">${{ number_format($approval->task->earning, 2) }}</p>
                 </div>
                 <div>
                   <p class="text-base-content/60 text-xs mb-1">Status</p>
-                  <div class="badge badge-warning gap-1">
-                    <span class="icon-[tabler--clock] size-2"></span>
-                    Pending
-                  </div>
+                  @if($approval->status == 1)
+                    <div class="badge badge-warning gap-1">
+                      <span class="icon-[tabler--clock] size-2"></span>
+                      {{ $approval->taskStatus->name }}
+                    </div>
+                  @elseif($approval->status == 2)
+                    <div class="badge badge-success gap-1">
+                      <span class="icon-[tabler--check] size-2"></span>
+                      {{ $approval->taskStatus->name }}
+                    </div>
+                  @else
+                    <div class="badge badge-error gap-1">
+                      <span class="icon-[tabler--x] size-2"></span>
+                      {{ $approval->taskStatus->name }}
+                    </div>
+                  @endif
                 </div>
               </div>
             </div>
@@ -105,18 +117,22 @@
               <h3 class="card-title text-lg mb-4">User Information</h3>
               <div class="space-y-3">
                 <div class="flex justify-between border-b border-base-300 pb-3">
+                  <span class="text-base-content/60">User Name</span>
+                  <span class="font-semibold">{{ $approval->user->name }}</span>
+                </div>
+                <div class="flex justify-between border-b border-base-300 pb-3">
                   <span class="text-base-content/60">User Email</span>
-                  <span class="font-semibold">{{ $approval['user_email'] }}</span>
+                  <span class="font-semibold">{{ $approval->user->email }}</span>
                 </div>
                 <div class="flex justify-between border-b border-base-300 pb-3">
                   <span class="text-base-content/60">User ID</span>
-                  <span class="font-semibold">#{{ str_pad($approval['id'], 4, '0', STR_PAD_LEFT) }}</span>
+                  <span class="font-semibold">#{{ str_pad($approval->user_id, 4, '0', STR_PAD_LEFT) }}</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-base-content/60">Account Status</span>
                   <div class="badge badge-success gap-1">
                     <span class="icon-[tabler--circle-filled] size-2"></span>
-                    Verified
+                    Active
                   </div>
                 </div>
               </div>
@@ -130,23 +146,23 @@
               <div class="space-y-3">
                 <div class="flex justify-between border-b border-base-300 pb-3">
                   <span class="text-base-content/60">Task ID</span>
-                  <span class="font-semibold text-primary">{{ $approval['task_id'] }}</span>
+                  <span class="font-semibold text-primary">{{ $approval->task_id }}</span>
                 </div>
                 <div class="flex justify-between border-b border-base-300 pb-3">
                   <span class="text-base-content/60">Task Name</span>
-                  <span class="font-semibold">{{ $approval['task_name'] }}</span>
+                  <span class="font-semibold">{{ $approval->task->name }}</span>
                 </div>
                 <div class="flex justify-between border-b border-base-300 pb-3">
                   <span class="text-base-content/60">Completion Date</span>
-                  <span class="font-semibold">{{ \Carbon\Carbon::parse($approval['completion_date'])->format('M d, Y') }}</span>
+                  <span class="font-semibold">{{ \Carbon\Carbon::parse($approval->date_time)->format('M d, Y') }}</span>
                 </div>
                 <div class="flex justify-between border-b border-base-300 pb-3">
                   <span class="text-base-content/60">Completion Time</span>
-                  <span class="font-semibold">{{ \Carbon\Carbon::parse($approval['completion_date'])->format('H:i A') }}</span>
+                  <span class="font-semibold">{{ \Carbon\Carbon::parse($approval->date_time)->format('h:i A') }}</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-base-content/60">Amount</span>
-                  <span class="font-semibold text-success text-lg">${{ number_format($approval['amount'], 2) }}</span>
+                  <span class="font-semibold text-success text-lg">${{ number_format($approval->task->earning, 2) }}</span>
                 </div>
               </div>
             </div>
@@ -156,45 +172,40 @@
           <div class="card bg-base-100 shadow-md">
             <div class="card-body">
               <h3 class="card-title text-lg mb-4">Submitted Work & Screenshot</h3>
-              <div class="bg-base-200 rounded-lg p-6 mb-4">
-                <div class="flex items-center justify-center h-96 bg-base-300 rounded-lg border-2 border-dashed border-base-400">
-                  <div class="text-center">
-                    <span class="icon-[tabler--photo] size-16 text-base-content/30 mx-auto block mb-2"></span>
-                    <p class="text-base-content/50 mb-2">Task Completion Screenshot</p>
-                    <p class="text-xs text-base-content/40">Placeholder for user's submitted work screenshot</p>
+              @if($approval->image_path)
+                <div class="bg-base-200 rounded-lg p-6 mb-4">
+                  <img src="{{ asset('storage/' . $approval->image_path) }}" alt="Task completion screenshot" class="w-full h-auto rounded-lg shadow-sm">
+                </div>
+              @else
+                <div class="bg-base-200 rounded-lg p-6 mb-4">
+                  <div class="flex items-center justify-center h-96 bg-base-300 rounded-lg border-2 border-dashed border-base-400">
+                    <div class="text-center">
+                      <span class="icon-[tabler--photo] size-16 text-base-content/30 mx-auto block mb-2"></span>
+                      <p class="text-base-content/50 mb-2">No Screenshot Uploaded</p>
+                      <p class="text-xs text-base-content/40">User did not upload a screenshot</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="divider my-2">OR</div>
-              <div class="space-y-2">
-                <p class="text-sm font-medium text-base-content/60">User's Submission Notes:</p>
-                <div class="bg-base-200 rounded-lg p-4">
-                  <p class="text-base">Task completed as per the requirements. All deliverables have been submitted and tested. Ready for approval and payment processing. The work includes comprehensive documentation and all requested features.</p>
+              @endif
+              @if($approval->notes)
+                <div class="divider my-2"></div>
+                <div class="space-y-2">
+                  <p class="text-sm font-medium text-base-content/60">User's Submission Notes:</p>
+                  <div class="bg-base-200 rounded-lg p-4">
+                    <p class="text-base">{{ $approval->notes }}</p>
+                  </div>
                 </div>
-              </div>
+              @endif
             </div>
           </div>
 
-          <!-- Work Details & Deliverables -->
+          <!-- Task Description -->
           <div class="card bg-base-100 shadow-md">
             <div class="card-body">
-              <h3 class="card-title text-lg mb-4">Deliverables Checklist</h3>
+              <h3 class="card-title text-lg mb-4">Task Description</h3>
               <div class="space-y-3">
-                <div class="flex items-center gap-2 pb-2 border-b border-base-300">
-                  <span class="icon-[tabler--check] size-5 text-success"></span>
-                  <span class="text-sm">All required deliverables submitted</span>
-                </div>
-                <div class="flex items-center gap-2 pb-2 border-b border-base-300">
-                  <span class="icon-[tabler--check] size-5 text-success"></span>
-                  <span class="text-sm">Quality standards met</span>
-                </div>
-                <div class="flex items-center gap-2 pb-2 border-b border-base-300">
-                  <span class="icon-[tabler--check] size-5 text-success"></span>
-                  <span class="text-sm">Task requirements fulfilled</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="icon-[tabler--check] size-5 text-success"></span>
-                  <span class="text-sm">Documentation provided</span>
+                <div class="bg-base-200 rounded-lg p-4">
+                  <p class="text-base">{{ $approval->task->description }}</p>
                 </div>
               </div>
             </div>
@@ -206,18 +217,32 @@
           <!-- Status Card -->
           <div class="card bg-base-100 shadow-md mb-6">
             <div class="card-body items-center text-center">
-              <div class="bg-warning/10 rounded-lg p-4 mb-4">
-                <span class="icon-[tabler--clock] size-12 text-warning"></span>
-              </div>
-              <h3 class="card-title text-lg">Pending Review</h3>
-              <p class="text-base-content/60 text-sm mt-2">Waiting for your decision</p>
+              @if($approval->status == 1)
+                <div class="bg-warning/10 rounded-lg p-4 mb-4">
+                  <span class="icon-[tabler--clock] size-12 text-warning"></span>
+                </div>
+                <h3 class="card-title text-lg">{{ $approval->taskStatus->name }}</h3>
+                <p class="text-base-content/60 text-sm mt-2">Waiting for your decision</p>
+              @elseif($approval->status == 2)
+                <div class="bg-success/10 rounded-lg p-4 mb-4">
+                  <span class="icon-[tabler--check] size-12 text-success"></span>
+                </div>
+                <h3 class="card-title text-lg">{{ $approval->taskStatus->name }}</h3>
+                <p class="text-base-content/60 text-sm mt-2">Task has been approved</p>
+              @else
+                <div class="bg-error/10 rounded-lg p-4 mb-4">
+                  <span class="icon-[tabler--x] size-12 text-error"></span>
+                </div>
+                <h3 class="card-title text-lg">{{ $approval->taskStatus->name }}</h3>
+                <p class="text-base-content/60 text-sm mt-2">Task has been rejected</p>
+              @endif
               <div class="divider my-2"></div>
               
               <!-- Approval Timeline -->
               <div class="text-left space-y-3 w-full">
                 <div class="text-xs">
                   <p class="text-base-content/60 mb-1">Submitted</p>
-                  <p class="font-semibold">{{ \Carbon\Carbon::parse($approval['completion_date'])->diffForHumans() }}</p>
+                  <p class="font-semibold">{{ \Carbon\Carbon::parse($approval->date_time)->diffForHumans() }}</p>
                 </div>
               </div>
             </div>
@@ -226,18 +251,32 @@
           <!-- Action Buttons -->
           <div class="card bg-base-100 shadow-md">
             <div class="card-body space-y-3">
-              <button class="btn btn-success gap-2 w-full" onclick="approveTask()">
-                <span class="icon-[tabler--check] size-5"></span>
-                Approve & Process Payment
-              </button>
-              <button class="btn btn-warning gap-2 w-full" onclick="requestRevision()">
-                <span class="icon-[tabler--alert-circle] size-5"></span>
-                Request Revision
-              </button>
-              <button class="btn btn-error gap-2 w-full" onclick="openRejectionModal()">
-                <span class="icon-[tabler--x] size-5"></span>
-                Reject
-              </button>
+              @if($approval->status == 1)
+                <form action="{{ route('admin.approval.approve', $approval->id) }}" method="POST">
+                  @csrf
+                  <button type="submit" class="btn btn-success gap-2 w-full" onclick="return confirm('Are you sure you want to approve this task?')">
+                    <span class="icon-[tabler--check] size-5"></span>
+                    Approve & Process Payment
+                  </button>
+                </form>
+                <form action="{{ route('admin.approval.reject', $approval->id) }}" method="POST" class="mt-3">
+                  @csrf
+                  <button type="submit" class="btn btn-error gap-2 w-full" onclick="return confirm('Are you sure you want to reject this task?')">
+                    <span class="icon-[tabler--x] size-5"></span>
+                    Reject
+                  </button>
+                </form>
+              @elseif($approval->status == 2)
+                <div class="alert alert-success">
+                  <span class="icon-[tabler--check] size-5"></span>
+                  <span>This task has been approved</span>
+                </div>
+              @else
+                <div class="alert alert-error">
+                  <span class="icon-[tabler--x] size-5"></span>
+                  <span>This task has been rejected</span>
+                </div>
+              @endif
             </div>
           </div>
 
@@ -264,37 +303,51 @@
             <div class="flex gap-3">
               <div class="flex flex-col items-center">
                 <div class="w-3 h-3 bg-success rounded-full"></div>
-                <div class="w-0.5 h-12 bg-base-300"></div>
+                @if($approval->status != 1)
+                  <div class="w-0.5 h-12 bg-base-300"></div>
+                @endif
               </div>
               <div class="pb-6">
                 <p class="font-semibold">Task Submitted</p>
-                <p class="text-base-content/60 text-sm">{{ \Carbon\Carbon::parse($approval['completion_date'])->format('M d, Y H:i A') }}</p>
+                <p class="text-base-content/60 text-sm">{{ \Carbon\Carbon::parse($approval->date_time)->format('M d, Y h:i A') }}</p>
                 <p class="text-base-content/60 text-sm mt-1">User submitted completed task for review</p>
               </div>
             </div>
 
-            <div class="flex gap-3">
-              <div class="flex flex-col items-center">
-                <div class="w-3 h-3 bg-primary rounded-full"></div>
-                <div class="w-0.5 h-12 bg-base-300"></div>
+            @if($approval->status == 2)
+              <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                  <div class="w-3 h-3 bg-success rounded-full"></div>
+                </div>
+                <div>
+                  <p class="font-semibold">Task Approved</p>
+                  <p class="text-base-content/60 text-sm">{{ \Carbon\Carbon::parse($approval->updated_at)->format('M d, Y h:i A') }}</p>
+                  <p class="text-base-content/60 text-sm mt-1">Task has been approved by admin</p>
+                </div>
               </div>
-              <div class="pb-6">
-                <p class="font-semibold">System Validated</p>
-                <p class="text-base-content/60 text-sm">{{ \Carbon\Carbon::parse($approval['completion_date'])->addHours(1)->format('M d, Y H:i A') }}</p>
-                <p class="text-base-content/60 text-sm mt-1">Automated validation completed successfully</p>
+            @elseif($approval->status == 3)
+              <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                  <div class="w-3 h-3 bg-error rounded-full"></div>
+                </div>
+                <div>
+                  <p class="font-semibold">Task Rejected</p>
+                  <p class="text-base-content/60 text-sm">{{ \Carbon\Carbon::parse($approval->updated_at)->format('M d, Y h:i A') }}</p>
+                  <p class="text-base-content/60 text-sm mt-1">Task has been rejected by admin</p>
+                </div>
               </div>
-            </div>
-
-            <div class="flex gap-3">
-              <div class="flex flex-col items-center">
-                <div class="w-3 h-3 bg-warning rounded-full"></div>
+            @else
+              <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                  <div class="w-3 h-3 bg-warning rounded-full"></div>
+                </div>
+                <div>
+                  <p class="font-semibold">Awaiting Admin Approval</p>
+                  <p class="text-base-content/60 text-sm">Now</p>
+                  <p class="text-base-content/60 text-sm mt-1">Waiting for your decision</p>
+                </div>
               </div>
-              <div>
-                <p class="font-semibold">Awaiting Admin Approval</p>
-                <p class="text-base-content/60 text-sm">Now</p>
-                <p class="text-base-content/60 text-sm mt-1">Waiting for your decision</p>
-              </div>
-            </div>
+            @endif
           </div>
         </div>
       </div>
@@ -302,97 +355,7 @@
   </div>
 </div>
 
-<!-- Rejection Modal -->
-<div class="modal" id="rejection_modal">
-  <div class="modal-box w-11/12 max-w-md">
-    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeRejectionModal()">✕</button>
-    <h3 class="font-bold text-lg mb-4">Reject Task Approval</h3>
-    
-    <form onsubmit="submitRejection(event)">
-      <!-- Rejection Reason -->
-      <div class="form-control mb-4">
-        <label class="label">
-          <span class="label-text font-medium">Rejection Reason</span>
-        </label>
-        <select id="rejection_reason" class="select select-bordered" required>
-          <option value="">Select a reason...</option>
-          <option value="incomplete">Work is incomplete</option>
-          <option value="quality">Quality does not meet standards</option>
-          <option value="requirements">Requirements not met</option>
-          <option value="documentation">Missing documentation</option>
-          <option value="technical">Technical issues found</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <!-- Additional Comments -->
-      <div class="form-control mb-6">
-        <label class="label">
-          <span class="label-text font-medium">Additional Comments</span>
-        </label>
-        <textarea id="rejection_comments" class="textarea textarea-bordered h-32" placeholder="Provide detailed feedback for the user..." required></textarea>
-      </div>
-
-      <!-- Modal Actions -->
-      <div class="modal-action gap-2">
-        <button type="button" class="btn btn-ghost" onclick="closeRejectionModal()">
-          Cancel
-        </button>
-        <button type="submit" class="btn btn-error gap-2">
-          <span class="icon-[tabler--check] size-5"></span>
-          Confirm Rejection
-        </button>
-      </div>
-    </form>
-  </div>
-  <div class="modal-backdrop" onclick="closeRejectionModal()"></div>
-</div>
-
 <script>
-  function openRejectionModal() {
-    const modal = document.getElementById('rejection_modal');
-    if (modal) {
-      modal.classList.add('modal-open');
-    }
-  }
-
-  function closeRejectionModal() {
-    const modal = document.getElementById('rejection_modal');
-    if (modal) {
-      modal.classList.remove('modal-open');
-    }
-  }
-
-  function approveTask() {
-    if (confirm('Are you sure you want to approve this task and process the payment?')) {
-      alert('Task approved successfully! Payment of ${{ $approval['amount'] }} will be processed.');
-      // Here you would send the approval to the backend
-    }
-  }
-
-  function requestRevision() {
-    alert('Revision request sent to the user. They will be notified to resubmit the work.');
-    // Here you would send the revision request to the backend
-  }
-
-  function submitRejection(event) {
-    event.preventDefault();
-    const reason = document.getElementById('rejection_reason').value;
-    const comments = document.getElementById('rejection_comments').value;
-    
-    if (!reason || !comments) {
-      alert('Please provide both reason and comments.');
-      return;
-    }
-
-    const message = `Task rejected with reason: ${reason}\n\nComments: ${comments}`;
-    if (confirm(message + '\n\nConfirm rejection?')) {
-      alert('Task rejection recorded and user will be notified.');
-      closeRejectionModal();
-      // Here you would send the rejection details to the backend
-    }
-  }
-
   document.getElementById('mobile-menu-btn').addEventListener('click', function() {
     const sidebar = document.querySelector('.w-64');
     sidebar.classList.toggle('hidden');
