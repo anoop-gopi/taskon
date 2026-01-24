@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Task;
+use App\Models\UserCategory;
 use Livewire\Component;
 
 class CreateTask extends Component
@@ -10,11 +11,13 @@ class CreateTask extends Component
     public $name = '';
     public $description = '';
     public $earning = '';
+    public $category_id = 1; // Default to Free
 
     protected $rules = [
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'earning' => 'required|numeric|min:0',
+        'category_id' => 'required|exists:user_categories,id',
     ];
 
     public function save()
@@ -30,6 +33,10 @@ class CreateTask extends Component
 
     public function render()
     {
-        return view('livewire.create-task');
+        $categories = UserCategory::orderBy('id')->get();
+        
+        return view('livewire.create-task', [
+            'categories' => $categories,
+        ]);
     }
 }

@@ -26,6 +26,7 @@ class User extends Authenticatable
         'google_id',
         'facebook_id',
         'status_id',
+        'category_id',
     ];
 
     /**
@@ -59,5 +60,10 @@ class User extends Authenticatable
     public function userStatus(): BelongsTo
     {
         return $this->belongsTo(UserStatus::class, 'status_id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(UserCategory::class, 'category_id');
     }
 }

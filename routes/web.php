@@ -31,15 +31,52 @@ Route::get('/learn', function () {
 })->name('public.learn');
 
 Route::get('/dashboard', function () {
-    // Fetch only non-deleted tasks (SoftDeletes automatically filters deleted_at IS NULL)
-    $tasks = \App\Models\Task::orderBy('created_at', 'desc')->limit(6)->get();
+    $user = auth()->user();
     
-    return view('dashboard.home', ['tasks' => $tasks]);
+    // Get user's category or default to free (1)
+    $userCategory = $user ? $user->category_id : 1;
+    
+    // Fetch tasks that match user's category or lower
+    // Free users (category 1) see only category 1 tasks (limit 1)
+    // Premium users see tasks for their category and below
+    $tasks = \App\Models\Task::where('category_id', '<=', $userCategory)
+        ->orderBy('created_at', 'desc')
+        ->get();
+    
+    // If user is free (category_id = 1), limit to 1 task
+    if ($userCategory == 1) {
+        $tasks = $tasks->take(1);
+    }
+    
+    return view('dashboard.home', [
+        'tasks' => $tasks,
+        'userCategory' => $user ? $user->category : null,
+    ]);
 })->name('dashboard.home');
 
 Route::get('/dashboard/profile', function () {
     return view('dashboard.profile');
 })->name('dashboard.profile');
+
+Route::get('/dashboard/upgrade', function () {
+    $categories = \App\Models\UserCategory::where('id', '>', 1)->orderBy('id')->get();
+    $currentCategory = auth()->user()->category;
+    
+    return view('dashboard.upgrade', [
+        'categories' => $categories,
+        'currentCategory' => $currentCategory,
+    ]);
+})->name('dashboard.upgrade');
+
+Route::post('/dashboard/upgrade/{categoryId}', function ($categoryId) {
+    $user = auth()->user();
+    $category = \App\Models\UserCategory::findOrFail($categoryId);
+    
+    // Update user category
+    $user->update(['category_id' => $categoryId]);
+    
+    return redirect()->route('dashboard.home')->with('success', 'Successfully upgraded to ' . $category->name . ' plan!');
+})->name('dashboard.upgrade.process');
 
 Route::get('/dashboard/tasks', function () {
     return view('dashboard.tasks');

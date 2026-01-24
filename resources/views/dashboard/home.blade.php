@@ -1,4 +1,14 @@
 <x-dashboard-layout>
+  <!-- Success Message -->
+  @if(session('success'))
+    <div class="container mx-auto px-4 pt-4">
+      <div class="alert alert-success shadow-lg">
+        <span class="icon-[tabler--check] size-5"></span>
+        <span>{{ session('success') }}</span>
+      </div>
+    </div>
+  @endif
+
   <!-- Hero Section -->
   <section class="bg-primary text-white py-12 -mx-4 md:-mx-0">
     <div class="container mx-auto px-4">
@@ -57,8 +67,31 @@
   <!-- Available Tasks Section -->
   <section class="py-12 bg-base-200">
     <div class="container mx-auto px-4">
+      <!-- Upgrade Banner for Free Users -->
+      @if($userCategory && $userCategory->id == 1)
+        <div class="alert alert-warning shadow-lg mb-8">
+          <span class="icon-[tabler--crown] size-6"></span>
+          <div class="flex-1">
+            <h3 class="font-bold">You're on the Free Plan</h3>
+            <div class="text-sm">Upgrade to access more tasks and earn up to $24,000/month!</div>
+          </div>
+          <a href="{{ route('dashboard.upgrade') }}" class="btn btn-sm btn-primary gap-2">
+            <span class="icon-[tabler--arrow-up] size-4"></span>
+            Upgrade Now
+          </a>
+        </div>
+      @endif
+
       <div class="flex items-center justify-between mb-8">
-        <h2 class="text-3xl font-bold">Available Tasks</h2>
+        <div>
+          <h2 class="text-3xl font-bold">Available Tasks</h2>
+          @if($userCategory)
+            <p class="text-sm text-base-content/60 mt-1">
+              Your Plan: <span class="font-semibold">{{ $userCategory->name }}</span> 
+              ({{ $userCategory->tasks_per_week }} {{ $userCategory->tasks_per_week == 1 ? 'task' : 'tasks' }}/week)
+            </p>
+          @endif
+        </div>
         <div class="flex flex-col md:flex-row gap-2">
           <input type="text" placeholder="Search tasks..." class="input input-bordered input-sm" />
           <select class="select select-bordered select-sm">

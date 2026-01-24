@@ -29,31 +29,39 @@
               <th>Name</th>
               <th>Description</th>
               <th>Task Fee</th>
-              <th>Count</th>
+              <th>Category</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             @forelse($tasks as $index => $task)
-              <tr class="hover:bg-base-200 cursor-pointer transition" onclick="window.location.href='{{ route('admin.task.show', $task['id']) }}'">
-                <td class="font-semibold">{{ $index + 1 }}</td>
+              <tr class="hover:bg-base-200 transition">
+                <td class="font-semibold">{{ $tasks->firstItem() + $index }}</td>
                 <td>
-                  <div class="font-semibold text-primary">{{ $task['name'] }}</div>
+                  <div class="font-semibold text-primary">{{ $task->name }}</div>
                 </td>
                 <td>
-                  <span class="text-base-content/60">{{ substr($task['description'], 0, 40) }}...</span>
+                  <span class="text-base-content/60">{{ Str::limit($task->description, 40) }}</span>
                 </td>
                 <td>
                   <div class="badge badge-success gap-2">
                     <span class="icon-[tabler--currency-dollar] size-3"></span>
-                    {{ number_format($task['earning'], 2) }}
+                    {{ number_format($task->earning, 2) }}
                   </div>
                 </td>
                 <td>
-                  <div class="badge badge-info">{{ $task['count'] }}</div>
+                  @if($task->category_id == 1)
+                    <div class="badge badge-neutral">{{ $task->category->name }}</div>
+                  @elseif($task->category_id == 2)
+                    <div class="badge badge-info">{{ $task->category->name }}</div>
+                  @elseif($task->category_id == 3)
+                    <div class="badge badge-secondary">{{ $task->category->name }}</div>
+                  @else
+                    <div class="badge badge-warning">{{ $task->category->name }}</div>
+                  @endif
                 </td>
                 <td>
-                  <a href="{{ route('admin.task.show', $task['id']) }}" class="btn btn-ghost btn-xs gap-1">
+                  <a href="{{ route('admin.task.show', $task->id) }}" class="btn btn-ghost btn-xs gap-1">
                     <span class="icon-[tabler--eye] size-4"></span>
                     View
                   </a>

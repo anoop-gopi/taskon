@@ -15,7 +15,7 @@ class TasksList extends Component
 
     public function render()
     {
-        $tasks = Task::query()
+        $tasks = Task::with('category')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')

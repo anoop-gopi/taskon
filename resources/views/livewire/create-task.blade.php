@@ -61,6 +61,40 @@
                 @enderror
             </div>
 
+            <!-- User Category -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Available For *</span>
+                    <span class="label-text-alt">Which user category can see this task?</span>
+                </label>
+                <select 
+                    wire:model="category_id" 
+                    class="select select-bordered w-full @error('category_id') select-error @enderror"
+                >
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">
+                            {{ $category->name }} 
+                            @if($category->id > 1)
+                                ({{ $category->tasks_per_week }} tasks/week, ${{ number_format($category->earning_per_task, 0) }}/task)
+                            @else
+                                ({{ $category->tasks_per_week }} task/week)
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_id')
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+                    </label>
+                @enderror
+                <label class="label">
+                    <span class="label-text-alt text-info">
+                        <span class="icon-[tabler--info-circle] size-4 inline"></span>
+                        Tasks are visible to selected category and all higher tiers
+                    </span>
+                </label>
+            </div>
+
             <!-- Buttons -->
             <div class="flex gap-4 justify-end">
                 <a href="{{ route('admin.tasks') }}" class="btn btn-ghost">

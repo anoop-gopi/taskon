@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -15,6 +16,7 @@ class Task extends Model
         'name',
         'description',
         'earning',
+        'category_id',
     ];
 
     protected $casts = [
@@ -24,5 +26,10 @@ class Task extends Model
     public function earnings(): HasMany
     {
         return $this->hasMany(UserEarning::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(UserCategory::class, 'category_id');
     }
 }
