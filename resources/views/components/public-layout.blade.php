@@ -537,12 +537,14 @@
                 event.preventDefault();
                 
                 const name = document.getElementById('signup_name').value;
+                const companyName = document.getElementById('signup_company_name').value;
                 const email = document.getElementById('signup_email').value;
                 const password = document.getElementById('signup_password').value;
                 const btn = document.getElementById('signup_btn');
                 
                 // Clear previous errors
                 document.getElementById('signup_name_error').classList.add('hidden');
+                document.getElementById('signup_company_name_error').classList.add('hidden');
                 document.getElementById('signup_email_error').classList.add('hidden');
                 document.getElementById('signup_password_error').classList.add('hidden');
                 
@@ -561,6 +563,7 @@
                         credentials: 'same-origin',
                         body: JSON.stringify({
                             name: name,
+                            company_name: companyName,
                             email: email,
                             password: password,
                         }),
@@ -580,6 +583,10 @@
                             if (data.errors.name) {
                                 document.getElementById('signup_name_error').textContent = data.errors.name[0];
                                 document.getElementById('signup_name_error').classList.remove('hidden');
+                            }
+                            if (data.errors.company_name) {
+                                document.getElementById('signup_company_name_error').textContent = data.errors.company_name[0];
+                                document.getElementById('signup_company_name_error').classList.remove('hidden');
                             }
                             if (data.errors.email) {
                                 document.getElementById('signup_email_error').textContent = data.errors.email[0];

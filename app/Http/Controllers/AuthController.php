@@ -18,6 +18,7 @@ class AuthController extends Controller
             // Validate the request
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
+                'company_name' => 'nullable|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:6',
             ]);
@@ -25,6 +26,7 @@ class AuthController extends Controller
             // Create the user
             $user = User::create([
                 'name' => $validated['name'],
+                'company_name' => $validated['company_name'] ?? null,
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'status_id' => 1, // Pending approval
