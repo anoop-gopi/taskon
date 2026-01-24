@@ -28,6 +28,7 @@ class User extends Authenticatable
         'facebook_id',
         'status_id',
         'category_id',
+        'crypto_wallet',
     ];
 
     /**

@@ -1,4 +1,14 @@
 <x-dashboard-layout>
+  <!-- Success Message -->
+  @if(session('success'))
+    <div class="container mx-auto px-4 pt-4">
+      <div class="alert alert-success shadow-lg">
+        <span class="icon-[tabler--check] size-5"></span>
+        <span>{{ session('success') }}</span>
+      </div>
+    </div>
+  @endif
+
   <!-- Hero Section -->
   <section class="bg-primary text-white py-12 -mx-4 md:-mx-0">
     <div class="container mx-auto px-4">
@@ -18,8 +28,8 @@
               <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
                 <span class="icon-[tabler--user] size-12 text-white"></span>
               </div>
-              <h2 class="text-2xl font-bold">John Doe</h2>
-              <p class="text-base-content/70 text-sm">Verified Member</p>
+              <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
+              <p class="text-base-content/70 text-sm">{{ $user->category->name }} Member</p>
               <div class="mt-6 pt-6 border-t border-base-300">
                 <div class="flex justify-center gap-4">
                   <div class="text-center">
@@ -56,7 +66,7 @@
                   <label class="label">
                     <span class="label-text font-semibold text-base-content/80">Full Name</span>
                   </label>
-                  <p class="text-base font-medium text-base-content">John Doe</p>
+                  <p class="text-base font-medium text-base-content">{{ $user->name }}</p>
                 </div>
 
                 <!-- Email -->
@@ -64,39 +74,25 @@
                   <label class="label">
                     <span class="label-text font-semibold text-base-content/80">Email Address</span>
                   </label>
-                  <p class="text-base font-medium text-base-content">john.doe@example.com</p>
+                  <p class="text-base font-medium text-base-content">{{ $user->email }}</p>
                 </div>
 
-                <!-- Mobile -->
+                <!-- Company Name -->
+                @if($user->company_name)
                 <div>
                   <label class="label">
-                    <span class="label-text font-semibold text-base-content/80">Mobile Number</span>
+                    <span class="label-text font-semibold text-base-content/80">Company Name</span>
                   </label>
-                  <p class="text-base font-medium text-base-content">+1 (555) 123-4567</p>
+                  <p class="text-base font-medium text-base-content">{{ $user->company_name }}</p>
                 </div>
+                @endif
 
-                <!-- Date of Birth -->
+                <!-- Member Since -->
                 <div>
                   <label class="label">
-                    <span class="label-text font-semibold text-base-content/80">Date of Birth</span>
+                    <span class="label-text font-semibold text-base-content/80">Member Since</span>
                   </label>
-                  <p class="text-base font-medium text-base-content">January 15, 1995</p>
-                </div>
-
-                <!-- Country -->
-                <div>
-                  <label class="label">
-                    <span class="label-text font-semibold text-base-content/80">Country</span>
-                  </label>
-                  <p class="text-base font-medium text-base-content">United States</p>
-                </div>
-
-                <!-- City -->
-                <div>
-                  <label class="label">
-                    <span class="label-text font-semibold text-base-content/80">City</span>
-                  </label>
-                  <p class="text-base font-medium text-base-content">New York</p>
+                  <p class="text-base font-medium text-base-content">{{ $user->created_at->format('F d, Y') }}</p>
                 </div>
               </div>
             </div>
@@ -150,71 +146,76 @@
           <div class="card-body">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-bold">Payment Methods</h3>
-              <button class="btn btn-sm btn-primary gap-2">
-                <span class="icon-[tabler--plus] size-4"></span>
-                Add Method
-              </button>
             </div>
 
             <div class="space-y-4">
-              <!-- Visa Card -->
-              <div class="border border-base-300 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <span class="icon-[tabler--credit-card] size-6 text-blue-600"></span>
-                    </div>
-                    <div>
-                      <p class="font-semibold">Visa Card</p>
-                      <p class="text-sm text-base-content/70">**** **** **** 4242</p>
-                    </div>
+              <!-- Crypto Wallet (USDT) -->
+              <div class="border-2 border-warning/30 bg-warning/5 rounded-lg p-4">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-12 h-12 bg-warning/20 rounded-lg flex items-center justify-center">
+                    <span class="icon-[tabler--currency-dollar] size-6 text-warning"></span>
                   </div>
-                  <div class="badge badge-success gap-1">
-                    <span class="icon-[tabler--check] size-4"></span>
-                    Default
-                  </div>
-                </div>
-                <div class="flex gap-2">
-                  <button class="btn btn-xs btn-ghost">Edit</button>
-                  <button class="btn btn-xs btn-ghost text-error">Remove</button>
-                </div>
-              </div>
-
-              <!-- PayPal Account -->
-              <div class="border border-base-300 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                      <span class="icon-[tabler--brand-paypal] size-6 text-blue-600"></span>
-                    </div>
-                    <div>
-                      <p class="font-semibold">PayPal Account</p>
-                      <p class="text-sm text-base-content/70">john.doe@paypal.com</p>
-                    </div>
+                  <div class="flex-1">
+                    <p class="font-semibold flex items-center gap-2">
+                      USDT Wallet (TRC20)
+                      <span class="badge badge-warning badge-sm">Crypto</span>
+                    </p>
+                    @if($user->crypto_wallet)
+                      <p class="text-sm text-base-content/70 font-mono break-all">{{ $user->crypto_wallet }}</p>
+                    @else
+                      <p class="text-sm text-base-content/50 italic">Not configured</p>
+                    @endif
                   </div>
                 </div>
-                <div class="flex gap-2">
-                  <button class="btn btn-xs btn-ghost">Edit</button>
-                  <button class="btn btn-xs btn-ghost text-error">Remove</button>
-                </div>
-              </div>
-
-              <!-- Bank Transfer -->
-              <div class="border border-base-300 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <span class="icon-[tabler--building-bank] size-6 text-green-600"></span>
-                    </div>
-                    <div>
-                      <p class="font-semibold">Bank Account</p>
-                      <p class="text-sm text-base-content/70">Chase Bank - ****5678</p>
-                    </div>
+                
+                <form action="{{ route('dashboard.profile.update-wallet') }}" method="POST" class="space-y-3">
+                  @csrf
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text text-sm">
+                        <span class="icon-[tabler--info-circle] size-4 inline"></span>
+                        Enter your USDT (TRC20) wallet address
+                      </span>
+                    </label>
+                    <input 
+                      type="text" 
+                      name="crypto_wallet" 
+                      value="{{ old('crypto_wallet', $user->crypto_wallet) }}"
+                      class="input input-bordered input-sm w-full font-mono" 
+                      placeholder="TRC20 wallet address (e.g., TXXXxxx...)"
+                    />
+                    @error('crypto_wallet')
+                      <label class="label">
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+                      </label>
+                    @enderror
                   </div>
-                </div>
-                <div class="flex gap-2">
-                  <button class="btn btn-xs btn-ghost">Edit</button>
-                  <button class="btn btn-xs btn-ghost text-error">Remove</button>
+                  
+                  <div class="flex gap-2">
+                    <button type="submit" class="btn btn-warning btn-sm gap-2">
+                      <span class="icon-[tabler--check] size-4"></span>
+                      {{ $user->crypto_wallet ? 'Update' : 'Add' }} Wallet
+                    </button>
+                    @if($user->crypto_wallet)
+                      <button 
+                        type="submit" 
+                        name="crypto_wallet" 
+                        value="" 
+                        class="btn btn-ghost btn-sm text-error"
+                        onclick="return confirm('Are you sure you want to remove your crypto wallet?')"
+                      >
+                        Remove
+                      </button>
+                    @endif
+                  </div>
+                </form>
+                
+                <div class="alert alert-info mt-4">
+                  <span class="icon-[tabler--alert-circle] size-4"></span>
+                  <span class="text-xs">
+                    <strong>Important:</strong> Only TRC20 (Tron) USDT addresses are supported. 
+                    Double-check your address before saving to avoid loss of funds.
+                  </span>
                 </div>
               </div>
             </div>

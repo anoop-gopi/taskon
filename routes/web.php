@@ -55,8 +55,22 @@ Route::get('/dashboard', function () {
 })->name('dashboard.home');
 
 Route::get('/dashboard/profile', function () {
-    return view('dashboard.profile');
+    return view('dashboard.profile', [
+        'user' => auth()->user(),
+    ]);
 })->name('dashboard.profile');
+
+Route::post('/dashboard/profile/update-wallet', function (\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'crypto_wallet' => 'nullable|string|max:255',
+    ]);
+    
+    auth()->user()->update([
+        'crypto_wallet' => $validated['crypto_wallet'],
+    ]);
+    
+    return redirect()->route('dashboard.profile')->with('success', 'Crypto wallet updated successfully!');
+})->name('dashboard.profile.update-wallet');
 
 Route::get('/dashboard/upgrade', function () {
     $categories = \App\Models\UserCategory::where('id', '>', 1)->orderBy('id')->get();
