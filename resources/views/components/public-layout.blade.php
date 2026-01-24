@@ -569,14 +569,11 @@
                     const data = await response.json();
                     
                     if (data.success) {
-                        // Success - show toast instead of alert
-                        showToast('Account created successfully!', 'success', 3000);
+                        // Success - show toast with approval message
+                        showToast(data.message || 'Account created! Awaiting admin approval.', 'info', 5000);
                         closeSignupModal();
                         document.getElementById('signup_form').reset();
-                        // Redirect to dashboard or home after 2 seconds
-                        setTimeout(() => {
-                            window.location.href = '{{ route("public.home") }}';
-                        }, 2000);
+                        // Don't redirect - user needs to wait for approval
                     } else {
                         // Show errors
                         if (data.errors) {

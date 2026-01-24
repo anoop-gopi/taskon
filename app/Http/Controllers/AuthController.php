@@ -27,17 +27,14 @@ class AuthController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
+                'status_id' => 1, // Pending approval
             ]);
 
-            // Log the user in
-            auth()->login($user);
-            
-            // Regenerate session for security
-            request()->session()->regenerate();
+            // Don't log the user in - they need admin approval first
 
             return response()->json([
                 'success' => true,
-                'message' => 'Account created successfully!',
+                'message' => 'Account created successfully! Please wait for admin approval before logging in.',
                 'user' => $user,
             ], 201);
         } catch (ValidationException $e) {
@@ -74,6 +71,18 @@ class AuthController extends Controller
                     'success' => false,
                     'message' => 'Invalid email or password',
                 ], 401);
+            }
+
+            // Check if user is approved
+            if ($user->status_id != 2) {
+                $statusMessage = $user->status_id == 1 
+                    ? 'Your account is pending approval. Please wait for admin approval.'
+                    : 'Your account has been rejected. Please contact support.';
+                    
+                return response()->json([
+                    'success' => false,
+                    'message' => $statusMessage,
+                ], 403);
             }
 
             // Log the user in

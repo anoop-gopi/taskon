@@ -28,38 +28,66 @@
               <th>Name</th>
               <th>Email</th>
               <th>Joined Date</th>
-              <th>Total Earnings</th>
+              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             @forelse($users as $user)
-              <tr class="hover:bg-base-200 cursor-pointer transition" onclick="window.location.href='{{ route('admin.user.show', $user['id']) }}'">
+              <tr class="hover:bg-base-200 transition">
                 <td>
                   <div class="flex items-center gap-3">
                     <div class="avatar placeholder">
                       <div class="bg-primary text-white rounded-full w-10">
-                        <span>{{ substr($user['name'], 0, 1) }}</span>
+                        <span>{{ substr($user->name, 0, 1) }}</span>
                       </div>
                     </div>
                     <div>
-                      <p class="font-semibold">{{ $user['name'] }}</p>
+                      <p class="font-semibold">{{ $user->name }}</p>
                     </div>
                   </div>
                 </td>
-                <td>{{ $user['email'] }}</td>
-                <td>{{ $user['joined_date'] }}</td>
+                <td>{{ $user->email }}</td>
+                <td>{{ $user->created_at->format('M d, Y') }}</td>
                 <td>
-                  <div class="badge badge-success gap-2">
-                    <span class="icon-[tabler--currency-dollar] size-3"></span>
-                    {{ number_format($user['earnings'], 2) }}
-                  </div>
+                  @if($user->status_id == 1)
+                    <div class="badge badge-warning gap-1">
+                      <span class="icon-[tabler--clock] size-3"></span>
+                      {{ $user->userStatus->name }}
+                    </div>
+                  @elseif($user->status_id == 2)
+                    <div class="badge badge-success gap-1">
+                      <span class="icon-[tabler--check] size-3"></span>
+                      {{ $user->userStatus->name }}
+                    </div>
+                  @else
+                    <div class="badge badge-error gap-1">
+                      <span class="icon-[tabler--x] size-3"></span>
+                      {{ $user->userStatus->name }}
+                    </div>
+                  @endif
                 </td>
                 <td>
-                  <a href="{{ route('admin.user.show', $user['id']) }}" class="btn btn-ghost btn-xs gap-1">
-                    <span class="icon-[tabler--eye] size-4"></span>
-                    View
-                  </a>
+                  <div class="flex gap-2">
+                    @if($user->status_id == 1)
+                      <form action="{{ route('admin.user.approve', $user->id) }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success btn-xs gap-1" onclick="return confirm('Approve this user?')">
+                          <span class="icon-[tabler--check] size-4"></span>
+                          Approve
+                        </button>
+                      </form>
+                      <form action="{{ route('admin.user.reject', $user->id) }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="btn btn-error btn-xs gap-1" onclick="return confirm('Reject this user?')">
+                          <span class="icon-[tabler--x] size-4"></span>
+                          Reject
+                        </button>
+                      </form>
+                    @else
+                      <span class="text-sm text-base-content/60">-</span>
+                    @endif
+                  </div>
                 </td>
               </tr>
             @empty

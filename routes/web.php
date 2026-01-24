@@ -156,6 +156,24 @@ Route::get('/admin/approvals', function () {
     return view('admin.approvals.index');
 })->name('admin.approvals');
 
+// User approval routes
+Route::post('/admin/users/{id}/approve', function ($id) {
+    $user = \App\Models\User::findOrFail($id);
+    $user->update(['status_id' => 2]); // 2 = Approved
+    
+    // Send approval email
+    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserApproved($user));
+    
+    return redirect()->route('admin.users')->with('success', 'User approved successfully! Approval email sent.');
+})->name('admin.user.approve');
+
+Route::post('/admin/users/{id}/reject', function ($id) {
+    $user = \App\Models\User::findOrFail($id);
+    $user->update(['status_id' => 3]); // 3 = Rejected
+    
+    return redirect()->route('admin.users')->with('success', 'User rejected.');
+})->name('admin.user.reject');
+
 Route::get('/admin/approvals/{id}', function ($id) {
     $approval = \App\Models\TaskCompleted::with(['task', 'user', 'taskStatus'])->findOrFail($id);
     
