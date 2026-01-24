@@ -86,11 +86,56 @@ Route::post('/dashboard/upgrade/{categoryId}', function ($categoryId) {
     $user = auth()->user();
     $category = \App\Models\UserCategory::findOrFail($categoryId);
     
-    // Update user category
-    $user->update(['category_id' => $categoryId]);
+    // Create upgrade request
+    $upgradeRequest = \App\Models\UpgradeRequest::create([
+        'user_id' => $user->id,
+        'from_category_id' => $user->category_id,
+        'to_category_id' => $categoryId,
+        'amount' => $category->price,
+        'payment_url' => 'https://pay.cryptomus.com/pay/' . uniqid() . '-' . substr(md5($user->id . $categoryId . time()), 0, 8),
+        'expires_at' => now()->addHours(2),
+        'status' => 'pending_payment',
+    ]);
     
-    return redirect()->route('dashboard.home')->with('success', 'Successfully upgraded to ' . $category->name . ' plan!');
+    return redirect()->route('dashboard.upgrade.invoice', $upgradeRequest->id);
 })->name('dashboard.upgrade.process');
+
+Route::get('/dashboard/upgrade/invoice/{id}', function ($id) {
+    $upgradeRequest = \App\Models\UpgradeRequest::with(['toCategory'])->findOrFail($id);
+    
+    // Check if user owns this request
+    if ($upgradeRequest->user_id != auth()->id()) {
+        abort(403);
+    }
+    
+    return view('dashboard.upgrade-invoice', [
+        'upgradeRequest' => $upgradeRequest,
+    ]);
+})->name('dashboard.upgrade.invoice');
+
+Route::post('/dashboard/upgrade/invoice/{id}/submit', function (\Illuminate\Http\Request $request, $id) {
+    $upgradeRequest = \App\Models\UpgradeRequest::findOrFail($id);
+    
+    // Check if user owns this request
+    if ($upgradeRequest->user_id != auth()->id()) {
+        abort(403);
+    }
+    
+    $validated = $request->validate([
+        'payment_screenshot' => 'required|image|max:5120', // 5MB max
+    ]);
+    
+    // Store the screenshot
+    $path = $request->file('payment_screenshot')->store('payment-screenshots', 'public');
+    
+    // Update upgrade request
+    $upgradeRequest->update([
+        'payment_screenshot' => $path,
+        'status' => 'pending_approval',
+    ]);
+    
+    return redirect()->route('dashboard.home')->with('success', 'Payment screenshot submitted! Your upgrade request is pending admin approval.');
+})->name('dashboard.upgrade.submit-payment');
 
 Route::get('/dashboard/tasks', function () {
     return view('dashboard.tasks');
@@ -253,3 +298,54 @@ Route::post('/admin/approvals/{id}/reject', function ($id) {
     
     return redirect()->route('admin.approvals')->with('success', 'Task completion rejected.');
 })->name('admin.approval.reject');
+
+// Admin upgrade requests routes
+Route::get('/admin/upgrade-requests', function (\Illuminate\Http\Request $request) {
+    $status = $request->get('status', 'pending_approval');
+    
+    $requests = \App\Models\UpgradeRequest::with(['user', 'fromCategory', 'toCategory'])
+        ->where('status', $status)
+        ->orderBy('created_at', 'desc')
+        ->paginate(15);
+    
+    $pendingCount = \App\Models\UpgradeRequest::where('status', 'pending_approval')->count();
+    
+    return view('admin.upgrade-requests', [
+        'requests' => $requests,
+        'pendingCount' => $pendingCount,
+    ]);
+})->name('admin.upgrade-requests');
+
+Route::post('/admin/upgrade-requests/{id}/approve', function (\Illuminate\Http\Request $request, $id) {
+    $upgradeRequest = \App\Models\UpgradeRequest::with('user')->findOrFail($id);
+    
+    // Update user's category
+    $upgradeRequest->user->update([
+        'category_id' => $upgradeRequest->to_category_id,
+    ]);
+    
+    // Update request status
+    $upgradeRequest->update([
+        'status' => 'approved',
+        'admin_notes' => $request->admin_notes,
+    ]);
+    
+    return redirect()->route('admin.upgrade-requests', ['status' => 'approved'])
+        ->with('success', 'Upgrade request approved! User has been upgraded to ' . $upgradeRequest->toCategory->name . ' plan.');
+})->name('admin.upgrade-requests.approve');
+
+Route::post('/admin/upgrade-requests/{id}/reject', function (\Illuminate\Http\Request $request, $id) {
+    $upgradeRequest = \App\Models\UpgradeRequest::findOrFail($id);
+    
+    $request->validate([
+        'admin_notes' => 'required|string',
+    ]);
+    
+    $upgradeRequest->update([
+        'status' => 'rejected',
+        'admin_notes' => $request->admin_notes,
+    ]);
+    
+    return redirect()->route('admin.upgrade-requests', ['status' => 'rejected'])
+        ->with('success', 'Upgrade request rejected.');
+})->name('admin.upgrade-requests.reject');
