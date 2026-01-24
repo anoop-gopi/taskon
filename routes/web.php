@@ -97,7 +97,10 @@ Route::post('/dashboard/upgrade/{categoryId}', function ($categoryId) {
         'status' => 'pending_payment',
     ]);
     
-    return redirect()->route('dashboard.upgrade.invoice', $upgradeRequest->id);
+    return response()->json([
+        'success' => true,
+        'upgradeRequestId' => $upgradeRequest->id,
+    ]);
 })->name('dashboard.upgrade.process');
 
 Route::get('/dashboard/upgrade/invoice/{id}', function ($id) {
@@ -112,6 +115,25 @@ Route::get('/dashboard/upgrade/invoice/{id}', function ($id) {
         'upgradeRequest' => $upgradeRequest,
     ]);
 })->name('dashboard.upgrade.invoice');
+
+Route::get('/dashboard/upgrade/invoice/{id}/content', function ($id) {
+    $upgradeRequest = \App\Models\UpgradeRequest::with(['toCategory'])->findOrFail($id);
+    
+    // Check if user owns this request
+    if ($upgradeRequest->user_id != auth()->id()) {
+        abort(403);
+    }
+    
+    $html = view('dashboard.upgrade-invoice-modal', [
+        'upgradeRequest' => $upgradeRequest,
+    ])->render();
+    
+    return response()->json([
+        'success' => true,
+        'html' => $html,
+        'paymentUrl' => $upgradeRequest->payment_url,
+    ]);
+})->name('dashboard.upgrade.invoice.content');
 
 Route::post('/dashboard/upgrade/invoice/{id}/submit', function (\Illuminate\Http\Request $request, $id) {
     $upgradeRequest = \App\Models\UpgradeRequest::findOrFail($id);
@@ -134,7 +156,10 @@ Route::post('/dashboard/upgrade/invoice/{id}/submit', function (\Illuminate\Http
         'status' => 'pending_approval',
     ]);
     
-    return redirect()->route('dashboard.home')->with('success', 'Payment screenshot submitted! Your upgrade request is pending admin approval.');
+    return response()->json([
+        'success' => true,
+        'message' => 'Payment screenshot submitted! Your upgrade request is pending admin approval.',
+    ]);
 })->name('dashboard.upgrade.submit-payment');
 
 Route::get('/dashboard/tasks', function () {

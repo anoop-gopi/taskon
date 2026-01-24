@@ -93,13 +93,43 @@
                 Lower Tier
               </button>
             @else
-              <form action="{{ route('dashboard.upgrade.process', $category->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-primary w-full gap-2" onclick="return confirm('Upgrade to {{ $category->name }} plan for ${{ number_format($category->price, 0) }}/month?')">
-                  <span class="icon-[tabler--arrow-up] size-5"></span>
-                  Upgrade Now
-                </button>
-              </form>
+              <button 
+                type="button" 
+                class="btn btn-primary w-full gap-2" 
+                aria-haspopup="dialog" 
+                aria-expanded="false" 
+                aria-controls="upgradeModal-{{ $category->id }}"
+                data-overlay="#upgradeModal-{{ $category->id }}"
+                onclick="initUpgradeModal({{ $category->id }})"
+              >
+                <span class="icon-[tabler--arrow-up] size-5"></span>
+                Upgrade Now
+              </button>
+
+              <!-- Modal for this category -->
+              <div id="upgradeModal-{{ $category->id }}" class="overlay modal overlay-open:opacity-100 hidden" role="dialog" tabindex="-1">
+                <div class="modal-dialog overlay-open:opacity-100 w-11/12 max-w-2xl">
+                  <div class="modal-content max-h-[90vh] overflow-y-auto">
+                    <div class="modal-header">
+                      <h3 class="modal-title">Upgrade to {{ $category->name }}</h3>
+                      <button
+                        type="button"
+                        class="btn btn-text btn-circle btn-sm absolute end-3 top-3"
+                        aria-label="Close"
+                        data-overlay="#upgradeModal-{{ $category->id }}"
+                      >
+                        <span class="icon-[tabler--x] size-4"></span>
+                      </button>
+                    </div>
+                    <div class="modal-body" id="modalContent-{{ $category->id }}">
+                      <!-- Loading state -->
+                      <div class="flex items-center justify-center py-12">
+                        <span class="loading loading-spinner loading-lg"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             @endif
           </div>
         </div>
@@ -169,4 +199,222 @@
       </div>
     </div>
   </section>
+
+  @push('scripts')
+  <!-- QR Code Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <script>
+    console.log('Upgrade page scripts loaded');
+    
+    function initUpgradeModal(categoryId) {
+      console.log('Initializing modal for category:', categoryId);
+      const modalContent = document.getElementById('modalContent-' + categoryId);
+      
+      if (!modalContent) {
+        console.error('Modal content element not found!');
+        return;
+      }
+      
+      // Show loading
+      modalContent.innerHTML = `
+        <div class="flex items-center justify-center py-12">
+          <span class="loading loading-spinner loading-lg"></span>
+        </div>
+      `;
+      
+      // Create upgrade request and load invoice
+      fetch(`/dashboard/upgrade/${categoryId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Upgrade request response:', data);
+        if (data.success) {
+          loadInvoice(data.upgradeRequestId, categoryId);
+        } else {
+          modalContent.innerHTML = `
+            <div class="alert alert-error">
+              <span class="icon-[tabler--x] size-5"></span>
+              <span>${data.message || 'Failed to create upgrade request'}</span>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        console.error('Error creating upgrade request:', error);
+        modalContent.innerHTML = `
+          <div class="alert alert-error">
+            <span class="icon-[tabler--x] size-5"></span>
+            <span>An error occurred. Please try again.</span>
+          </div>
+        `;
+      });
+    }
+
+    function loadInvoice(upgradeRequestId, categoryId) {
+      console.log('Loading invoice for request:', upgradeRequestId);
+      const modalContent = document.getElementById('modalContent-' + categoryId);
+      
+      fetch(`/dashboard/upgrade/invoice/${upgradeRequestId}/content`)
+        .then(response => response.json())
+        .then(data => {
+          console.log('Invoice content loaded');
+          modalContent.innerHTML = data.html;
+          
+          // Generate QR Code after content is loaded
+          setTimeout(() => {
+            const qrcodeElement = document.getElementById('qrcode-modal');
+            if (qrcodeElement) {
+              qrcodeElement.innerHTML = '';
+              new QRCode(qrcodeElement, {
+                text: data.paymentUrl,
+                width: 200,
+                height: 200,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+              });
+            }
+          }, 100);
+        })
+        .catch(error => {
+          console.error('Error loading invoice:', error);
+        });
+    }
+
+    // Copy Payment URL
+    function copyPaymentUrl() {
+      const input = document.getElementById('payment-url-modal');
+      input.select();
+      document.execCommand('copy');
+      
+      // Show toast notification
+      const toast = document.createElement('div');
+      toast.className = 'toast toast-top toast-end';
+      toast.innerHTML = `
+        <div class="alert alert-success">
+          <span class="icon-[tabler--check] size-5"></span>
+          <span>Payment URL copied to clipboard!</span>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Preview Image
+    function previewImage(event) {
+      const preview = document.getElementById('image-preview-modal');
+      const previewImg = document.getElementById('preview-img-modal');
+      const file = event.target.files[0];
+      
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          preview.classList.remove('hidden');
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Handle form submission
+    window.handleFormSubmit = function(event, categoryId) {
+      event.preventDefault();
+      console.log('Form submit handler called for category:', categoryId);
+      
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      // Show loading
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalContent = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="loading loading-spinner"></span> Submitting...';
+      
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Submit response:', data);
+        if (data.success) {
+          // Close modal using FlyonUI overlay method
+          const modal = document.getElementById('upgradeModal-' + categoryId);
+          if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('overlay-open');
+          }
+          
+          // Show success alert
+          const alertHtml = `
+            <div class="alert alert-success shadow-lg mb-4 removing:translate-x-5 removing:opacity-0 transition duration-300 ease-in-out" role="alert" id="success-alert">
+              <span class="icon-[tabler--check] size-5"></span>
+              <div>
+                <strong>Success!</strong> ${data.message || 'Payment screenshot submitted! Your upgrade request is pending admin approval.'}
+              </div>
+              <button class="ms-auto cursor-pointer leading-none" data-remove-element="#success-alert" aria-label="Close">
+                <span class="icon-[tabler--x] size-5"></span>
+              </button>
+            </div>
+          `;
+          
+          // Insert alert at the top of the page
+          const container = document.querySelector('.container.mx-auto.px-4');
+          if (container) {
+            container.insertAdjacentHTML('afterbegin', alertHtml);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+              const alert = document.getElementById('success-alert');
+              if (alert) {
+                alert.remove();
+              }
+            }, 5000);
+          }
+          
+          // Reload after a short delay
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          // Show error alert
+          const alertHtml = `
+            <div class="alert alert-error shadow-lg mb-4 removing:translate-x-5 removing:opacity-0 transition duration-300 ease-in-out" role="alert" id="error-alert">
+              <span class="icon-[tabler--x] size-5"></span>
+              <div>
+                <strong>Error!</strong> ${data.message || 'Failed to submit payment screenshot'}
+              </div>
+              <button class="ms-auto cursor-pointer leading-none" data-remove-element="#error-alert" aria-label="Close">
+                <span class="icon-[tabler--x] size-5"></span>
+              </button>
+            </div>
+          `;
+          
+          const modalContent = document.getElementById('modalContent-' + categoryId);
+          if (modalContent) {
+            modalContent.insertAdjacentHTML('afterbegin', alertHtml);
+          }
+          
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalContent;
+        }
+      })
+      .catch(error => {
+        console.error('Submit error:', error);
+        alert('An error occurred. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+      });
+    };
+  </script>
+  @endpush
 </x-dashboard-layout>

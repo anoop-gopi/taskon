@@ -102,7 +102,7 @@
                       <td>
                         @if($request->payment_screenshot)
                           <button 
-                            onclick="viewScreenshot{{ $request->id }}.showModal()" 
+                            onclick="document.getElementById('viewScreenshot{{ $request->id }}').showModal()" 
                             class="btn btn-sm btn-ghost gap-2"
                           >
                             <span class="icon-[tabler--photo] size-4"></span>
@@ -165,14 +165,14 @@
                         @if($request->status == 'pending_approval')
                           <div class="flex gap-2">
                             <button 
-                              onclick="approveModal{{ $request->id }}.showModal()" 
+                              onclick="document.getElementById('approveModal{{ $request->id }}').showModal()" 
                               class="btn btn-sm btn-success gap-2"
                             >
                               <span class="icon-[tabler--check] size-4"></span>
                               Approve
                             </button>
                             <button 
-                              onclick="rejectModal{{ $request->id }}.showModal()" 
+                              onclick="document.getElementById('rejectModal{{ $request->id }}').showModal()" 
                               class="btn btn-sm btn-error gap-2"
                             >
                               <span class="icon-[tabler--x] size-4"></span>
@@ -203,7 +203,7 @@
                                   ></textarea>
                                 </div>
                                 <div class="modal-action">
-                                  <button type="button" onclick="approveModal{{ $request->id }}.close()" class="btn btn-ghost">Cancel</button>
+                                  <button type="button" onclick="document.getElementById('approveModal{{ $request->id }}').close()" class="btn btn-ghost">Cancel</button>
                                   <button type="submit" class="btn btn-success gap-2">
                                     <span class="icon-[tabler--check] size-4"></span>
                                     Confirm Approval
@@ -232,7 +232,7 @@
                                   ></textarea>
                                 </div>
                                 <div class="modal-action">
-                                  <button type="button" onclick="rejectModal{{ $request->id }}.close()" class="btn btn-ghost">Cancel</button>
+                                  <button type="button" onclick="document.getElementById('rejectModal{{ $request->id }}').close()" class="btn btn-ghost">Cancel</button>
                                   <button type="submit" class="btn btn-error gap-2">
                                     <span class="icon-[tabler--x] size-4"></span>
                                     Confirm Rejection
@@ -244,7 +244,7 @@
                         @elseif($request->status == 'approved' || $request->status == 'rejected')
                           @if($request->admin_notes)
                             <button 
-                              onclick="notesModal{{ $request->id }}.showModal()" 
+                              onclick="document.getElementById('notesModal{{ $request->id }}').showModal()" 
                               class="btn btn-sm btn-ghost gap-2"
                             >
                               <span class="icon-[tabler--notes] size-4"></span>

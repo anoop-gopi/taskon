@@ -24,6 +24,10 @@
         <span class="icon-[tabler--checkbox] size-5"></span>
         <span>Approvals</span>
       </a>
+      <a href="{{ route('admin.upgrade-requests') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+        <span class="icon-[tabler--file-invoice] size-5"></span>
+        <span>Upgrade Requests</span>
+      </a>
       <a href="{{ route('admin.finance') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--wallet] size-5"></span>
         <span>Finance</span>
