@@ -164,8 +164,15 @@ Route::get('/admin/approvals/{id}', function ($id) {
 
 // Approve task completion
 Route::post('/admin/approvals/{id}/approve', function ($id) {
-    $approval = \App\Models\TaskCompleted::findOrFail($id);
+    $approval = \App\Models\TaskCompleted::with('task')->findOrFail($id);
     $approval->update(['status' => 2]); // 2 = Accepted
+    
+    // Create user earning record with current task earning value
+    \App\Models\UserEarning::create([
+        'user_id' => $approval->user_id,
+        'task_id' => $approval->task_id,
+        'earning' => $approval->task->earning,
+    ]);
     
     return redirect()->route('admin.approvals')->with('success', 'Task completion approved successfully!');
 })->name('admin.approval.approve');
