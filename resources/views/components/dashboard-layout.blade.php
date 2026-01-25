@@ -126,6 +126,11 @@
         <livewire:styles />
     </head>
     <body class="bg-base-100 min-h-screen flex flex-col">
+        <!-- Pass Laravel auth state to JavaScript -->
+        <script>
+            window.laravelUser = @json(auth()->check() ? auth()->user() : null);
+        </script>
+        
         <!-- Navigation Header -->
         <nav class="bg-base-100 shadow-lg sticky top-0 z-50">
             <div class="container mx-auto px-4 flex items-center justify-between h-16">
@@ -164,15 +169,25 @@
                     </button>
 
                     <!-- User Menu (shown when logged in) -->
-                    <div id="user_menu" class="hidden items-center gap-3">
-                        <div class="dropdown dropdown-end">
-                            <button class="btn btn-ghost gap-2" tabindex="0">
-                                <span class="icon-[tabler--user-circle] size-5"></span>
-                                <span id="user_name" class="hidden md:inline">User</span>
+                    <div id="user_menu" class="hidden">
+                        <div class="dropdown">
+                            <button class="text-base-content hover:text-primary transition font-semibold flex items-center gap-1" type="button" id="user-dropdown" data-dropdown-toggle="user-dropdown-menu" aria-haspopup="true" aria-expanded="false">
+                                <span id="user_name">User</span>
+                                <span class="icon-[tabler--chevron-down] size-4"></span>
                             </button>
-                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                                <li><a href="{{ route('dashboard.profile') }}">Profile</a></li>
-                                <li><a href="javascript:void(0);" onclick="handleLogout(event)">Logout</a></li>
+                            <ul id="user-dropdown-menu" class="dropdown-menu dropdown-open:opacity-100 hidden" role="menu">
+                                <li>
+                                    <a class="dropdown-item text-sm" href="{{ route('dashboard.profile') }}">
+                                        <span class="icon-[tabler--user] size-4"></span>
+                                        Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-sm" href="javascript:void(0);" onclick="handleLogout(event)">
+                                        <span class="icon-[tabler--logout] size-4"></span>
+                                        Logout
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -575,18 +590,29 @@
                 const userMenu = document.getElementById('user_menu');
                 const userName = document.getElementById('user_name');
                 
-                // Hide sign in, show user menu
-                signinLink.classList.add('hidden');
-                signinBtnMobile.classList.add('hidden');
-                userMenu.classList.remove('hidden');
-                userMenu.classList.add('flex');
+                // Hide sign in elements
+                if (signinLink) signinLink.classList.add('!hidden');
+                if (signinBtnMobile) signinBtnMobile.classList.add('!hidden');
+                
+                // Show user menu elements
+                if (userMenu) {
+                    userMenu.classList.remove('hidden');
+                    userMenu.classList.add('flex');
+                }
                 
                 // Set user name
-                userName.textContent = user.name;
+                if (userName) userName.textContent = user.name;
             }
 
             // Check if user is logged in on page load
             function checkLoginStatus() {
+                // First check if Laravel has an authenticated user
+                if (window.laravelUser) {
+                    updateUserMenu(window.laravelUser);
+                    return;
+                }
+                
+                // Otherwise check localStorage
                 const user = localStorage.getItem('user');
                 if (user) {
                     try {
