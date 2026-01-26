@@ -371,6 +371,13 @@
                     </div>
                     <div class="form-control">
                         <label class="label">
+                            <span class="label-text">Company Name</span>
+                        </label>
+                        <input type="text" id="signup_company_name" name="company_name" placeholder="Your Company" class="input input-bordered" required />
+                        <span class="text-error text-sm hidden" id="signup_company_name_error"></span>
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
                             <span class="label-text">Email</span>
                         </label>
                         <input type="email" id="signup_email" name="email" placeholder="your@email.com" class="input input-bordered" required />

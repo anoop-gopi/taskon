@@ -17,7 +17,7 @@
               <span class="icon-[tabler--check-circle] size-6 text-primary"></span>
             </div>
             <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Total Completed</p>
-            <p class="text-3xl font-bold mt-2">24</p>
+            <p class="text-3xl font-bold mt-2">{{ $completedTasks->count() }}</p>
           </div>
         </div>
 
@@ -27,7 +27,7 @@
               <span class="icon-[tabler--wallet] size-6 text-primary"></span>
             </div>
             <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Total Earned</p>
-            <p class="text-3xl font-bold mt-2">$2,450</p>
+            <p class="text-3xl font-bold mt-2">${{ number_format($completedTasks->where('status', 2)->sum(function($ct) { return $ct->task->earning ?? 0; }), 2) }}</p>
           </div>
         </div>
 
@@ -36,8 +36,8 @@
             <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <span class="icon-[tabler--star] size-6 text-primary"></span>
             </div>
-            <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Avg. Rating</p>
-            <p class="text-3xl font-bold mt-2">4.8/5</p>
+            <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Approved</p>
+            <p class="text-3xl font-bold mt-2">{{ $completedTasks->where('status', 2)->count() }}</p>
           </div>
         </div>
 
@@ -47,7 +47,7 @@
               <span class="icon-[tabler--percentage] size-6 text-primary"></span>
             </div>
             <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Approval Rate</p>
-            <p class="text-3xl font-bold mt-2">98%</p>
+            <p class="text-3xl font-bold mt-2">{{ $completedTasks->count() > 0 ? number_format(($completedTasks->where('status', 2)->count() / $completedTasks->count()) * 100, 0) : 0 }}%</p>
           </div>
         </div>
       </div>
@@ -79,185 +79,56 @@
 
       <!-- Tasks Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Task 1 - Approved -->
-        <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center relative">
-            <span class="icon-[tabler--pencil] size-16 text-white/50"></span>
-            <div class="absolute top-3 right-3 badge badge-success gap-1">
-              <span class="icon-[tabler--check] size-4"></span>
-              Approved
+        @forelse($completedTasks as $completedTask)
+        @php
+          $task = $completedTask->task;
+          $statusColors = [
+            1 => ['badge' => 'badge-warning', 'text' => 'text-warning', 'icon' => 'icon-[tabler--hourglass-mid]', 'label' => 'Pending'],
+            2 => ['badge' => 'badge-success', 'text' => 'text-success', 'icon' => 'icon-[tabler--check]', 'label' => 'Approved'],
+            3 => ['badge' => 'badge-error', 'text' => 'text-error', 'icon' => 'icon-[tabler--x]', 'label' => 'Rejected'],
+          ];
+          $statusConfig = $statusColors[$completedTask->status] ?? $statusColors[1];
+          $gradientColors = ['blue', 'purple', 'pink', 'green', 'yellow', 'orange'];
+          $colorIndex = $loop->index % count($gradientColors);
+          $color = $gradientColors[$colorIndex];
+        @endphp
+        <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition overflow-hidden {{ $completedTask->status == 3 ? 'opacity-75' : '' }}">
+          <figure class="h-40 bg-gradient-to-br from-{{ $color }}-400 to-{{ $color }}-600 flex items-center justify-center relative">
+            <span class="icon-[tabler--checklist] size-16 text-white/50"></span>
+            <div class="absolute top-3 right-3 badge {{ $statusConfig['badge'] }} gap-1">
+              <span class="{{ $statusConfig['icon'] }} size-4"></span>
+              {{ $statusConfig['label'] }}
             </div>
           </figure>
           <div class="card-body">
-            <h3 class="card-title text-lg">Write Product Description</h3>
+            <h3 class="card-title text-lg">{{ $task->name }}</h3>
             <div class="flex items-center gap-2 text-xs text-base-content/60 mb-2">
               <span class="icon-[tabler--calendar] size-4"></span>
-              Jan 15, 2026
+              {{ $completedTask->date_time->format('M d, Y') }}
             </div>
-            <p class="text-base-content/70 text-sm mb-2">Write an engaging product description for an e-commerce website.</p>
-            <div class="flex gap-2 mb-4">
-              <span class="badge badge-outline">Writing</span>
-              <span class="badge badge-outline">Beginner</span>
+            <p class="text-base-content/70 text-sm mb-2">{{ Str::limit($task->description, 100) }}</p>
+            @if($completedTask->notes)
+            <div class="mb-4">
+              <p class="text-xs text-base-content/60 mb-1">Your Notes:</p>
+              <p class="text-sm italic text-base-content/70">{{ Str::limit($completedTask->notes, 80) }}</p>
             </div>
+            @endif
             <div class="flex items-center justify-between pt-4 border-t border-base-300">
               <div>
-                <p class="text-xs text-base-content/60">You Earned</p>
-                <p class="text-xl font-bold text-success">$25</p>
+                <p class="text-xs text-base-content/60">{{ $completedTask->status == 2 ? 'You Earned' : ($completedTask->status == 3 ? 'Potential' : 'Pending') }}</p>
+                <p class="text-xl font-bold {{ $statusConfig['text'] }}">${{ number_format($task->earning, 2) }}</p>
               </div>
-              <button class="btn btn-sm btn-ghost">View Details</button>
+              <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-sm btn-ghost">View Details</a>
             </div>
           </div>
         </div>
-
-        <!-- Task 2 - Approved -->
-        <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center relative">
-            <span class="icon-[tabler--code] size-16 text-white/50"></span>
-            <div class="absolute top-3 right-3 badge badge-success gap-1">
-              <span class="icon-[tabler--check] size-4"></span>
-              Approved
-            </div>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">Build a React Component</h3>
-            <div class="flex items-center gap-2 text-xs text-base-content/60 mb-2">
-              <span class="icon-[tabler--calendar] size-4"></span>
-              Jan 12, 2026
-            </div>
-            <p class="text-base-content/70 text-sm mb-2">Create a reusable React component for data visualization with TypeScript.</p>
-            <div class="flex gap-2 mb-4">
-              <span class="badge badge-outline">Programming</span>
-              <span class="badge badge-outline">Intermediate</span>
-            </div>
-            <div class="flex items-center justify-between pt-4 border-t border-base-300">
-              <div>
-                <p class="text-xs text-base-content/60">You Earned</p>
-                <p class="text-xl font-bold text-success">$150</p>
-              </div>
-              <button class="btn btn-sm btn-ghost">View Details</button>
-            </div>
-          </div>
+        @empty
+        <div class="col-span-full text-center py-12">
+          <span class="icon-[tabler--clipboard-off] size-16 text-base-content/30 mx-auto mb-4"></span>
+          <p class="text-base-content/60 text-lg">No completed tasks yet. Start completing tasks to see them here!</p>
+          <a href="{{ route('dashboard.home') }}" class="btn btn-primary mt-4">Browse Available Tasks</a>
         </div>
-
-        <!-- Task 3 - Pending -->
-        <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center relative">
-            <span class="icon-[tabler--brush] size-16 text-white/50"></span>
-            <div class="absolute top-3 right-3 badge badge-warning gap-1">
-              <span class="icon-[tabler--hourglass-mid] size-4"></span>
-              Pending
-            </div>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">Design Mobile App UI</h3>
-            <div class="flex items-center gap-2 text-xs text-base-content/60 mb-2">
-              <span class="icon-[tabler--calendar] size-4"></span>
-              Jan 10, 2026
-            </div>
-            <p class="text-base-content/70 text-sm mb-2">Design mockups for a mobile app UI including 5 key screens in Figma.</p>
-            <div class="flex gap-2 mb-4">
-              <span class="badge badge-outline">Design</span>
-              <span class="badge badge-outline">Advanced</span>
-            </div>
-            <div class="flex items-center justify-between pt-4 border-t border-base-300">
-              <div>
-                <p class="text-xs text-base-content/60">Potential Earnings</p>
-                <p class="text-xl font-bold text-warning">$200</p>
-              </div>
-              <button class="btn btn-sm btn-ghost">View Details</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Task 4 - Approved -->
-        <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center relative">
-            <span class="icon-[tabler--volume] size-16 text-white/50"></span>
-            <div class="absolute top-3 right-3 badge badge-success gap-1">
-              <span class="icon-[tabler--check] size-4"></span>
-              Approved
-            </div>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">Social Media Marketing Post</h3>
-            <div class="flex items-center gap-2 text-xs text-base-content/60 mb-2">
-              <span class="icon-[tabler--calendar] size-4"></span>
-              Jan 8, 2026
-            </div>
-            <p class="text-base-content/70 text-sm mb-2">Create engaging social media content for Instagram and TikTok with captions.</p>
-            <div class="flex gap-2 mb-4">
-              <span class="badge badge-outline">Marketing</span>
-              <span class="badge badge-outline">Beginner</span>
-            </div>
-            <div class="flex items-center justify-between pt-4 border-t border-base-300">
-              <div>
-                <p class="text-xs text-base-content/60">You Earned</p>
-                <p class="text-xl font-bold text-success">$50</p>
-              </div>
-              <button class="btn btn-sm btn-ghost">View Details</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Task 5 - Approved -->
-        <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition overflow-hidden">
-          <figure class="h-40 bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center relative">
-            <span class="icon-[tabler--analytics] size-16 text-white/50"></span>
-            <div class="absolute top-3 right-3 badge badge-success gap-1">
-              <span class="icon-[tabler--check] size-4"></span>
-              Approved
-            </div>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">Data Analysis Report</h3>
-            <div class="flex items-center gap-2 text-xs text-base-content/60 mb-2">
-              <span class="icon-[tabler--calendar] size-4"></span>
-              Jan 5, 2026
-            </div>
-            <p class="text-base-content/70 text-sm mb-2">Analyze sales data and create comprehensive report with visualizations.</p>
-            <div class="flex gap-2 mb-4">
-              <span class="badge badge-outline">Analytics</span>
-              <span class="badge badge-outline">Intermediate</span>
-            </div>
-            <div class="flex items-center justify-between pt-4 border-t border-base-300">
-              <div>
-                <p class="text-xs text-base-content/60">You Earned</p>
-                <p class="text-xl font-bold text-success">$175</p>
-              </div>
-              <button class="btn btn-sm btn-ghost">View Details</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Task 6 - Rejected -->
-        <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition overflow-hidden opacity-75">
-          <figure class="h-40 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center relative">
-            <span class="icon-[tabler--video] size-16 text-white/50"></span>
-            <div class="absolute top-3 right-3 badge badge-error gap-1">
-              <span class="icon-[tabler--x] size-4"></span>
-              Rejected
-            </div>
-          </figure>
-          <div class="card-body">
-            <h3 class="card-title text-lg">YouTube Video Editing</h3>
-            <div class="flex items-center gap-2 text-xs text-base-content/60 mb-2">
-              <span class="icon-[tabler--calendar] size-4"></span>
-              Dec 28, 2025
-            </div>
-            <p class="text-base-content/70 text-sm mb-2">Edit raw footage into polished YouTube video with transitions and effects.</p>
-            <div class="flex gap-2 mb-4">
-              <span class="badge badge-outline">Video</span>
-              <span class="badge badge-outline">Intermediate</span>
-            </div>
-            <div class="flex items-center justify-between pt-4 border-t border-base-300">
-              <div>
-                <p class="text-xs text-base-content/60">Reason</p>
-                <p class="text-sm font-semibold text-error">Quality Issues</p>
-              </div>
-              <button class="btn btn-sm btn-ghost">View Feedback</button>
-            </div>
-          </div>
-        </div>
+        @endforelse
       </div>
     </div>
   </section>

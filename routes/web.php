@@ -163,7 +163,13 @@ Route::post('/dashboard/upgrade/invoice/{id}/submit', function (\Illuminate\Http
 })->name('dashboard.upgrade.submit-payment');
 
 Route::get('/dashboard/tasks', function () {
-    return view('dashboard.tasks');
+    $user = auth()->user();
+    $completedTasks = \App\Models\TaskCompleted::where('user_id', $user->id)
+        ->with(['task', 'taskStatus'])
+        ->orderBy('date_time', 'desc')
+        ->get();
+    
+    return view('dashboard.tasks', ['completedTasks' => $completedTasks]);
 })->name('dashboard.tasks');
 
 Route::get('/dashboard/earnings', function () {
