@@ -15,7 +15,11 @@ Route::post('/auth/signin', [AuthController::class, 'signin'])->name('auth.signi
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 Route::get('/', function () {
-    return view('public.home');
+    $testimonials = \App\Models\Testimonial::where('is_active', true)
+        ->orderBy('created_at', 'desc')
+        ->limit(6)
+        ->get();
+    return view('public.home', ['testimonials' => $testimonials]);
 })->name('public.home');
 
 Route::get('/earn-money', function () {
@@ -278,6 +282,81 @@ Route::get('/admin/tasks/{id}', function ($id) {
 Route::get('/admin/finance', function () {
     return view('admin.finance.index');
 })->name('admin.finance');
+
+Route::get('/admin/testimonials', function () {
+    $testimonials = \App\Models\Testimonial::orderBy('created_at', 'desc')->get();
+    return view('admin.testimonials.index', ['testimonials' => $testimonials]);
+})->name('admin.testimonials');
+
+Route::get('/admin/testimonials/create', function () {
+    return view('admin.testimonials.create');
+})->name('admin.testimonials.create');
+
+Route::post('/admin/testimonials', function (\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'customer_name' => 'required|string|max:255',
+        'job_title' => 'required|string|max:255',
+        'email' => 'nullable|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'feedback' => 'required|string',
+        'stars' => 'required|integer|min:1|max:5',
+        'is_active' => 'boolean',
+    ]);
+
+    if ($request->hasFile('photo')) {
+        $validated['photo'] = $request->file('photo')->store('testimonials', 'public');
+    }
+
+    \App\Models\Testimonial::create($validated);
+
+    return redirect()->route('admin.testimonials')->with('success', 'Testimonial created successfully!');
+})->name('admin.testimonials.store');
+
+Route::get('/admin/testimonials/{id}/edit', function ($id) {
+    $testimonial = \App\Models\Testimonial::findOrFail($id);
+    return view('admin.testimonials.edit', ['testimonial' => $testimonial]);
+})->name('admin.testimonials.edit');
+
+Route::put('/admin/testimonials/{id}', function (\Illuminate\Http\Request $request, $id) {
+    $testimonial = \App\Models\Testimonial::findOrFail($id);
+    
+    $validated = $request->validate([
+        'customer_name' => 'required|string|max:255',
+        'job_title' => 'required|string|max:255',
+        'email' => 'nullable|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'feedback' => 'required|string',
+        'stars' => 'required|integer|min:1|max:5',
+        'is_active' => 'boolean',
+    ]);
+
+    if ($request->hasFile('photo')) {
+        // Delete old photo if exists and not default
+        if ($testimonial->photo !== 'default_profile_pic.jpg' && \Storage::disk('public')->exists($testimonial->photo)) {
+            \Storage::disk('public')->delete($testimonial->photo);
+        }
+        $validated['photo'] = $request->file('photo')->store('testimonials', 'public');
+    }
+
+    $testimonial->update($validated);
+
+    return redirect()->route('admin.testimonials')->with('success', 'Testimonial updated successfully!');
+})->name('admin.testimonials.update');
+
+Route::delete('/admin/testimonials/{id}', function ($id) {
+    $testimonial = \App\Models\Testimonial::findOrFail($id);
+    
+    // Delete photo if exists and not default
+    if ($testimonial->photo !== 'default_profile_pic.jpg' && \Storage::disk('public')->exists($testimonial->photo)) {
+        \Storage::disk('public')->delete($testimonial->photo);
+    }
+    
+    $testimonial->delete();
+
+    return redirect()->route('admin.testimonials')->with('success', 'Testimonial deleted successfully!');
+})->name('admin.testimonials.destroy');
 
 Route::get('/admin/approvals', function () {
     return view('admin.approvals.index');

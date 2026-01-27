@@ -187,7 +187,35 @@
       </div>
 
       <div class="grid md:grid-cols-3 gap-8">
-        <!-- Testimonial 1 -->
+        @forelse($testimonials->take(3) as $testimonial)
+        <div class="card bg-base-100 shadow-lg">
+          <div class="card-body">
+            <div class="flex gap-1 mb-4">
+              @for($i = 1; $i <= 5; $i++)
+                <span class="icon-[tabler--star-filled] size-5 {{ $i <= $testimonial->stars ? 'text-yellow-400' : 'text-gray-300' }}"></span>
+              @endfor
+            </div>
+            <p class="mb-4">"{{ $testimonial->feedback }}"</p>
+            <div class="flex items-center gap-3">
+              <div class="avatar placeholder">
+                @if($testimonial->photo === 'default_profile_pic.jpg')
+                  <div class="bg-primary text-white rounded-full w-10">
+                    <span>{{ strtoupper(substr($testimonial->customer_name, 0, 2)) }}</span>
+                  </div>
+                @else
+                  <div class="w-10 rounded-full">
+                    <img src="{{ asset('storage/' . $testimonial->photo) }}" alt="{{ $testimonial->customer_name }}" />
+                  </div>
+                @endif
+              </div>
+              <div>
+                <p class="font-semibold">{{ $testimonial->customer_name }}</p>
+                <p class="text-sm text-base-content/60">{{ $testimonial->job_title }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        @empty
         <div class="card bg-base-100 shadow-lg">
           <div class="card-body">
             <div class="flex gap-1 mb-4">
@@ -211,56 +239,7 @@
             </div>
           </div>
         </div>
-
-        <!-- Testimonial 2 -->
-        <div class="card bg-base-100 shadow-lg">
-          <div class="card-body">
-            <div class="flex gap-1 mb-4">
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-            </div>
-            <p class="mb-4">"The platform is so user-friendly and the payment process is quick. I love how transparent everything is here."</p>
-            <div class="flex items-center gap-3">
-              <div class="avatar placeholder">
-                <div class="bg-secondary text-white rounded-full w-10">
-                  <span>SM</span>
-                </div>
-              </div>
-              <div>
-                <p class="font-semibold">Sarah Miller</p>
-                <p class="text-sm text-base-content/60">Web Designer</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Testimonial 3 -->
-        <div class="card bg-base-100 shadow-lg">
-          <div class="card-body">
-            <div class="flex gap-1 mb-4">
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-            </div>
-            <p class="mb-4">"Great variety of tasks and flexible working hours. I can balance this with my full-time job perfectly."</p>
-            <div class="flex items-center gap-3">
-              <div class="avatar placeholder">
-                <div class="bg-accent text-white rounded-full w-10">
-                  <span>MJ</span>
-                </div>
-              </div>
-              <div>
-                <p class="font-semibold">Mike Johnson</p>
-                <p class="text-sm text-base-content/60">Part-time Developer</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        @endforelse
       </div>
     </div>
   </section>
