@@ -52,14 +52,6 @@
                         </li>
                     </ul>
                 </nav>
-
-                <!-- Logout -->
-                <div class="p-4 border-t border-base-300">
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-error/20 text-error transition">
-                        <span class="icon-[tabler--logout] size-5"></span>
-                        <span class="font-semibold">Logout</span>
-                    </a>
-                </div>
             </aside>
 
             <!-- Mobile Sidebar Toggle -->
@@ -97,12 +89,6 @@
                         </a></li>
                     </ul>
                 </nav>
-                <div class="p-4 border-t border-base-300">
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-error/20 text-error">
-                        <span class="icon-[tabler--logout] size-5"></span>
-                        <span class="font-semibold">Logout</span>
-                    </a>
-                </div>
             </div>
 
             <!-- Main Content -->
