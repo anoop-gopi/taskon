@@ -92,7 +92,7 @@
           $colorIndex = $loop->index % count($gradientColors);
           $color = $gradientColors[$colorIndex];
         @endphp
-        <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition overflow-hidden {{ $completedTask->status == 3 ? 'opacity-75' : '' }}">
+        <div class="card bg-base-100 shadow-md hover:shadow-lg transition overflow-hidden {{ $completedTask->status == 3 ? 'opacity-75' : '' }}">
           <figure class="h-40 bg-gradient-to-br from-{{ $color }}-400 to-{{ $color }}-600 flex items-center justify-center relative">
             <span class="icon-[tabler--checklist] size-16 text-white/50"></span>
             <div class="absolute top-3 right-3 badge {{ $statusConfig['badge'] }} gap-1">
@@ -113,7 +113,7 @@
               <p class="text-sm italic text-base-content/70">{{ Str::limit($completedTask->notes, 80) }}</p>
             </div>
             @endif
-            <div class="flex items-center justify-between pt-4 border-t border-base-300">
+            <div class="flex items-center justify-between pt-4 border-t border-base-content/10">
               <div>
                 <p class="text-xs text-base-content/60">{{ $completedTask->status == 2 ? 'You Earned' : ($completedTask->status == 3 ? 'Potential' : 'Pending') }}</p>
                 <p class="text-xl font-bold {{ $statusConfig['text'] }}">${{ number_format($task->earning, 2) }}</p>

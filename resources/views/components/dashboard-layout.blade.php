@@ -230,18 +230,22 @@
                                 <span class="font-semibold">Tasks</span>
                             </a>
                         </li>
+                        {{-- Temporarily hidden
                         <li>
                             <a href="{{ route('dashboard.earnings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.earnings') ? 'bg-primary text-white' : 'text-base-content' }}">
                                 <span class="icon-[tabler--wallet] size-5"></span>
                                 <span class="font-semibold">Earnings</span>
                             </a>
                         </li>
+                        --}}
+                        {{-- Temporarily hidden
                         <li>
                             <a href="{{ route('dashboard.activity') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.activity') ? 'bg-primary text-white' : 'text-base-content' }}">
                                 <span class="icon-[tabler--history] size-5"></span>
                                 <span class="font-semibold">My Activity</span>
                             </a>
                         </li>
+                        --}}
                         <li>
                             <a href="{{ route('dashboard.upgrade') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-warning/10 hover:text-warning transition {{ request()->routeIs('dashboard.upgrade') ? 'bg-warning text-white' : 'text-warning' }}">
                                 <span class="icon-[tabler--crown] size-5"></span>
@@ -251,13 +255,6 @@
                     </ul>
                 </nav>
 
-                <!-- Logout -->
-                <div class="p-4 border-t border-base-300">
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-error/20 text-error transition">
-                        <span class="icon-[tabler--logout] size-5"></span>
-                        <span class="font-semibold">Logout</span>
-                    </a>
-                </div>
             </aside>
 
             <!-- Mobile Sidebar Toggle -->
@@ -284,14 +281,18 @@
                             <span class="icon-[tabler--clipboard-list] size-5"></span>
                             <span class="font-semibold">Tasks</span>
                         </a></li>
+                        {{-- Temporarily hidden
                         <li><a href="{{ route('dashboard.earnings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
                             <span class="icon-[tabler--wallet] size-5"></span>
                             <span class="font-semibold">Earnings</span>
                         </a></li>
+                        --}}
+                        {{-- Temporarily hidden
                         <li><a href="{{ route('dashboard.activity') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
                             <span class="icon-[tabler--history] size-5"></span>
                             <span class="font-semibold">My Activity</span>
                         </a></li>
+                        --}}
                         <li><a href="{{ route('dashboard.upgrade') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-warning/10 hover:text-warning text-warning transition">
                             <span class="icon-[tabler--crown] size-5"></span>
                             <span class="font-semibold">Upgrade Plan</span>

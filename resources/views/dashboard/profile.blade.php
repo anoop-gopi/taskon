@@ -237,15 +237,6 @@
                 <button class="btn btn-sm btn-ghost">Change</button>
               </div>
 
-              <!-- Two-Factor Authentication -->
-              <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg">
-                <div>
-                  <p class="font-semibold">Two-Factor Authentication</p>
-                  <p class="text-sm text-base-content/70">Not enabled</p>
-                </div>
-                <button class="btn btn-sm btn-primary">Enable</button>
-              </div>
-
               <!-- Email Verification -->
               <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg">
                 <div>
@@ -259,7 +250,7 @@
               </div>
 
               <!-- Phone Verification -->
-              <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg">
+              <!-- <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg">
                 <div>
                   <p class="font-semibold">Phone Verification</p>
                   <p class="text-sm text-base-content/70">Verified on Jan 15, 2026</p>
@@ -268,20 +259,21 @@
                   <span class="icon-[tabler--check] size-4"></span>
                   Verified
                 </div>
-              </div>
+              </div> -->
+
             </div>
           </div>
         </div>
       </div>
 
       <!-- Account Settings -->
-      <div class="card bg-base-100 shadow-lg border border-primary/20">
+      <!-- <div class="card bg-base-100 shadow-lg border border-primary/20">
         <div class="card-body">
           <h3 class="text-xl font-bold mb-6">Account Settings</h3>
 
-          <div class="space-y-4">
+          <div class="space-y-4"> -->
             <!-- Notifications -->
-            <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg hover:bg-base-200 transition">
+            <!-- <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg hover:bg-base-200 transition">
               <div class="flex items-center gap-3">
                 <span class="icon-[tabler--bell] size-6 text-primary"></span>
                 <div>
@@ -290,10 +282,10 @@
                 </div>
               </div>
               <button class="btn btn-sm btn-ghost">Manage</button>
-            </div>
+            </div> -->
 
             <!-- Privacy -->
-            <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg hover:bg-base-200 transition">
+            <!-- <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg hover:bg-base-200 transition">
               <div class="flex items-center gap-3">
                 <span class="icon-[tabler--lock] size-6 text-primary"></span>
                 <div>
@@ -302,10 +294,10 @@
                 </div>
               </div>
               <button class="btn btn-sm btn-ghost">Manage</button>
-            </div>
+            </div> -->
 
             <!-- Language -->
-            <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg hover:bg-base-200 transition">
+            <!-- <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg hover:bg-base-200 transition">
               <div class="flex items-center gap-3">
                 <span class="icon-[tabler--language] size-6 text-primary"></span>
                 <div>
@@ -314,10 +306,10 @@
                 </div>
               </div>
               <button class="btn btn-sm btn-ghost">Change</button>
-            </div>
+            </div> -->
 
             <!-- Danger Zone -->
-            <div class="flex items-center justify-between p-4 border border-error/30 rounded-lg bg-error/5 hover:bg-error/10 transition">
+            <!-- <div class="flex items-center justify-between p-4 border border-error/30 rounded-lg bg-error/5 hover:bg-error/10 transition">
               <div class="flex items-center gap-3">
                 <span class="icon-[tabler--trash] size-6 text-error"></span>
                 <div>
@@ -326,10 +318,10 @@
                 </div>
               </div>
               <button class="btn btn-sm btn-error">Delete</button>
-            </div>
-          </div>
+            </div> -->
+          <!-- </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </section>
 </x-dashboard-layout>
