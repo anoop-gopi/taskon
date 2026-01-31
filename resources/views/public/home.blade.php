@@ -16,8 +16,8 @@
         </div>
       </div>
       <div class="flex justify-center">
-        <div class="bg-white/20 rounded-lg p-8 backdrop-blur">
-          <span class="icon-[tabler--coin] size-32 text-white/80"></span>
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur w-[80%] max-w-2xl">
+          <img src="{{ asset('assets/img/header_img.png') }}" alt="Header image" class="w-full h-auto object-contain" />
         </div>
       </div>
     </div>
