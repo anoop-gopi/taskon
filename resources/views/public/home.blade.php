@@ -3,8 +3,8 @@
   <section class="hero bg-primary text-white py-20">
     <div class="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
       <div>
-        <h1 class="text-5xl font-bold mb-6">Earn Money Online, On Your Terms</h1>
-        <p class="text-lg text-white/90 mb-6">Join thousands of people making money by completing tasks, projects, and gigs from home.</p>
+        <h1 class="text-5xl font-bold mb-6">Join the Decentralized Workforce Today</h1>
+        <p class="text-lg text-white/90 mb-6">Access thousands of data entry project, and gig opportunities from vetted employers.</p>
         <div class="flex gap-4">
           <button class="btn btn-lg btn-secondary gap-2">
             <span class="icon-[tabler--rocket] size-6"></span>
@@ -27,7 +27,7 @@
   <section id="earn" class="py-16 bg-base-100">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Why Choose Taskon?</h2>
+        <h2 class="text-4xl font-bold mb-4">Why Choose Jobtrackingsys?</h2>
         <p class="text-xl text-base-content/70">Start earning with the most trusted platform for flexible work</p>
       </div>
 
@@ -240,6 +240,62 @@
           </div>
         </div>
         @endforelse
+      </div>
+    </div>
+  </section>
+
+  <!-- Is It Legit Section -->
+  <section class="py-16 bg-base-100">
+    <div class="container mx-auto px-4">
+      <div class="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <!-- Left Column - Content -->
+        <div>
+          <h2 class="text-4xl font-bold mb-6">Is it legit to earn crypto rewards online?</h2>
+          <p class="text-lg text-base-content/70 mb-8">Yes, earning crypto assets online is real when you use a trusted platform. Many people assume free crypto offers are scams or require hidden investments, but that is not always true.</p>
+          <p class="text-lg text-base-content/70 mb-8">JumpTask works with verified partners, including global advertisers, app developers, and data providers. These companies pay for real user actions, and you earn rewards for your time and attention. It is a simple value exchange that benefits everyone involved.</p>
+          <p class="text-lg text-base-content/70 mb-8">Millions of users have already earned assets through microtasks. Payouts are sent directly to your wallet. There are no tricks, no locked assets, and no barriers. Join a growing community that trusts JumpTask for fair and transparent rewards.</p>
+          
+          <div class="space-y-4">
+
+
+
+
+
+
+
+          </div>
+        </div>
+
+        <!-- Right Column - Image -->
+        <div class="relative">
+          <div class="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl p-8 flex items-center justify-center min-h-[400px]">
+            <div class="text-center">
+              <span class="icon-[tabler--shield-check-filled] size-32 text-primary/40 mb-6 block mx-auto"></span>
+              <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                <div class="bg-base-100 rounded-lg p-4 shadow-md">
+                  <span class="icon-[tabler--users] size-8 text-info mb-2 block"></span>
+                  <p class="text-2xl font-bold">15M+</p>
+                  <p class="text-xs text-base-content/60">Users</p>
+                </div>
+                <div class="bg-base-100 rounded-lg p-4 shadow-md">
+                  <span class="icon-[tabler--wallet] size-8 text-success mb-2 block"></span>
+                  <p class="text-2xl font-bold">$2.8M</p>
+                  <p class="text-xs text-base-content/60">Paid Out</p>
+                </div>
+                <div class="bg-base-100 rounded-lg p-4 shadow-md">
+                  <span class="icon-[tabler--certificate] size-8 text-warning mb-2 block"></span>
+                  <p class="text-2xl font-bold">2.8M</p>
+                  <p class="text-xs text-base-content/60">Payouts</p>
+                </div>
+                <div class="bg-base-100 rounded-lg p-4 shadow-md">
+                  <span class="icon-[tabler--star-filled] size-8 text-yellow-400 mb-2 block"></span>
+                  <p class="text-2xl font-bold">4.6/5</p>
+                  <p class="text-xs text-base-content/60">Rating</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
