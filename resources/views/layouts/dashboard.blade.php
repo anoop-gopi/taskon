@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{ config('app.name', 'Taskon') }} - Dashboard</title>
+        <title>{{ config('app.name', 'Jobtrackingsys') }} - Dashboard</title>
 
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -19,7 +19,7 @@
                 <!-- Logo -->
                 <div class="p-6 border-b border-base-300">
                     <a href="{{ route('public.home') }}" class="text-2xl font-bold">
-                        Taskon
+                        Jobtrackingsys
                     </a>
                 </div>
 
@@ -66,7 +66,7 @@
             <div id="mobile_sidebar" class="hidden fixed left-0 top-0 h-screen w-64 bg-base-200 shadow-lg z-40 md:hidden flex flex-col">
                 <div class="p-6 border-b border-base-300">
                     <a href="{{ route('public.home') }}" class="text-2xl font-bold">
-                        Taskon
+                        Jobtrackingsys
                     </a>
                 </div>
                 <nav class="flex-1 px-4 py-6 overflow-y-auto">

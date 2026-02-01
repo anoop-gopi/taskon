@@ -18,7 +18,7 @@
 </div>
 
 <!-- Upgrade Details -->
-<div class="bg-base-200 rounded-lg p-4 mb-6">
+<!-- <div class="bg-base-200 rounded-lg p-4 mb-6">
   <h3 class="font-semibold mb-2">Upgrade Details</h3>
   <div class="flex justify-between text-sm">
     <span class="text-base-content/70">Plan:</span>
@@ -32,7 +32,7 @@
     <span class="text-base-content/70">Earning per task:</span>
     <span class="font-semibold">${{ number_format($upgradeRequest->toCategory->earning_per_task, 0) }}</span>
   </div>
-</div>
+</div> -->
 
 <!-- Payment URL -->
 <div class="mb-6">
@@ -68,7 +68,7 @@
 </div>
 
 <!-- Submit Payment Screenshot -->
-<div class="divider">OR</div>
+<div class="divider">Attach Screenshot After Payment</div>
 
 <form action="{{ route('dashboard.upgrade.submit-payment', $upgradeRequest->id) }}" method="POST" enctype="multipart/form-data" id="payment-form-modal" onsubmit="handleFormSubmit(event, {{ $upgradeRequest->to_category_id }})">
   @csrf

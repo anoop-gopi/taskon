@@ -3,7 +3,7 @@
   <section class="bg-primary text-white py-20">
     <div class="container mx-auto px-4">
       <h1 class="text-5xl font-bold mb-6">Earn Money Online</h1>
-      <p class="text-xl text-white/90">Start making money today with Taskon. Explore various ways to earn and grow your income.</p>
+      <p class="text-xl text-white/90">Start making money today with Jobtrackingsys. Explore various ways to earn and grow your income.</p>
     </div>
   </section>
 
@@ -138,7 +138,7 @@
   <section class="py-20 bg-primary text-white">
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-4xl font-bold mb-6">Ready to Start Earning?</h2>
-      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Join thousands of people making money on Taskon. Sign up today and access thousands of earning opportunities.</p>
+      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Join thousands of people making money on Jobtrackingsys. Sign up today and access thousands of earning opportunities.</p>
       <button class="btn btn-lg btn-secondary gap-2">
         <span class="icon-[tabler--rocket] size-6"></span>
         Start Earning Now

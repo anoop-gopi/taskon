@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
-        <title>{{ config('app.name', 'Taskon') }} - Dashboard</title>
+        <title>{{ config('app.name', 'Jobtrackingsys') }} - Dashboard</title>
 
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -138,7 +138,7 @@
                 <div class="flex items-center gap-12">
                     <!-- Logo -->
                     <a href="{{ route('public.home') }}" class="text-2xl font-bold">
-                        Taskon
+                        Jobtrackingsys
                     </a>
 
                     <!-- Desktop Menu -->
@@ -322,9 +322,9 @@
                     <!-- Company Info -->
                     <div>
                         <h3 class="font-bold text-lg mb-4">
-                            <span class="text-primary">Taskon</span>
+                            <span class="text-primary">Jobtrackingsys</span>
                         </h3>
-                        <p class="text-sm text-base-content/70 mb-4">Empower yourself to earn money online with flexible tasks and projects on Taskon.</p>
+                        <p class="text-sm text-base-content/70 mb-4">Empower yourself to earn money online with flexible tasks and projects on Jobtrackingsys.</p>
                         <div class="flex gap-3">
                             <a href="#" class="btn btn-ghost btn-sm btn-circle">
                                 <span class="icon-[tabler--brand-facebook] size-5"></span>
@@ -383,7 +383,7 @@
                             <span class="icon-[tabler--mail] size-6 text-primary mt-1"></span>
                             <div>
                                 <p class="text-xs text-base-content/60 mb-1">Email</p>
-                                <p class="font-semibold text-sm">support@taskon.com</p>
+                                <p class="font-semibold text-sm">support@Jobtrackingsys.com</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
@@ -405,8 +405,7 @@
 
                 <!-- Bottom Footer -->
                 <div class="border-t border-base-300 pt-6 mt-8 flex flex-col md:flex-row justify-between items-center text-sm text-base-content/70">
-                    <p>&copy; 2026 Taskon. All rights reserved.</p>
-                    <p>Made with <span class="text-error">♥</span> for freelancers and task seekers</p>
+                    <p>&copy; 2026 Jobtrackingsys. All rights reserved.</p>
                 </div>
             </div>
         </footer>
@@ -416,7 +415,7 @@
             <div class="auth-modal-content">
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeAuthModal()">✕</button>
                 
-                <h3 class="font-bold text-lg mb-6" style="padding: 1.5rem 1.5rem 0 1.5rem;">Sign In to Taskon</h3>
+                <h3 class="font-bold text-lg mb-6" style="padding: 1.5rem 1.5rem 0 1.5rem;">Sign In to Jobtrackingsys</h3>
                 
                 <form id="signin_form" onsubmit="handleSignin(event)" class="space-y-4 mb-6" style="padding: 0 1.5rem;">
                     <div class="form-control">

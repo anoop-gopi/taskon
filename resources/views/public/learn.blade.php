@@ -3,7 +3,7 @@
   <section class="bg-primary text-white py-20">
     <div class="container mx-auto px-4">
       <h1 class="text-5xl font-bold mb-6">Learn & Grow</h1>
-      <p class="text-xl text-white/90">Access free resources, tutorials, and guides to improve your skills and maximize your earnings on Taskon.</p>
+      <p class="text-xl text-white/90">Access free resources, tutorials, and guides to improve your skills and maximize your earnings on Jobtrackingsys.</p>
     </div>
   </section>
 
@@ -105,7 +105,7 @@
             <span class="icon-[tabler--play] size-12 text-white"></span>
           </div>
           <div class="card-body">
-            <h3 class="card-title text-base">Getting Started on Taskon</h3>
+            <h3 class="card-title text-base">Getting Started on Jobtrackingsys</h3>
             <p class="text-sm text-base-content/70">5 min tutorial covering profile setup and first task</p>
             <button class="btn btn-sm btn-primary mt-4">Watch Video</button>
           </div>
@@ -128,7 +128,7 @@
           </div>
           <div class="card-body">
             <h3 class="card-title text-base">Scaling Your Earnings</h3>
-            <p class="text-sm text-base-content/70">15 min strategies to increase your income on Taskon</p>
+            <p class="text-sm text-base-content/70">15 min strategies to increase your income on Jobtrackingsys</p>
             <button class="btn btn-sm btn-primary mt-4">Watch Video</button>
           </div>
         </div>
@@ -149,7 +149,7 @@
           <div class="card-body">
             <span class="badge badge-primary mb-2">Tips</span>
             <h3 class="card-title">10 Ways to Improve Your Profile Visibility</h3>
-            <p class="text-base-content/70 text-sm mb-4">Discover proven strategies to get noticed by more clients on Taskon.</p>
+            <p class="text-base-content/70 text-sm mb-4">Discover proven strategies to get noticed by more clients on Jobtrackingsys.</p>
             <p class="text-xs text-base-content/50 mb-4">5 min read • Jan 15, 2026</p>
             <a href="#" class="link link-primary text-sm">Read Article →</a>
           </div>
@@ -159,7 +159,7 @@
           <div class="card-body">
             <span class="badge badge-secondary mb-2">Success Story</span>
             <h3 class="card-title">From Zero to 5-Star Freelancer</h3>
-            <p class="text-base-content/70 text-sm mb-4">How Sarah turned her side hustle into a full-time income on Taskon.</p>
+            <p class="text-base-content/70 text-sm mb-4">How Sarah turned her side hustle into a full-time income on Jobtrackingsys.</p>
             <p class="text-xs text-base-content/50 mb-4">7 min read • Jan 12, 2026</p>
             <a href="#" class="link link-primary text-sm">Read Article →</a>
           </div>
@@ -231,7 +231,7 @@
   <section class="py-20 bg-primary text-white">
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-4xl font-bold mb-6">Start Your Learning Journey</h2>
-      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Invest in yourself with free resources and become a top earner on Taskon.</p>
+      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Invest in yourself with free resources and become a top earner on Jobtrackingsys.</p>
       <button class="btn btn-lg btn-secondary gap-2">
         <span class="icon-[tabler--book] size-6"></span>
         Browse All Resources

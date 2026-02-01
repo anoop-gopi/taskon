@@ -3,7 +3,7 @@
   <section class="bg-primary text-white py-20">
     <div class="container mx-auto px-4">
       <h1 class="text-5xl font-bold mb-6">How It Works</h1>
-      <p class="text-xl text-white/90">Get started on Taskon in simple steps and begin earning today.</p>
+      <p class="text-xl text-white/90">Get started on Jobtrackingsys in simple steps and begin earning today.</p>
     </div>
   </section>
 
@@ -19,7 +19,7 @@
           </div>
           <div class="flex-1 pt-2">
             <h3 class="text-2xl font-bold mb-3">Sign Up & Create Your Profile</h3>
-            <p class="text-base-content/70 mb-4">Create a free Taskon account in minutes. Verify your email and set up your profile with:</p>
+            <p class="text-base-content/70 mb-4">Create a free Jobtrackingsys account in minutes. Verify your email and set up your profile with:</p>
             <ul class="space-y-2 text-base-content/70">
               <li class="flex gap-2">
                 <span class="icon-[tabler--check] text-primary size-5 flex-shrink-0"></span>
@@ -101,7 +101,7 @@
             <ul class="space-y-2 text-base-content/70">
               <li class="flex gap-2">
                 <span class="icon-[tabler--check] text-primary size-5 flex-shrink-0"></span>
-                <span>Communicate with the client through Taskon messaging</span>
+                <span>Communicate with the client through Jobtrackingsys messaging</span>
               </li>
               <li class="flex gap-2">
                 <span class="icon-[tabler--check] text-primary size-5 flex-shrink-0"></span>
@@ -126,7 +126,7 @@
             <ul class="space-y-2 text-base-content/70">
               <li class="flex gap-2">
                 <span class="icon-[tabler--check] text-primary size-5 flex-shrink-0"></span>
-                <span>Funds are credited to your Taskon wallet</span>
+                <span>Funds are credited to your Jobtrackingsys wallet</span>
               </li>
               <li class="flex gap-2">
                 <span class="icon-[tabler--check] text-primary size-5 flex-shrink-0"></span>
@@ -202,7 +202,7 @@
   <section class="py-20 bg-primary text-white">
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-4xl font-bold mb-6">Ready to Get Started?</h2>
-      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Join Taskon today and start your earning journey. It's free and takes just a few minutes.</p>
+      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Join Jobtrackingsys today and start your earning journey. It's free and takes just a few minutes.</p>
       <button class="btn btn-lg btn-secondary gap-2">
         <span class="icon-[tabler--user-plus] size-6"></span>
         Sign Up Now

@@ -67,7 +67,7 @@
             </ul>
             
             <p style="text-align: center;">
-                <a href="{{ url('/login') }}" class="button">Login to Your Account</a>
+                <a href="{{ route('public.home') }}" class="button">Login to Your Account</a>
             </p>
             
             <p>Once logged in, you'll be able to:</p>
