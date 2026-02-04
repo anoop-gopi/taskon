@@ -14,6 +14,14 @@ Route::post('/auth/signup', [AuthController::class, 'signup'])->name('auth.signu
 Route::post('/auth/signin', [AuthController::class, 'signin'])->name('auth.signin');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
+// OAuth Routes - Google
+Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+// OAuth Routes - Facebook
+Route::get('/auth/facebook/redirect', [AuthController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
+Route::get('/auth/facebook/callback', [AuthController::class, 'handleFacebookCallback'])->name('auth.facebook.callback');
+
 Route::get('/', function () {
     $testimonials = \App\Models\Testimonial::where('is_active', true)
         ->orderBy('created_at', 'desc')

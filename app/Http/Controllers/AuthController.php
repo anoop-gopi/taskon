@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -130,4 +131,113 @@ class AuthController extends Controller
             'message' => 'Logged out successfully!',
         ], 200);
     }
-}
+
+    /**
+     * Redirect to Google OAuth provider
+     */
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Handle Google OAuth callback
+     */
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+            
+            // Check if user exists by email or google_id
+            $user = User::where('email', $googleUser->getEmail())
+                ->orWhere('google_id', $googleUser->getId())
+                ->first();
+
+            if ($user) {
+                // Update google_id if it wasn't set
+                if (!$user->google_id) {
+                    $user->update(['google_id' => $googleUser->getId()]);
+                }
+            } else {
+                // Create new user with pending approval status
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
+                    'password' => Hash::make(uniqid()), // Generate random password for OAuth users
+                    'status_id' => 1, // Pending approval
+                ]);
+            }
+
+            // Check if user is approved
+            if ($user->status_id != 2) {
+                $statusMessage = $user->status_id == 1 
+                    ? 'Your account is pending approval. Please wait for admin approval.'
+                    : 'Your account has been rejected. Please contact support.';
+                
+                return redirect()->route('public.home')->with('error', $statusMessage);
+            }
+
+            // Log the user in
+            auth()->login($user, true);
+            
+            return redirect()->route('dashboard.home')->with('success', 'Signed in with Google successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('public.home')->with('error', 'Failed to sign in with Google: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Redirect to Facebook OAuth provider
+     */
+    public function redirectToFacebook()
+    {
+        return Socialite::driver('facebook')->redirect();
+    }
+
+    /**
+     * Handle Facebook OAuth callback
+     */
+    public function handleFacebookCallback()
+    {
+        try {
+            $facebookUser = Socialite::driver('facebook')->user();
+            
+            // Check if user exists by email or facebook_id
+            $user = User::where('email', $facebookUser->getEmail())
+                ->orWhere('facebook_id', $facebookUser->getId())
+                ->first();
+
+            if ($user) {
+                // Update facebook_id if it wasn't set
+                if (!$user->facebook_id) {
+                    $user->update(['facebook_id' => $facebookUser->getId()]);
+                }
+            } else {
+                // Create new user with pending approval status
+                $user = User::create([
+                    'name' => $facebookUser->getName(),
+                    'email' => $facebookUser->getEmail(),
+                    'facebook_id' => $facebookUser->getId(),
+                    'password' => Hash::make(uniqid()), // Generate random password for OAuth users
+                    'status_id' => 1, // Pending approval
+                ]);
+            }
+
+            // Check if user is approved
+            if ($user->status_id != 2) {
+                $statusMessage = $user->status_id == 1 
+                    ? 'Your account is pending approval. Please wait for admin approval.'
+                    : 'Your account has been rejected. Please contact support.';
+                
+                return redirect()->route('public.home')->with('error', $statusMessage);
+            }
+
+            // Log the user in
+            auth()->login($user, true);
+            
+            return redirect()->route('dashboard.home')->with('success', 'Signed in with Facebook successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('public.home')->with('error', 'Failed to sign in with Facebook: ' . $e->getMessage());
+        }
+    }

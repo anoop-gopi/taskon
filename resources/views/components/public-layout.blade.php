@@ -342,14 +342,14 @@
 
                 <!-- Social Login -->
                 <div class="space-y-3 mb-6" style="padding: 0 1.5rem;">
-                    <button class="btn btn-outline w-full gap-2">
+                    <a href="{{ route('auth.google.redirect') }}" class="btn btn-outline w-full gap-2">
                         <span class="icon-[tabler--brand-google] size-5"></span>
                         Sign in with Google
-                    </button>
-                    <button class="btn btn-outline w-full gap-2">
+                    </a>
+                    <a href="{{ route('auth.facebook.redirect') }}" class="btn btn-outline w-full gap-2">
                         <span class="icon-[tabler--brand-facebook] size-5"></span>
                         Sign in with Facebook
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Links -->
