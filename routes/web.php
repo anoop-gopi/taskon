@@ -23,6 +23,11 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 Route::get('/auth/facebook/redirect', [AuthController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
 Route::get('/auth/facebook/callback', [AuthController::class, 'handleFacebookCallback'])->name('auth.facebook.callback');
 
+// Fallback login route for auth middleware
+Route::get('/login', function () {
+    return redirect()->route('public.home')->with('error', 'Please sign in to continue.');
+})->name('login');
+
 Route::get('/', function () {
     $testimonials = \App\Models\Testimonial::where('is_active', true)
         ->orderBy('created_at', 'desc')

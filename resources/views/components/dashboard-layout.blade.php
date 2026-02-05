@@ -668,12 +668,6 @@
                     }, 2000);
                 }
             }
-                        updateUserMenu(userData);
-                    } catch (e) {
-                        console.error('Error parsing user data:', e);
-                    }
-                }
-            }
 
             // Logout function
             async function handleLogout(event) {

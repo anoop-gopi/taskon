@@ -261,3 +261,5 @@ class AuthController extends Controller
             return redirect()->route('public.home')->with('error', 'Failed to sign in with Facebook: ' . $e->getMessage());
         }
     }
+
+}
