@@ -114,6 +114,26 @@ class AuthController extends Controller
     }
 
     /**
+     * Validate if the user session is still active
+     */
+    public function validateSession()
+    {
+        $user = auth()->user();
+        
+        if ($user) {
+            return response()->json([
+                'authenticated' => true,
+                'user' => $user,
+            ], 200);
+        }
+        
+        return response()->json([
+            'authenticated' => false,
+            'user' => null,
+        ], 200);
+    }
+
+    /**
      * Handle user logout
      */
     public function logout(Request $request)

@@ -13,6 +13,7 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 Route::post('/auth/signup', [AuthController::class, 'signup'])->name('auth.signup');
 Route::post('/auth/signin', [AuthController::class, 'signin'])->name('auth.signin');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
+Route::get('/auth/validate-session', [AuthController::class, 'validateSession'])->name('auth.validate-session');
 
 // OAuth Routes - Google
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
@@ -42,186 +43,278 @@ Route::get('/learn', function () {
     return view('public.learn');
 })->name('public.learn');
 
-Route::get('/dashboard', function () {
-    $user = auth()->user();
-    
-    // Get user's category or default to free (1)
-    $userCategory = $user ? $user->category_id : 1;
-    
-    // Fetch tasks that match user's category or lower
-    // Free users (category 1) see only category 1 tasks (limit 1)
-    // Premium users see tasks for their category and below
-    $tasks = \App\Models\Task::where('category_id', '<=', $userCategory)
-        ->orderBy('created_at', 'desc')
-        ->get();
-    
-    // If user is free (category_id = 1), limit to 1 task
-    if ($userCategory == 1) {
-        $tasks = $tasks->take(1);
-    }
-    
-    return view('dashboard.home', [
-        'tasks' => $tasks,
-        'userCategory' => $user ? $user->category : null,
-    ]);
-})->name('dashboard.home');
+// Protected Dashboard Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        // Get user's category or default to free (1)
+        $userCategory = $user->category_id;
+        
+        // Fetch tasks that match user's category or lower
+        // Free users (category 1) see only category 1 tasks (limit 1)
+        // Premium users see tasks for their category and below
+        $tasks = \App\Models\Task::where('category_id', '<=', $userCategory)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // If user is free (category_id = 1), limit to 1 task
+        if ($userCategory == 1) {
+            $tasks = $tasks->take(1);
+        }
+        
+        return view('dashboard.home', [
+            'tasks' => $tasks,
+            'userCategory' => $user->category,
+        ]);
+    })->name('dashboard.home');
 
-Route::get('/dashboard/profile', function () {
-    return view('dashboard.profile', [
-        'user' => auth()->user(),
-    ]);
-})->name('dashboard.profile');
+    Route::get('/dashboard/profile', function () {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        return view('dashboard.profile', [
+            'user' => $user,
+        ]);
+    })->name('dashboard.profile');
 
-Route::post('/dashboard/profile/update-wallet', function (\Illuminate\Http\Request $request) {
-    $validated = $request->validate([
-        'crypto_wallet' => 'nullable|string|max:255',
-    ]);
-    
-    auth()->user()->update([
-        'crypto_wallet' => $validated['crypto_wallet'],
-    ]);
-    
-    return redirect()->route('dashboard.profile')->with('success', 'Crypto wallet updated successfully!');
-})->name('dashboard.profile.update-wallet');
+    Route::post('/dashboard/profile/update-wallet', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $validated = $request->validate([
+            'crypto_wallet' => 'nullable|string|max:255',
+        ]);
+        
+        $user->update([
+            'crypto_wallet' => $validated['crypto_wallet'],
+        ]);
+        
+        return redirect()->route('dashboard.profile')->with('success', 'Crypto wallet updated successfully!');
+    })->name('dashboard.profile.update-wallet');
 
-Route::get('/dashboard/upgrade', function () {
-    $categories = \App\Models\UserCategory::where('id', '>', 1)->orderBy('id')->get();
-    $currentCategory = auth()->user()->category;
-    
-    return view('dashboard.upgrade', [
-        'categories' => $categories,
-        'currentCategory' => $currentCategory,
-    ]);
-})->name('dashboard.upgrade');
+    Route::get('/dashboard/upgrade', function () {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $categories = \App\Models\UserCategory::where('id', '>', 1)->orderBy('id')->get();
+        $currentCategory = $user->category;
+        
+        return view('dashboard.upgrade', [
+            'categories' => $categories,
+            'currentCategory' => $currentCategory,
+        ]);
+    })->name('dashboard.upgrade');
 
-Route::post('/dashboard/upgrade/{categoryId}', function ($categoryId) {
-    $user = auth()->user();
-    $category = \App\Models\UserCategory::findOrFail($categoryId);
-    
-    // Create upgrade request
-    $upgradeRequest = \App\Models\UpgradeRequest::create([
-        'user_id' => $user->id,
-        'from_category_id' => $user->category_id,
-        'to_category_id' => $categoryId,
-        'amount' => $category->price,
-        'payment_url' => 'https://pay.cryptomus.com/pay/' . uniqid() . '-' . substr(md5($user->id . $categoryId . time()), 0, 8),
-        'expires_at' => now()->addHours(2),
-        'status' => 'pending_payment',
-    ]);
-    
-    return response()->json([
-        'success' => true,
-        'upgradeRequestId' => $upgradeRequest->id,
-    ]);
-})->name('dashboard.upgrade.process');
+    Route::post('/dashboard/upgrade/{categoryId}', function ($categoryId) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please sign in again.',
+            ], 401);
+        }
+        
+        $category = \App\Models\UserCategory::findOrFail($categoryId);
+        
+        // Create upgrade request
+        $upgradeRequest = \App\Models\UpgradeRequest::create([
+            'user_id' => $user->id,
+            'from_category_id' => $user->category_id,
+            'to_category_id' => $categoryId,
+            'amount' => $category->price,
+            'payment_url' => 'https://pay.cryptomus.com/pay/' . uniqid() . '-' . substr(md5($user->id . $categoryId . time()), 0, 8),
+            'expires_at' => now()->addHours(2),
+            'status' => 'pending_payment',
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'upgradeRequestId' => $upgradeRequest->id,
+        ]);
+    })->name('dashboard.upgrade.process');
 
-Route::get('/dashboard/upgrade/invoice/{id}', function ($id) {
-    $upgradeRequest = \App\Models\UpgradeRequest::with(['toCategory'])->findOrFail($id);
-    
-    // Check if user owns this request
-    if ($upgradeRequest->user_id != auth()->id()) {
-        abort(403);
-    }
-    
-    return view('dashboard.upgrade-invoice', [
-        'upgradeRequest' => $upgradeRequest,
-    ]);
-})->name('dashboard.upgrade.invoice');
+    Route::get('/dashboard/upgrade/invoice/{id}', function ($id) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $upgradeRequest = \App\Models\UpgradeRequest::with(['toCategory'])->findOrFail($id);
+        
+        // Check if user owns this request
+        if ($upgradeRequest->user_id != $user->id) {
+            abort(403);
+        }
+        
+        return view('dashboard.upgrade-invoice', [
+            'upgradeRequest' => $upgradeRequest,
+        ]);
+    })->name('dashboard.upgrade.invoice');
 
-Route::get('/dashboard/upgrade/invoice/{id}/content', function ($id) {
-    $upgradeRequest = \App\Models\UpgradeRequest::with(['toCategory'])->findOrFail($id);
-    
-    // Check if user owns this request
-    if ($upgradeRequest->user_id != auth()->id()) {
-        abort(403);
-    }
-    
-    $html = view('dashboard.upgrade-invoice-modal', [
-        'upgradeRequest' => $upgradeRequest,
-    ])->render();
-    
-    return response()->json([
-        'success' => true,
-        'html' => $html,
-        'paymentUrl' => $upgradeRequest->payment_url,
-    ]);
-})->name('dashboard.upgrade.invoice.content');
+    Route::get('/dashboard/upgrade/invoice/{id}/content', function ($id) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please sign in again.',
+            ], 401);
+        }
+        
+        $upgradeRequest = \App\Models\UpgradeRequest::with(['toCategory'])->findOrFail($id);
+        
+        // Check if user owns this request
+        if ($upgradeRequest->user_id != $user->id) {
+            abort(403);
+        }
+        
+        $html = view('dashboard.upgrade-invoice-modal', [
+            'upgradeRequest' => $upgradeRequest,
+        ])->render();
+        
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+            'paymentUrl' => $upgradeRequest->payment_url,
+        ]);
+    })->name('dashboard.upgrade.invoice.content');
 
-Route::post('/dashboard/upgrade/invoice/{id}/submit', function (\Illuminate\Http\Request $request, $id) {
-    $upgradeRequest = \App\Models\UpgradeRequest::findOrFail($id);
-    
-    // Check if user owns this request
-    if ($upgradeRequest->user_id != auth()->id()) {
-        abort(403);
-    }
-    
-    $validated = $request->validate([
-        'payment_screenshot' => 'required|image|max:5120', // 5MB max
-    ]);
-    
-    // Store the screenshot
-    $path = $request->file('payment_screenshot')->store('payment-screenshots', 'public');
-    
-    // Update upgrade request
-    $upgradeRequest->update([
-        'payment_screenshot' => $path,
-        'status' => 'pending_approval',
-    ]);
-    
-    return response()->json([
-        'success' => true,
-        'message' => 'Payment screenshot submitted! Your upgrade request is pending admin approval.',
-    ]);
-})->name('dashboard.upgrade.submit-payment');
+    Route::post('/dashboard/upgrade/invoice/{id}/submit', function (\Illuminate\Http\Request $request, $id) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please sign in again.',
+            ], 401);
+        }
+        
+        $upgradeRequest = \App\Models\UpgradeRequest::findOrFail($id);
+        
+        // Check if user owns this request
+        if ($upgradeRequest->user_id != $user->id) {
+            abort(403);
+        }
+        
+        $validated = $request->validate([
+            'payment_screenshot' => 'required|image|max:5120', // 5MB max
+        ]);
+        
+        // Store the screenshot
+        $path = $request->file('payment_screenshot')->store('payment-screenshots', 'public');
+        
+        // Update upgrade request
+        $upgradeRequest->update([
+            'payment_screenshot' => $path,
+            'status' => 'pending_approval',
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment screenshot submitted! Your upgrade request is pending admin approval.',
+        ]);
+    })->name('dashboard.upgrade.submit-payment');
 
-Route::get('/dashboard/tasks', function () {
-    $user = auth()->user();
-    $completedTasks = \App\Models\TaskCompleted::where('user_id', $user->id)
-        ->with(['task', 'taskStatus'])
-        ->orderBy('date_time', 'desc')
-        ->get();
-    
-    return view('dashboard.tasks', ['completedTasks' => $completedTasks]);
-})->name('dashboard.tasks');
+    Route::get('/dashboard/tasks', function () {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $completedTasks = \App\Models\TaskCompleted::where('user_id', $user->id)
+            ->with(['task', 'taskStatus'])
+            ->orderBy('date_time', 'desc')
+            ->get();
+        
+        return view('dashboard.tasks', ['completedTasks' => $completedTasks]);
+    })->name('dashboard.tasks');
 
-Route::get('/dashboard/earnings', function () {
-    return view('dashboard.earnings');
-})->name('dashboard.earnings');
+    Route::get('/dashboard/earnings', function () {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        return view('dashboard.earnings');
+    })->name('dashboard.earnings');
 
-Route::get('/dashboard/activity', function () {
-    return view('dashboard.activity');
-})->name('dashboard.activity');
+    Route::get('/dashboard/activity', function () {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        return view('dashboard.activity');
+    })->name('dashboard.activity');
 
-Route::get('/dashboard/task/{taskId}', function ($taskId) {
-    $task = \App\Models\Task::findOrFail($taskId);
-    return view('dashboard.task-detail', ['task' => $task]);
-})->name('dashboard.task.show');
+    Route::get('/dashboard/task/{taskId}', function ($taskId) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $task = \App\Models\Task::findOrFail($taskId);
+        return view('dashboard.task-detail', ['task' => $task]);
+    })->name('dashboard.task.show');
 
-Route::get('/dashboard/task/{taskId}/complete', function ($taskId) {
-    $task = \App\Models\Task::findOrFail($taskId);
-    return view('dashboard.task-complete', ['task' => $task]);
-})->name('dashboard.task.complete.form');
+    Route::get('/dashboard/task/{taskId}/complete', function ($taskId) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $task = \App\Models\Task::findOrFail($taskId);
+        return view('dashboard.task-complete', ['task' => $task]);
+    })->name('dashboard.task.complete.form');
 
-Route::post('/dashboard/task/{taskId}/complete', function (\Illuminate\Http\Request $request, $taskId) {
-    $request->validate([
-        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
-        'notes' => 'nullable|string',
-    ]);
+    Route::post('/dashboard/task/{taskId}/complete', function (\Illuminate\Http\Request $request, $taskId) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'notes' => 'nullable|string',
+        ]);
 
-    // Store the uploaded image
-    $imagePath = $request->file('image')->store('task_completions', 'public');
+        // Store the uploaded image
+        $imagePath = $request->file('image')->store('task_completions', 'public');
 
-    // Create task completion record
-    \App\Models\TaskCompleted::create([
-        'task_id' => $taskId,
-        'user_id' => auth()->id(),
-        'image_path' => $imagePath,
-        'notes' => $request->notes,
-        'date_time' => now(),
-    ]);
+        // Create task completion record
+        \App\Models\TaskCompleted::create([
+            'task_id' => $taskId,
+            'user_id' => $user->id,
+            'image_path' => $imagePath,
+            'notes' => $request->notes,
+            'date_time' => now(),
+        ]);
 
-    return redirect()->route('dashboard.home')->with('success', 'Task submission received! We will review and process your completion.');
-})->name('dashboard.task.complete');
+        return redirect()->route('dashboard.home')->with('success', 'Task submission received! We will review and process your completion.');
+    })->name('dashboard.task.complete');
+});
 
 Route::get('/components', function () {
     return view('components.flyonui-components');

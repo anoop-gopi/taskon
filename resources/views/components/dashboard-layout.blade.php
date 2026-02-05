@@ -607,17 +607,67 @@
 
             // Check if user is logged in on page load
             function checkLoginStatus() {
-                // First check if Laravel has an authenticated user
-                if (window.laravelUser) {
-                    updateUserMenu(window.laravelUser);
-                    return;
-                }
+                // Check if the page is a dashboard page
+                const isDashboardPage = window.location.pathname.startsWith('/dashboard');
                 
-                // Otherwise check localStorage
-                const user = localStorage.getItem('user');
-                if (user) {
-                    try {
-                        const userData = JSON.parse(user);
+                if (isDashboardPage) {
+                    // For dashboard pages, verify session with server
+                    validateServerSession();
+                } else {
+                    // For non-dashboard pages, just check localStorage
+                    if (window.laravelUser) {
+                        updateUserMenu(window.laravelUser);
+                        return;
+                    }
+                    
+                    const user = localStorage.getItem('user');
+                    if (user) {
+                        try {
+                            const userData = JSON.parse(user);
+                            updateUserMenu(userData);
+                        } catch (e) {
+                            console.error('Error parsing user data:', e);
+                        }
+                    }
+                }
+            }
+
+            // Validate session with server
+            async function validateServerSession() {
+                try {
+                    const response = await fetch('{{ route("auth.validate-session") }}', {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.authenticated && data.user) {
+                        // Session is valid
+                        updateUserMenu(data.user);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                    } else {
+                        // Session expired
+                        localStorage.removeItem('user');
+                        showToast('Session expired. Redirecting to login...', 'error', 2000);
+                        setTimeout(() => {
+                            window.location.href = '{{ route("public.home") }}';
+                        }, 2000);
+                    }
+                } catch (error) {
+                    console.error('Session validation error:', error);
+                    // If validation fails, clear user and redirect
+                    localStorage.removeItem('user');
+                    showToast('Session validation failed. Redirecting to login...', 'error', 2000);
+                    setTimeout(() => {
+                        window.location.href = '{{ route("public.home") }}';
+                    }, 2000);
+                }
+            }
                         updateUserMenu(userData);
                     } catch (e) {
                         console.error('Error parsing user data:', e);
