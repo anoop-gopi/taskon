@@ -13,43 +13,6 @@
         @endif
 
         <style>
-            .auth-modal {
-                display: none;
-                position: fixed;
-                inset: 0;
-                z-index: 9999;
-                justify-content: center;
-                align-items: center;
-                background-color: rgba(0, 0, 0, 0.5);
-            }
-
-            .auth-modal.active {
-                display: flex;
-            }
-
-            .auth-modal-content {
-                background-color: var(--color-base-100, white);
-                border-radius: 0.5rem;
-                width: 100%;
-                max-width: 28rem;
-                max-height: 90vh;
-                overflow-y: auto;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-                position: relative;
-                animation: slideIn 0.3s ease-out;
-            }
-
-            @keyframes slideIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
             /* Toast Notification Styles */
             .toast-container {
                 position: fixed;
@@ -410,53 +373,6 @@
             </div>
         </footer>
 
-        <!-- Auth Modal -->
-        <div id="auth_modal" class="auth-modal" onclick="if(event.target === this) closeAuthModal()">
-            <div class="auth-modal-content">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeAuthModal()">✕</button>
-                
-                <h3 class="font-bold text-lg mb-6" style="padding: 1.5rem 1.5rem 0 1.5rem;">Sign In to Jobtrackingsys</h3>
-                
-                <form id="signin_form" onsubmit="handleSignin(event)" class="space-y-4 mb-6" style="padding: 0 1.5rem;">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Email</span>
-                        </label>
-                        <input type="email" id="signin_email" name="email" placeholder="your@email.com" class="input input-bordered" required />
-                        <span class="text-error text-sm hidden" id="signin_email_error"></span>
-                    </div>
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Password</span>
-                        </label>
-                        <input type="password" id="signin_password" name="password" placeholder="••••••••" class="input input-bordered" required />
-                        <span class="text-error text-sm hidden" id="signin_password_error"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-full" id="signin_btn">Sign In</button>
-                </form>
-
-                <div class="divider text-xs" style="margin: 1.5rem;">OR</div>
-
-                <!-- Social Login -->
-                <div class="space-y-3 mb-6" style="padding: 0 1.5rem;">
-                    <a href="{{ route('auth.google.redirect') }}" class="btn btn-outline w-full gap-2">
-                        <span class="icon-[tabler--brand-google] size-5"></span>
-                        Sign in with Google
-                    </a>
-                    <a href="{{ route('auth.facebook.redirect') }}" class="btn btn-outline w-full gap-2">
-                        <span class="icon-[tabler--brand-facebook] size-5"></span>
-                        Sign in with Facebook
-                    </a>
-                </div>
-
-                <!-- Links -->
-                <div class="flex flex-col gap-3 text-center text-sm" style="padding: 0 1.5rem 1.5rem 1.5rem;">
-                    <a href="#" class="link link-primary">Forgot your password?</a>
-                    <p class="text-base-content/70">Don't have an account? <a href="javascript:void(0);" onclick="closeAuthModal(); openSignupModal(event)" class="link link-primary font-semibold">Sign up</a></p>
-                </div>
-            </div>
-        </div>
-
         <!-- Toast Container -->
         <div id="toast_container" class="toast-container"></div>
 
@@ -490,97 +406,6 @@
                         toast.style.animation = 'slideOutRight 0.3s ease-out forwards';
                         setTimeout(() => toast.remove(), 300);
                     }, duration);
-                }
-            }
-
-            function openAuthModal(event) {
-                if (event) event.preventDefault();
-                const modal = document.getElementById('auth_modal');
-                if (modal) {
-                    modal.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                }
-            }
-
-            function closeAuthModal() {
-                const modal = document.getElementById('auth_modal');
-                if (modal) {
-                    modal.classList.remove('active');
-                    document.body.style.overflow = 'auto';
-                }
-            }
-
-            function openSignupModal(event) {
-                if (event) event.preventDefault();
-                const modal = document.getElementById('signup_modal');
-                if (modal) {
-                    modal.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                }
-            }
-
-            function closeSignupModal() {
-                const modal = document.getElementById('signup_modal');
-                if (modal) {
-                    modal.classList.remove('active');
-                    document.body.style.overflow = 'auto';
-                }
-            }
-
-            async function handleSignin(event) {
-                event.preventDefault();
-                
-                const email = document.getElementById('signin_email').value;
-                const password = document.getElementById('signin_password').value;
-                const btn = document.getElementById('signin_btn');
-                
-                // Clear previous errors
-                document.getElementById('signin_email_error').classList.add('hidden');
-                document.getElementById('signin_password_error').classList.add('hidden');
-                
-                // Disable button
-                btn.disabled = true;
-                const originalText = btn.textContent;
-                btn.textContent = 'Signing in...';
-                
-                try {
-                    const response = await fetch('{{ route("auth.signin") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                        },
-                        body: JSON.stringify({
-                            email: email,
-                            password: password,
-                        }),
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Store user data in localStorage
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        // Update header to show user name
-                        updateUserMenu(data.user);
-                        // Success - show toast and redirect
-                        showToast('Signed in successfully!', 'success', 2000);
-                        closeAuthModal();
-                        document.getElementById('signin_form').reset();
-                        // Redirect to dashboard after 1.5 seconds
-                        setTimeout(() => {
-                            window.location.href = '{{ route("dashboard.home") }}';
-                        }, 1500);
-                    } else {
-                        // Show error
-                        showToast(data.message || 'Sign in failed', 'error', 3000);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showToast('An error occurred. Please try again.', 'error', 3000);
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = originalText;
                 }
             }
 
@@ -718,14 +543,6 @@
                 userMenu.classList.add('hidden');
                 userMenu.classList.remove('flex');
             }
-
-            // Close modals with Escape key
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    closeAuthModal();
-                    closeSignupModal();
-                }
-            });
 
             // Check login status on page load
             window.addEventListener('DOMContentLoaded', function() {
