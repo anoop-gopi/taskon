@@ -610,23 +610,25 @@
                 // Check if the page is a dashboard page
                 const isDashboardPage = window.location.pathname.startsWith('/dashboard');
                 
+                // Always check window.laravelUser first for immediate display
+                if (window.laravelUser) {
+                    updateUserMenu(window.laravelUser);
+                }
+                
                 if (isDashboardPage) {
-                    // For dashboard pages, verify session with server
+                    // For dashboard pages, also verify session with server in background
                     validateServerSession();
                 } else {
-                    // For non-dashboard pages, just check localStorage
-                    if (window.laravelUser) {
-                        updateUserMenu(window.laravelUser);
-                        return;
-                    }
-                    
-                    const user = localStorage.getItem('user');
-                    if (user) {
-                        try {
-                            const userData = JSON.parse(user);
-                            updateUserMenu(userData);
-                        } catch (e) {
-                            console.error('Error parsing user data:', e);
+                    // For non-dashboard pages, check localStorage as fallback
+                    if (!window.laravelUser) {
+                        const user = localStorage.getItem('user');
+                        if (user) {
+                            try {
+                                const userData = JSON.parse(user);
+                                updateUserMenu(userData);
+                            } catch (e) {
+                                console.error('Error parsing user data:', e);
+                            }
                         }
                     }
                 }
