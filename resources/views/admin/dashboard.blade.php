@@ -8,38 +8,38 @@
     </div>
 
     <nav class="flex-1 p-4 space-y-2">
-      <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white font-medium">
+      <a href="{{ route('admin.dashboard') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white font-medium">
         <span class="icon-[tabler--home] size-5"></span>
         <span>Home</span>
       </a>
-      <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.users') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--users] size-5"></span>
         <span>Users</span>
       </a>
-      <a href="{{ route('admin.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.tasks') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--checklist] size-5"></span>
         <span>Tasks</span>
       </a>
-      <a href="{{ route('admin.approvals') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.approvals') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--checkbox] size-5"></span>
         <span>Approvals</span>
       </a>
-      <a href="{{ route('admin.upgrade-requests') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.upgrade-requests') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--file-invoice] size-5"></span>
         <span>Upgrade Requests</span>
       </a>
-      <a href="{{ route('admin.finance') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="{{ route('admin.finance') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--wallet] size-5"></span>
         <span>Finance</span>
       </a>
-      <a href="#settings" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+      <a href="#settings" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--settings] size-5"></span>
         <span>Settings</span>
       </a>
     </nav>
 
     <div class="p-4 border-t border-base-300">
-      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-error/20 text-error font-medium transition">
+      <button onclick="handleAdminLogout(event)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-error/20 text-error font-medium transition">
         <span class="icon-[tabler--logout] size-5"></span>
         <span>Logout</span>
       </button>
@@ -330,7 +330,95 @@
 </div>
 
 <script>
-  document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+  // Check admin session before navigating
+  async function checkAdminSessionBeforeNavigate(event) {
+    try {
+      const response = await fetch('{{ route("auth.validate-session") }}', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      });
+
+      const data = await response.json();
+
+      if (!data.authenticated || !data.user || !data.user.is_admin) {
+        // Session expired or not admin
+        alert('Session expired. Redirecting to admin login...');
+        window.location.href = '{{ route("admin.login") }}';
+        return false; // Prevent navigation
+      }
+      
+      // Session valid and is admin, allow navigation
+      return true;
+    } catch (error) {
+      console.error('Session check error:', error);
+      // On error, allow navigation (server will handle auth)
+      return true;
+    }
+  }
+
+  // Handle admin logout
+  async function handleAdminLogout(event) {
+    event.preventDefault();
+    
+    if (confirm('Are you sure you want to logout?')) {
+      try {
+        const response = await fetch('{{ route("auth.logout") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          },
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert('Logged out successfully!');
+          window.location.href = '{{ route("admin.login") }}';
+        } else {
+          alert('Logout failed');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      }
+    }
+  }
+
+  // Check session on page load
+  window.addEventListener('DOMContentLoaded', function() {
+    checkAdminSessionOnLoad();
+  });
+
+  // Validate admin session on page load
+  async function checkAdminSessionOnLoad() {
+    try {
+      const response = await fetch('{{ route("auth.validate-session") }}', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      });
+
+      const data = await response.json();
+
+      if (!data.authenticated || !data.user || !data.user.is_admin) {
+        // Session expired or not admin
+        alert('Session expired. Redirecting to admin login...');
+        window.location.href = '{{ route("admin.login") }}';
+      }
+    } catch (error) {
+      console.error('Session validation error:', error);
+      // On error, allow page to continue (server will handle auth)
+    }
+  }
+
     const sidebar = document.querySelector('.w-64');
     sidebar.classList.toggle('hidden');
   });

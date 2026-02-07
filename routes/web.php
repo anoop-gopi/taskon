@@ -325,19 +325,39 @@ Route::get('/components', function () {
     return view('components.flyonui-components');
 })->name('components');
 
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard');
+// Protected Admin Routes - require admin authentication
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        $user = auth()->user();
+        
+        if (!$user || !$user->is_admin) {
+            return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
+        }
+        
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
 
-Route::get('/admin/users', function () {
-    return view('admin.users.index');
-})->name('admin.users');
+    Route::get('/admin/users', function () {
+        $user = auth()->user();
+        
+        if (!$user || !$user->is_admin) {
+            return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
+        }
+        
+        return view('admin.users.index');
+    })->name('admin.users');
 
-Route::get('/admin/users/{id}', function ($id) {
-    // Mock user data - in production, fetch from database
-    $users = [
-        1 => ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'joined_date' => '2023-06-15', 'earnings' => 2450.50],
-        2 => ['id' => 2, 'name' => 'Sarah Miller', 'email' => 'sarah@example.com', 'joined_date' => '2023-08-22', 'earnings' => 3200.75],
+    Route::get('/admin/users/{id}', function ($id) {
+        $user = auth()->user();
+        
+        if (!$user || !$user->is_admin) {
+            return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
+        }
+        
+        // Mock user data - in production, fetch from database
+        $users = [
+            1 => ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'joined_date' => '2023-06-15', 'earnings' => 2450.50],
+            2 => ['id' => 2, 'name' => 'Sarah Miller', 'email' => 'sarah@example.com', 'joined_date' => '2023-08-22', 'earnings' => 3200.75],
         3 => ['id' => 3, 'name' => 'Mike Johnson', 'email' => 'mike@example.com', 'joined_date' => '2023-09-10', 'earnings' => 1890.25],
         4 => ['id' => 4, 'name' => 'Emily Davis', 'email' => 'emily@example.com', 'joined_date' => '2023-10-05', 'earnings' => 4100.00],
         5 => ['id' => 5, 'name' => 'Robert Wilson', 'email' => 'robert@example.com', 'joined_date' => '2023-11-12', 'earnings' => 2750.90],
@@ -564,4 +584,4 @@ Route::post('/admin/upgrade-requests/{id}/reject', function (\Illuminate\Http\Re
     
     return redirect()->route('admin.upgrade-requests', ['status' => 'rejected'])
         ->with('success', 'Upgrade request rejected.');
-})->name('admin.upgrade-requests.reject');
+})->name('admin.upgrade-requests.reject');});
