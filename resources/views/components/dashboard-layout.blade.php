@@ -176,19 +176,19 @@
                 <nav class="flex-1 px-4 py-6 overflow-y-auto">
                     <ul class="space-y-2">
                         <li>
-                            <a href="{{ route('dashboard.home') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.home') ? 'bg-primary text-white' : 'text-base-content' }}">
+                            <a href="{{ route('dashboard.home') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.home') ? 'bg-primary text-white' : 'text-base-content' }}">
                                 <span class="icon-[tabler--home] size-5"></span>
                                 <span class="font-semibold">Dashboard</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('dashboard.profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.profile') ? 'bg-primary text-white' : 'text-base-content' }}">
+                            <a href="{{ route('dashboard.profile') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.profile') ? 'bg-primary text-white' : 'text-base-content' }}">
                                 <span class="icon-[tabler--user] size-5"></span>
                                 <span class="font-semibold">Profile</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('dashboard.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.tasks') ? 'bg-primary text-white' : 'text-base-content' }}">
+                            <a href="{{ route('dashboard.tasks') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.tasks') ? 'bg-primary text-white' : 'text-base-content' }}">
                                 <span class="icon-[tabler--clipboard-list] size-5"></span>
                                 <span class="font-semibold">Tasks</span>
                             </a>
@@ -210,7 +210,7 @@
                         </li>
                         --}}
                         <li>
-                            <a href="{{ route('dashboard.upgrade') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-warning/10 hover:text-warning transition {{ request()->routeIs('dashboard.upgrade') ? 'bg-warning text-white' : 'text-warning' }}">
+                            <a href="{{ route('dashboard.upgrade') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-warning/10 hover:text-warning transition {{ request()->routeIs('dashboard.upgrade') ? 'bg-warning text-white' : 'text-warning' }}">
                                 <span class="icon-[tabler--crown] size-5"></span>
                                 <span class="font-semibold">Upgrade Plan</span>
                             </a>
@@ -232,15 +232,15 @@
             <div id="mobile_sidebar" class="hidden fixed left-0 top-0 h-screen w-64 bg-base-200 shadow-lg z-40 md:hidden flex flex-col">
                 <nav class="flex-1 px-4 py-6 overflow-y-auto">
                     <ul class="space-y-2">
-                        <li><a href="{{ route('dashboard.home') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                        <li><a href="{{ route('dashboard.home') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
                             <span class="icon-[tabler--home] size-5"></span>
                             <span class="font-semibold">Dashboard</span>
                         </a></li>
-                        <li><a href="{{ route('dashboard.profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                        <li><a href="{{ route('dashboard.profile') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
                             <span class="icon-[tabler--user] size-5"></span>
                             <span class="font-semibold">Profile</span>
                         </a></li>
-                        <li><a href="{{ route('dashboard.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                        <li><a href="{{ route('dashboard.tasks') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
                             <span class="icon-[tabler--clipboard-list] size-5"></span>
                             <span class="font-semibold">Tasks</span>
                         </a></li>
@@ -377,6 +377,39 @@
         <div id="toast_container" class="toast-container"></div>
 
         <script>
+            // Check session before navigating to dashboard pages
+            async function checkSessionBeforeNavigate(event) {
+                try {
+                    const response = await fetch('{{ route("auth.validate-session") }}', {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.authenticated) {
+                        // Session expired - clear data and redirect
+                        localStorage.removeItem('user');
+                        showToast('Session expired. Redirecting to login...', 'error', 2000);
+                        setTimeout(() => {
+                            window.location.href = '{{ route("public.home") }}';
+                        }, 2000);
+                        return false; // Prevent navigation
+                    }
+                    
+                    // Session valid, allow navigation
+                    return true;
+                } catch (error) {
+                    console.error('Session check error:', error);
+                    // On error, allow navigation (server will handle auth)
+                    return true;
+                }
+            }
+
             // Toast Notification Function
             function showToast(message, type = 'success', duration = 4000) {
                 const container = document.getElementById('toast_container');
