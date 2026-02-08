@@ -108,6 +108,66 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('dashboard.profile')->with('success', 'Crypto wallet updated successfully!');
     })->name('dashboard.profile.update-wallet');
 
+    Route::post('/dashboard/profile/update-personal', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'company_name' => 'nullable|string|max:255',
+        ]);
+        
+        $user->update($validated);
+        
+        return redirect()->route('dashboard.profile')->with('success', 'Personal information updated successfully!');
+    })->name('dashboard.profile.update-personal');
+
+    Route::post('/dashboard/profile/update-contact', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $validated = $request->validate([
+            'phone' => 'nullable|string|max:20',
+            'alternative_email' => 'nullable|email|max:255',
+            'address' => 'nullable|string|max:500',
+        ]);
+        
+        $user->update($validated);
+        
+        return redirect()->route('dashboard.profile')->with('success', 'Contact information updated successfully!');
+    })->name('dashboard.profile.update-contact');
+
+    Route::post('/dashboard/profile/update-password', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+        
+        $validated = $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+        
+        // Check if current password matches
+        if (!\Illuminate\Support\Facades\Hash::check($validated['current_password'], $user->password)) {
+            return redirect()->route('dashboard.profile')->with('error', 'Current password is incorrect.');
+        }
+        
+        // Update password
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['new_password']),
+        ]);
+        
+        return redirect()->route('dashboard.profile')->with('success', 'Password updated successfully!');
+    })->name('dashboard.profile.update-password');
+
     Route::get('/dashboard/upgrade', function () {
         $user = auth()->user();
         

@@ -1,10 +1,35 @@
 <x-dashboard-layout>
-  <!-- Success Message -->
+  <!-- Success/Error Messages -->
   @if(session('success'))
     <div class="container mx-auto px-4 pt-4">
       <div class="alert alert-success shadow-lg">
         <span class="icon-[tabler--check] size-5"></span>
         <span>{{ session('success') }}</span>
+      </div>
+    </div>
+  @endif
+
+  @if(session('error'))
+    <div class="container mx-auto px-4 pt-4">
+      <div class="alert alert-error shadow-lg">
+        <span class="icon-[tabler--x] size-5"></span>
+        <span>{{ session('error') }}</span>
+      </div>
+    </div>
+  @endif
+
+  @if($errors->any())
+    <div class="container mx-auto px-4 pt-4">
+      <div class="alert alert-error shadow-lg">
+        <span class="icon-[tabler--alert-circle] size-5"></span>
+        <div>
+          <div class="font-semibold">Please fix the following errors:</div>
+          <ul class="list-disc list-inside mt-1">
+            @foreach($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
       </div>
     </div>
   @endif
@@ -54,13 +79,14 @@
             <div class="card-body">
               <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold">Personal Information</h3>
-                <button class="btn btn-sm btn-ghost gap-2">
+                <button onclick="togglePersonalEdit()" class="btn btn-sm btn-ghost gap-2" id="personal-edit-btn">
                   <span class="icon-[tabler--edit] size-4"></span>
                   Edit
                 </button>
               </div>
 
-              <div class="grid md:grid-cols-2 gap-6">
+              <!-- Display Mode -->
+              <div id="personal-display" class="grid md:grid-cols-2 gap-6">
                 <!-- Full Name -->
                 <div>
                   <label class="label">
@@ -69,32 +95,42 @@
                   <p class="text-base font-medium text-base-content">{{ $user->name }}</p>
                 </div>
 
-                <!-- Email -->
-                <div>
-                  <label class="label">
-                    <span class="label-text font-semibold text-base-content/80">Email Address</span>
-                  </label>
-                  <p class="text-base font-medium text-base-content">{{ $user->email }}</p>
-                </div>
-
                 <!-- Company Name -->
-                @if($user->company_name)
                 <div>
                   <label class="label">
                     <span class="label-text font-semibold text-base-content/80">Company Name</span>
                   </label>
-                  <p class="text-base font-medium text-base-content">{{ $user->company_name }}</p>
-                </div>
-                @endif
-
-                <!-- Member Since -->
-                <div>
-                  <label class="label">
-                    <span class="label-text font-semibold text-base-content/80">Member Since</span>
-                  </label>
-                  <p class="text-base font-medium text-base-content">{{ $user->created_at->format('F d, Y') }}</p>
+                  <p class="text-base font-medium text-base-content">{{ $user->company_name ?? 'Not provided' }}</p>
                 </div>
               </div>
+
+              <!-- Edit Mode -->
+              <form id="personal-edit" action="{{ route('dashboard.profile.update-personal') }}" method="POST" class="hidden space-y-4">
+                @csrf
+                <div class="grid md:grid-cols-2 gap-6">
+                  <!-- Full Name -->
+                  <div>
+                    <label class="label">
+                      <span class="label-text font-semibold text-base-content/80">Full Name</span>
+                    </label>
+                    <input type="text" name="name" value="{{ old('name', $user->name) }}" class="input input-bordered w-full" required>
+                  </div>
+
+                  <!-- Company Name -->
+                  <!-- Company Name -->
+                  <div>
+                    <label class="label">
+                      <span class="label-text font-semibold text-base-content/80">Company Name</span>
+                    </label>
+                    <input type="text" name="company_name" value="{{ old('company_name', $user->company_name) }}" class="input input-bordered w-full">
+                  </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                  <button type="button" onclick="togglePersonalEdit()" class="btn btn-ghost">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+              </form>
             </div>
           </div>
 
@@ -103,19 +139,20 @@
             <div class="card-body">
               <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold">Contact Information</h3>
-                <button class="btn btn-sm btn-ghost gap-2">
+                <button onclick="toggleContactEdit()" class="btn btn-sm btn-ghost gap-2" id="contact-edit-btn">
                   <span class="icon-[tabler--edit] size-4"></span>
                   Edit
                 </button>
               </div>
 
-              <div class="grid md:grid-cols-2 gap-6">
-                <!-- Phone -->
+              <!-- Display Mode -->
+              <div id="contact-display" class="grid md:grid-cols-2 gap-6">
+                <!-- Phone Number -->
                 <div>
                   <label class="label">
-                    <span class="label-text font-semibold text-base-content/80">Primary Phone</span>
+                    <span class="label-text font-semibold text-base-content/80">Phone Number</span>
                   </label>
-                  <p class="text-base font-medium text-base-content">+1 (555) 123-4567</p>
+                  <p class="text-base font-medium text-base-content">{{ $user->phone ?? 'Not provided' }}</p>
                 </div>
 
                 <!-- Alternative Email -->
@@ -123,7 +160,7 @@
                   <label class="label">
                     <span class="label-text font-semibold text-base-content/80">Alternative Email</span>
                   </label>
-                  <p class="text-base font-medium text-base-content">john.alternative@example.com</p>
+                  <p class="text-base font-medium text-base-content">{{ $user->alternative_email ?? 'Not provided' }}</p>
                 </div>
 
                 <!-- Address -->
@@ -131,15 +168,109 @@
                   <label class="label">
                     <span class="label-text font-semibold text-base-content/80">Address</span>
                   </label>
-                  <p class="text-base font-medium text-base-content">123 Main Street, New York, NY 10001</p>
+                  <p class="text-base font-medium text-base-content">{{ $user->address ?? 'Not provided' }}</p>
                 </div>
+              </div>
+
+              <!-- Edit Mode -->
+              <form id="contact-edit" action="{{ route('dashboard.profile.update-contact') }}" method="POST" class="hidden space-y-4">
+                @csrf
+                <div class="grid md:grid-cols-2 gap-6">
+                  <!-- Phone Number -->
+                  <div>
+                    <label class="label">
+                      <span class="label-text font-semibold text-base-content/80">Phone Number</span>
+                    </label>
+                    <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" class="input input-bordered w-full">
+                  </div>
+
+                  <!-- Alternative Email -->
+                  <div>
+                    <label class="label">
+                      <span class="label-text font-semibold text-base-content/80">Alternative Email</span>
+                    </label>
+                    <input type="email" name="alternative_email" value="{{ old('alternative_email', $user->alternative_email) }}" class="input input-bordered w-full">
+                  </div>
+
+                  <!-- Address -->
+                  <div class="md:col-span-2">
+                    <label class="label">
+                      <span class="label-text font-semibold text-base-content/80">Address</span>
+                    </label>
+                    <textarea name="address" class="textarea textarea-bordered w-full" rows="3">{{ old('address', $user->address) }}</textarea>
+                  </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                  <button type="button" onclick="toggleContactEdit()" class="btn btn-ghost">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Account Security Card -->
+          <div class="card bg-base-100 shadow-lg border border-primary/20">
+            <div class="card-body">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold">Account Security</h3>
+                <button onclick="togglePasswordEdit()" class="btn btn-sm btn-primary gap-2" id="password-edit-btn">
+                  <span class="icon-[tabler--lock] size-4"></span>
+                  Change
+                </button>
+              </div>
+
+              <!-- Display Mode -->
+              <div id="password-display">
+                <div>
+                  <label class="label">
+                    <span class="label-text font-semibold text-base-content/80">Password</span>
+                  </label>
+                  <p class="text-base font-medium text-base-content">••••••••</p>
+                  <p class="text-sm text-base-content/60 mt-1">Last updated: Recently</p>
+                </div>
+              </div>
+
+              <!-- Edit Mode -->
+              <form id="password-edit" action="{{ route('dashboard.profile.update-password') }}" method="POST" class="hidden space-y-4">
+                @csrf
+                <div class="space-y-4">
+                  <!-- Current Password -->
+                  <div>
+                    <label class="label">
+                      <span class="label-text font-semibold text-base-content/80">Current Password</span>
+                    </label>
+                    <input type="password" name="current_password" class="input input-bordered w-full" required>
+                  </div>
+
+                  <!-- New Password -->
+                  <div>
+                    <label class="label">
+                      <span class="label-text font-semibold text-base-content/80">New Password</span>
+                    </label>
+                    <input type="password" name="new_password" class="input input-bordered w-full" required minlength="6">
+                    <p class="text-sm text-base-content/60 mt-1">Minimum 6 characters</p>
+                  </div>
+
+                  <!-- Confirm New Password -->
+                  <div>
+                    <label class="label">
+                      <span class="label-text font-semibold text-base-content/80">Confirm New Password</span>
+                    </label>
+                    <input type="password" name="new_password_confirmation" class="input input-bordered w-full" required minlength="6">
+                  </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                  <button type="button" onclick="togglePasswordEdit()" class="btn btn-ghost">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Update Password</button>
+                </div>
+              </form>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Payment Information -->
+          <!-- Payment Information -->
       <div class="grid md:grid-cols-2 gap-6 mb-8">
         <!-- Payment Methods Card -->
         <div class="card bg-base-100 shadow-lg border border-primary/20">
@@ -324,4 +455,58 @@
       </div> -->
     </div>
   </section>
+
+  <script>
+    function togglePersonalEdit() {
+      const display = document.getElementById('personal-display');
+      const edit = document.getElementById('personal-edit');
+      const btn = document.getElementById('personal-edit-btn');
+      
+      if (display.classList.contains('hidden')) {
+        display.classList.remove('hidden');
+        edit.classList.add('hidden');
+        btn.innerHTML = '<span class="icon-[tabler--edit] size-4"></span> Edit';
+      } else {
+        display.classList.add('hidden');
+        edit.classList.remove('hidden');
+        btn.innerHTML = '<span class="icon-[tabler--x] size-4"></span> Cancel';
+      }
+    }
+
+    function toggleContactEdit() {
+      const display = document.getElementById('contact-display');
+      const edit = document.getElementById('contact-edit');
+      const btn = document.getElementById('contact-edit-btn');
+      
+      if (display.classList.contains('hidden')) {
+        display.classList.remove('hidden');
+        edit.classList.add('hidden');
+        btn.innerHTML = '<span class="icon-[tabler--edit] size-4"></span> Edit';
+      } else {
+        display.classList.add('hidden');
+        edit.classList.remove('hidden');
+        btn.innerHTML = '<span class="icon-[tabler--x] size-4"></span> Cancel';
+      }
+    }
+
+    function togglePasswordEdit() {
+      const display = document.getElementById('password-display');
+      const edit = document.getElementById('password-edit');
+      const btn = document.getElementById('password-edit-btn');
+      
+      if (display.classList.contains('hidden')) {
+        display.classList.remove('hidden');
+        edit.classList.add('hidden');
+        btn.innerHTML = '<span class="icon-[tabler--lock] size-4"></span> Change';
+        btn.classList.remove('btn-ghost');
+        btn.classList.add('btn-primary');
+      } else {
+        display.classList.add('hidden');
+        edit.classList.remove('hidden');
+        btn.innerHTML = '<span class="icon-[tabler--x] size-4"></span> Cancel';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-ghost');
+      }
+    }
+  </script>
 </x-dashboard-layout>

@@ -29,6 +29,9 @@ class User extends Authenticatable
         'status_id',
         'category_id',
         'crypto_wallet',
+        'phone',
+        'alternative_email',
+        'address',
     ];
 
     /**
