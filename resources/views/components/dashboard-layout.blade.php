@@ -378,6 +378,7 @@
 
         <script>
             // Check session before navigating to dashboard pages
+            // This allows the browser to navigate, but we show a message if session is expired
             async function checkSessionBeforeNavigate(event) {
                 try {
                     const response = await fetch('{{ route("auth.validate-session") }}', {
@@ -392,16 +393,12 @@
                     const data = await response.json();
 
                     if (!data.authenticated) {
-                        // Session expired - clear data and redirect
+                        // Session expired - show message and allow middleware to handle redirect
                         localStorage.removeItem('user');
-                        showToast('Session expired. Redirecting to login...', 'error', 2000);
-                        setTimeout(() => {
-                            window.location.href = '{{ route("public.home") }}';
-                        }, 2000);
-                        return false; // Prevent navigation
+                        showToast('Session expired. Please sign in again.', 'error', 3000);
                     }
                     
-                    // Session valid, allow navigation
+                    // Always allow navigation - let the server handle authentication
                     return true;
                 } catch (error) {
                     console.error('Session check error:', error);
@@ -471,22 +468,28 @@
                 // Always check window.laravelUser first for immediate display
                 if (window.laravelUser) {
                     updateUserMenu(window.laravelUser);
-                }
-                
-                if (isDashboardPage) {
-                    // For dashboard pages, also verify session with server in background
-                    validateServerSession();
+                    
+                    if (isDashboardPage) {
+                        // For dashboard pages, also verify session with server in background
+                        validateServerSession();
+                    }
+                } else if (isDashboardPage) {
+                    // On dashboard pages without laravelUser, session has likely expired
+                    // Clear cache and redirect to home with message
+                    localStorage.removeItem('user');
+                    showToast('Session expired. Redirecting...', 'error', 1500);
+                    setTimeout(() => {
+                        window.location.href = '{{ route("public.home") }}?session_expired=1';
+                    }, 1500);
                 } else {
                     // For non-dashboard pages, check localStorage as fallback
-                    if (!window.laravelUser) {
-                        const user = localStorage.getItem('user');
-                        if (user) {
-                            try {
-                                const userData = JSON.parse(user);
-                                updateUserMenu(userData);
-                            } catch (e) {
-                                console.error('Error parsing user data:', e);
-                            }
+                    const user = localStorage.getItem('user');
+                    if (user) {
+                        try {
+                            const userData = JSON.parse(user);
+                            updateUserMenu(userData);
+                        } catch (e) {
+                            console.error('Error parsing user data:', e);
                         }
                     }
                 }

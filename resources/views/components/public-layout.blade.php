@@ -749,6 +749,19 @@
 
             // Check login status on page load
             window.addEventListener('DOMContentLoaded', function() {
+                // Check if session expired
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('session_expired') === '1') {
+                    // Remove the parameter from URL without reloading
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    // Show session expired message
+                    showToast('Your session has expired. Please sign in again.', 'error', 5000);
+                    
+                    // Clear localStorage
+                    localStorage.removeItem('user');
+                }
+                
                 checkLoginStatus();
                 
                 // Initialize FlyonUI dropdowns if library is available
