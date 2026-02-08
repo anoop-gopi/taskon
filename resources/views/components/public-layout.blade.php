@@ -755,11 +755,17 @@
                     // Remove the parameter from URL without reloading
                     window.history.replaceState({}, document.title, window.location.pathname);
                     
+                    // Clear localStorage FIRST
+                    localStorage.removeItem('user');
+                    
+                    // Reset the menu to show Sign In
+                    resetUserMenu();
+                    
                     // Show session expired message
                     showToast('Your session has expired. Please sign in again.', 'error', 5000);
                     
-                    // Clear localStorage
-                    localStorage.removeItem('user');
+                    // Skip checkLoginStatus since we already reset everything
+                    return;
                 }
                 
                 checkLoginStatus();

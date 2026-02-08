@@ -25,7 +25,7 @@ Route::get('/auth/facebook/callback', [AuthController::class, 'handleFacebookCal
 
 // Fallback login route for auth middleware
 Route::get('/login', function () {
-    return redirect()->route('public.home')->with('error', 'Please sign in to continue.');
+    return redirect()->route('public.home', ['session_expired' => '1'])->with('error', 'Please sign in to continue.');
 })->name('login');
 
 Route::get('/', function () {
