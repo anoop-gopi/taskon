@@ -103,7 +103,7 @@
                             <span class="icon-[tabler--mail] size-6 text-primary"></span>
                             <div>
                                 <p class="text-xs text-base-content/60">Email</p>
-                                <p class="font-semibold">support@flyon.com</p>
+                                <p class="font-semibold">support@jobtrackingsys.com</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">

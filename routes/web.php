@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminAuthController;
 
@@ -47,6 +49,61 @@ Route::get('/how-it-works', function () {
 Route::get('/learn', function () {
     return view('public.learn');
 })->name('public.learn');
+
+Route::get('/help-center', function () {
+    return view('public.help-center');
+})->name('public.help-center');
+
+Route::get('/contact-us', function () {
+    return view('public.contact');
+})->name('public.contact');
+
+Route::post('/contact-us', function (Request $request) {
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:30',
+        'message' => 'required|string|max:2000',
+    ]);
+
+    $body = "New contact form submission:\n\n"
+        . "Name: {$validated['name']}\n"
+        . "Email: {$validated['email']}\n"
+        . "Phone: " . ($validated['phone'] ?? 'N/A') . "\n\n"
+        . "Message:\n{$validated['message']}";
+
+    Mail::raw($body, function ($message) use ($validated) {
+        $message->to('anoop09smart@gmail.com')
+            ->subject('New Contact Form Submission')
+            ->replyTo($validated['email'], $validated['name']);
+    });
+
+    return redirect()->route('public.contact')->with('success', 'Thanks for reaching out! We will get back to you soon.');
+})->name('public.contact.submit');
+
+Route::get('/faq', function () {
+    return view('public.faq');
+})->name('public.faq');
+
+Route::get('/community', function () {
+    return view('public.community');
+})->name('public.community');
+
+Route::get('/privacy-policy', function () {
+    return view('public.privacy-policy');
+})->name('public.privacy-policy');
+
+Route::get('/terms-of-service', function () {
+    return view('public.terms');
+})->name('public.terms');
+
+Route::get('/cookie-policy', function () {
+    return view('public.cookie-policy');
+})->name('public.cookie-policy');
+
+Route::get('/disclaimer', function () {
+    return view('public.disclaimer');
+})->name('public.disclaimer');
 
 // Protected Dashboard Routes
 Route::middleware(['auth'])->group(function () {

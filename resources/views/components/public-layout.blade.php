@@ -248,10 +248,9 @@
                     <div>
                         <h4 class="font-bold text-sm mb-4 uppercase">Quick Links</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="#" class="link link-hover">About Us</a></li>
-                            <li><a href="#" class="link link-hover">How It Works</a></li>
-                            <li><a href="#" class="link link-hover">Browse Tasks</a></li>
-                            <li><a href="#" class="link link-hover">Pricing</a></li>
+                            <li><a href="{{ route('public.how-it-works') }}" class="link link-hover">How It Works</a></li>
+                            <li><a href="{{ route('public.earn-money') }}" class="link link-hover">Earn Money</a></li>
+                            <li><a href="{{ route('public.learn') }}" class="link link-hover">Learn</a></li>
                         </ul>
                     </div>
 
@@ -259,10 +258,10 @@
                     <div>
                         <h4 class="font-bold text-sm mb-4 uppercase">Support</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="#" class="link link-hover">Help Center</a></li>
-                            <li><a href="#" class="link link-hover">Contact Us</a></li>
-                            <li><a href="#" class="link link-hover">FAQ</a></li>
-                            <li><a href="#" class="link link-hover">Community</a></li>
+                            <li><a href="{{ route('public.help-center') }}" class="link link-hover">Help Center</a></li>
+                            <li><a href="{{ route('public.contact') }}" class="link link-hover">Contact Us</a></li>
+                            <li><a href="{{ route('public.faq') }}" class="link link-hover">FAQ</a></li>
+                            <li><a href="{{ route('public.community') }}" class="link link-hover">Community</a></li>
                         </ul>
                     </div>
 
@@ -270,10 +269,10 @@
                     <div>
                         <h4 class="font-bold text-sm mb-4 uppercase">Legal</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="#" class="link link-hover">Privacy Policy</a></li>
-                            <li><a href="#" class="link link-hover">Terms of Service</a></li>
-                            <li><a href="#" class="link link-hover">Cookie Policy</a></li>
-                            <li><a href="#" class="link link-hover">Disclaimer</a></li>
+                            <li><a href="{{ route('public.privacy-policy') }}" class="link link-hover">Privacy Policy</a></li>
+                            <li><a href="{{ route('public.terms') }}" class="link link-hover">Terms of Service</a></li>
+                            <li><a href="{{ route('public.cookie-policy') }}" class="link link-hover">Cookie Policy</a></li>
+                            <li><a href="{{ route('public.disclaimer') }}" class="link link-hover">Disclaimer</a></li>
                         </ul>
                     </div>
                 </div>
@@ -286,7 +285,7 @@
                             <span class="icon-[tabler--mail] size-6 text-primary mt-1"></span>
                             <div>
                                 <p class="text-xs text-base-content/60 mb-1">Email</p>
-                                <p class="font-semibold text-sm">support@flyon.com</p>
+                                <p class="font-semibold text-sm">support@jobtrackingsys.com</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">

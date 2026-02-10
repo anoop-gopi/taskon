@@ -6,11 +6,11 @@
         <h1 class="text-5xl font-bold mb-6">Join the Decentralized Workforce Today</h1>
         <p class="text-lg text-white/90 mb-6">Access thousands of data entry project, and gig opportunities from vetted employers.</p>
         <div class="flex gap-4">
-          <button class="btn btn-lg btn-secondary gap-2">
+          <button class="btn btn-lg btn-primary gap-2 border-2 border-white">
             <span class="icon-[tabler--rocket] size-6"></span>
             Get Started
           </button>
-          <button class="btn btn-lg btn-outline border-white hover:bg-white/20">
+          <button class="btn btn-lg btn-secondary border-2 border-secondary">
             Learn More
           </button>
         </div>
