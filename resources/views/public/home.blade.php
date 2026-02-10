@@ -1,6 +1,6 @@
 <x-public-layout>
   <!-- Hero Section -->
-  <section class="hero bg-primary text-white py-20">
+  <section class="hero bg-primary text-white">
     <div class="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
       <div>
         <h1 class="text-5xl font-bold mb-6">Join the Decentralized Workforce Today</h1>
@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="flex justify-center">
-        <div class="bg-white/10 rounded-2xl py-2 px-2 backdrop-blur w-[40%] max-w-xl">
+        <div class="w-full max-w-2xl">
           <img src="{{ asset('assets/img/header_img.png') }}" alt="Header image" class="w-full h-auto object-contain" />
         </div>
       </div>
