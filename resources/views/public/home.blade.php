@@ -117,6 +117,36 @@
     </div>
   </section>
 
+  <!-- Video Section -->
+  <section class="py-16 bg-base-200">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-4">Video Tutorials</h2>
+        <p class="text-xl text-base-content/70">Watch how to get started and learn from success stories</p>
+      </div>
+
+      @php
+        $video = \App\Models\Video::where('is_active', true)->orderBy('display_order')->first();
+      @endphp
+
+      @if($video)
+        <div class="flex items-center justify-center">
+          <div class="w-full bg-black/10 rounded-lg overflow-hidden shadow-lg" style="height: 500px;">
+            <iframe
+              src="{{ $video->embed_url }}"
+              width="100%"
+              height="100%"
+              style="border:0;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+        </div>
+      @endif
+    </div>
+  </section>
+
   <!-- Steps to Earn Section -->
   <section id="how-it-works" class="py-16 bg-base-100">
     <div class="container mx-auto px-4">
@@ -186,57 +216,29 @@
         <p class="text-xl text-base-content/70">Join thousands of happy earners</p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-8">
-        @forelse($testimonials->take(3) as $testimonial)
-        <div class="card bg-base-100 shadow-lg">
-          <div class="card-body">
-            <div class="flex gap-1 mb-4">
-              @for($i = 1; $i <= 5; $i++)
-                <span class="icon-[tabler--star-filled] size-5 {{ $i <= $testimonial->stars ? 'text-yellow-400' : 'text-gray-300' }}"></span>
-              @endfor
-            </div>
-            <p class="mb-4">"{{ $testimonial->feedback }}"</p>
-            <div class="flex items-center gap-3">
-              <div class="avatar placeholder">
-                @if($testimonial->photo === 'default_profile_pic.jpg')
-                  <div class="bg-primary text-white rounded-full w-10">
-                    <span>{{ strtoupper(substr($testimonial->customer_name, 0, 2)) }}</span>
-                  </div>
-                @else
-                  <div class="w-10 rounded-full">
-                    <img src="{{ asset('storage/' . $testimonial->photo) }}" alt="{{ $testimonial->customer_name }}" />
-                  </div>
-                @endif
-              </div>
-              <div>
-                <p class="font-semibold">{{ $testimonial->customer_name }}</p>
-                <p class="text-sm text-base-content/60">{{ $testimonial->job_title }}</p>
-              </div>
-            </div>
+      @php
+        $videoTestimonials = \App\Models\Video::where('is_active', true)->orderBy('display_order')->limit(2)->get();
+      @endphp
+
+      <div class="grid md:grid-cols-2 gap-8">
+        @forelse($videoTestimonials as $video)
+        <div class="card bg-base-100 shadow-lg overflow-hidden">
+          <div class="bg-black/10 flex items-center justify-center" style="height: 350px;">
+            <iframe
+              src="{{ $video->embed_url }}"
+              width="100%"
+              height="100%"
+              style="border:0;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
           </div>
         </div>
         @empty
         <div class="card bg-base-100 shadow-lg">
-          <div class="card-body">
-            <div class="flex gap-1 mb-4">
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-              <span class="icon-[tabler--star-filled] size-5 text-yellow-400"></span>
-            </div>
-            <p class="mb-4">"Flyon has completely changed my life! I was able to make substantial income while working from home in my spare time."</p>
-            <div class="flex items-center gap-3">
-              <div class="avatar placeholder">
-                <div class="bg-primary text-white rounded-full w-10">
-                  <span>JD</span>
-                </div>
-              </div>
-              <div>
-                <p class="font-semibold">John Doe</p>
-                <p class="text-sm text-base-content/60">Freelance Writer</p>
-              </div>
-            </div>
+          <div class="card-body text-center">
+            <p class="text-base-content/70">Video testimonials will be available soon. Check back later!</p>
           </div>
         </div>
         @endforelse

@@ -32,6 +32,10 @@
         <span class="icon-[tabler--wallet] size-5"></span>
         <span>Finance</span>
       </a>
+      <a href="{{ route('admin.videos') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+        <span class="icon-[tabler--video] size-5"></span>
+        <span>Videos</span>
+      </a>
       <a href="#settings" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--settings] size-5"></span>
         <span>Settings</span>
@@ -366,25 +370,21 @@
     
     if (confirm('Are you sure you want to logout?')) {
       try {
-        const response = await fetch('{{ route("auth.logout") }}', {
+        const response = await fetch('{{ route("admin.logout") }}', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
           },
+          credentials: 'same-origin',
         });
         
-        const data = await response.json();
-        
-        if (data.success) {
-          alert('Logged out successfully!');
-          window.location.href = '{{ route("admin.login") }}';
-        } else {
-          alert('Logout failed');
-        }
+        // Redirect regardless of response since admin.logout redirects
+        window.location.href = '{{ route("admin.login") }}';
       } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred. Please try again.');
+        // Still redirect on error
+        window.location.href = '{{ route("admin.login") }}';
       }
     }
   }

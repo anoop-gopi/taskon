@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\VideoController;
 
 // Admin Auth Routes
 Route::get('/admin', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
@@ -601,7 +602,15 @@ Route::delete('/admin/testimonials/{id}', function ($id) {
     return redirect()->route('admin.testimonials')->with('success', 'Testimonial deleted successfully!');
 })->name('admin.testimonials.destroy');
 
-Route::get('/admin/approvals', function () {
+    // Video Management Routes
+    Route::get('/admin/videos', [VideoController::class, 'index'])->name('admin.videos');
+    Route::get('/admin/videos/create', [VideoController::class, 'create'])->name('admin.videos.create');
+    Route::post('/admin/videos', [VideoController::class, 'store'])->name('admin.videos.store');
+    Route::get('/admin/videos/{id}/edit', [VideoController::class, 'edit'])->name('admin.videos.edit');
+    Route::put('/admin/videos/{id}', [VideoController::class, 'update'])->name('admin.videos.update');
+    Route::delete('/admin/videos/{id}', [VideoController::class, 'destroy'])->name('admin.videos.destroy');
+
+    Route::get('/admin/approvals', function () {
     return view('admin.approvals.index');
 })->name('admin.approvals');
 
