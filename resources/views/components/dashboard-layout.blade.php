@@ -193,6 +193,12 @@
                                 <span class="font-semibold">Tasks</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('dashboard.earnings') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.earnings') ? 'bg-primary text-white' : 'text-base-content' }}">
+                                <span class="icon-[tabler--wallet] size-5"></span>
+                                <span class="font-semibold">Earnings</span>
+                            </a>
+                        </li>
                         {{-- Temporarily hidden
                         <li>
                             <a href="{{ route('dashboard.earnings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.earnings') ? 'bg-primary text-white' : 'text-base-content' }}">
@@ -222,13 +228,15 @@
 
             <!-- Mobile Sidebar Toggle -->
             <div class="md:hidden fixed bottom-4 right-4 z-40">
-                <button class="btn btn-circle btn-primary" onclick="document.getElementById('mobile_sidebar').classList.toggle('hidden')">
+                <button class="btn btn-circle btn-primary" onclick="toggleMobileSidebar()">
                     <span class="icon-[tabler--menu-2] size-6"></span>
                 </button>
             </div>
 
+            <!-- Mobile Sidebar Backdrop -->
+            <div id="mobile_sidebar_backdrop" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden" onclick="toggleMobileSidebar()"></div>
+            
             <!-- Mobile Sidebar -->
-            <div id="mobile_sidebar" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden" onclick="document.getElementById('mobile_sidebar').classList.add('hidden')"></div>
             <div id="mobile_sidebar" class="hidden fixed left-0 top-0 h-screen w-64 bg-base-200 shadow-lg z-40 md:hidden flex flex-col">
                 <nav class="flex-1 px-4 py-6 overflow-y-auto">
                     <ul class="space-y-2">
@@ -243,6 +251,10 @@
                         <li><a href="{{ route('dashboard.tasks') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
                             <span class="icon-[tabler--clipboard-list] size-5"></span>
                             <span class="font-semibold">Tasks</span>
+                        </a></li>
+                        <li><a href="{{ route('dashboard.earnings') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                            <span class="icon-[tabler--wallet] size-5"></span>
+                            <span class="font-semibold">Earnings</span>
                         </a></li>
                         {{-- Temporarily hidden
                         <li><a href="{{ route('dashboard.earnings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
@@ -279,7 +291,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="bg-base-200 text-base-content pt-12 pb-6">
+        <footer class="bg-base-200 text-base-content pt-12 pb-6 mt-20">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <!-- Company Info -->
@@ -308,10 +320,9 @@
                     <div>
                         <h4 class="font-bold text-sm mb-4 uppercase">Quick Links</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="#" class="link link-hover">About Us</a></li>
-                            <li><a href="#" class="link link-hover">How It Works</a></li>
-                            <li><a href="#" class="link link-hover">Browse Tasks</a></li>
-                            <li><a href="#" class="link link-hover">Pricing</a></li>
+                            <li><a href="{{ route('public.how-it-works') }}" class="link link-hover">How It Works</a></li>
+                            <li><a href="{{ route('public.earn-money') }}" class="link link-hover">Earn Money</a></li>
+                            <li><a href="{{ route('public.learn') }}" class="link link-hover">Learn</a></li>
                         </ul>
                     </div>
 
@@ -319,10 +330,10 @@
                     <div>
                         <h4 class="font-bold text-sm mb-4 uppercase">Support</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="#" class="link link-hover">Help Center</a></li>
-                            <li><a href="#" class="link link-hover">Contact Us</a></li>
-                            <li><a href="#" class="link link-hover">FAQ</a></li>
-                            <li><a href="#" class="link link-hover">Community</a></li>
+                            <li><a href="{{ route('public.help-center') }}" class="link link-hover">Help Center</a></li>
+                            <li><a href="{{ route('public.contact') }}" class="link link-hover">Contact Us</a></li>
+                            <li><a href="{{ route('public.faq') }}" class="link link-hover">FAQ</a></li>
+                            <li><a href="{{ route('public.community') }}" class="link link-hover">Community</a></li>
                         </ul>
                     </div>
 
@@ -330,10 +341,10 @@
                     <div>
                         <h4 class="font-bold text-sm mb-4 uppercase">Legal</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="#" class="link link-hover">Privacy Policy</a></li>
-                            <li><a href="#" class="link link-hover">Terms of Service</a></li>
-                            <li><a href="#" class="link link-hover">Cookie Policy</a></li>
-                            <li><a href="#" class="link link-hover">Disclaimer</a></li>
+                            <li><a href="{{ route('public.privacy-policy') }}" class="link link-hover">Privacy Policy</a></li>
+                            <li><a href="{{ route('public.terms') }}" class="link link-hover">Terms of Service</a></li>
+                            <li><a href="{{ route('public.cookie-policy') }}" class="link link-hover">Cookie Policy</a></li>
+                            <li><a href="{{ route('public.disclaimer') }}" class="link link-hover">Disclaimer</a></li>
                         </ul>
                     </div>
                 </div>
@@ -346,7 +357,7 @@
                             <span class="icon-[tabler--mail] size-6 text-primary mt-1"></span>
                             <div>
                                 <p class="text-xs text-base-content/60 mb-1">Email</p>
-                                <p class="font-semibold text-sm">support@Jobtrackingsys.com</p>
+                                <p class="font-semibold text-sm">support@jobtrackingsys.com</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
@@ -367,8 +378,8 @@
                 </div>
 
                 <!-- Bottom Footer -->
-                <div class="border-t border-base-300 pt-6 mt-8 flex flex-col md:flex-row justify-between items-center text-sm text-base-content/70">
-                    <p>&copy; 2026 Jobtrackingsys. All rights reserved.</p>
+                <div class="border-t border-base-300 pt-6 mt-8 text-center text-sm text-base-content/60">
+                    <p>&copy; {{ date('Y') }} Jobtrackingsys. All rights reserved.</p>
                 </div>
             </div>
         </footer>
@@ -377,6 +388,14 @@
         <div id="toast_container" class="toast-container"></div>
 
         <script>
+            // Toggle mobile sidebar
+            function toggleMobileSidebar() {
+                const sidebar = document.getElementById('mobile_sidebar');
+                const backdrop = document.getElementById('mobile_sidebar_backdrop');
+                sidebar.classList.toggle('hidden');
+                backdrop.classList.toggle('hidden');
+            }
+
             // Check session before navigating to dashboard pages
             // This allows the browser to navigate, but we show a message if session is expired
             async function checkSessionBeforeNavigate(event) {

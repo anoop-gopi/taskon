@@ -130,9 +130,31 @@ Route::middleware(['auth'])->group(function () {
             $tasks = $tasks->take(1);
         }
         
+        // Get user's completed tasks with status
+        $completedTasksMap = \App\Models\TaskCompleted::where('user_id', $user->id)
+            ->with('taskStatus')
+            ->get()
+            ->keyBy('task_id');
+        
+        // Add completion status to each task
+        $tasks = $tasks->map(function($task) use ($completedTasksMap) {
+            $completed = $completedTasksMap->get($task->id);
+            $task->completion_status = $completed ? $completed->taskStatus->name : null;
+            return $task;
+        });
+        
+        // Get user earnings statistics
+        $totalEarnings = \App\Models\UserEarning::where('user_id', $user->id)
+            ->sum('earning');
+        
+        $completedTasks = \App\Models\UserEarning::where('user_id', $user->id)
+            ->count();
+        
         return view('dashboard.home', [
             'tasks' => $tasks,
             'userCategory' => $user->category,
+            'totalEarnings' => $totalEarnings,
+            'completedTasks' => $completedTasks,
         ]);
     })->name('dashboard.home');
 
@@ -376,8 +398,75 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
         
-        return view('dashboard.earnings');
+        $totalEarnings = \App\Models\UserEarning::where('user_id', $user->id)
+            ->sum('earning');
+
+        $approvedWithdrawals = \App\Models\WithdrawalRequest::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->sum('amount');
+
+        $currentBalance = max($totalEarnings - $approvedWithdrawals, 0);
+
+        $withdrawals = \App\Models\WithdrawalRequest::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        $hasPendingWithdrawal = \App\Models\WithdrawalRequest::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->exists();
+
+        return view('dashboard.earnings', [
+            'totalEarnings' => $totalEarnings,
+            'approvedWithdrawals' => $approvedWithdrawals,
+            'currentBalance' => $currentBalance,
+            'withdrawals' => $withdrawals,
+            'hasPendingWithdrawal' => $hasPendingWithdrawal,
+        ]);
     })->name('dashboard.earnings');
+
+    Route::post('/dashboard/earnings/withdraw', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        $totalEarnings = \App\Models\UserEarning::where('user_id', $user->id)
+            ->sum('earning');
+
+        $approvedWithdrawals = \App\Models\WithdrawalRequest::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->sum('amount');
+
+        $currentBalance = max($totalEarnings - $approvedWithdrawals, 0);
+
+        $hasPendingWithdrawal = \App\Models\WithdrawalRequest::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($hasPendingWithdrawal) {
+            return redirect()->route('dashboard.earnings')
+                ->with('error', 'You already have a pending withdrawal. Please wait for it to be processed before requesting another.');
+        }
+
+        if ($validated['amount'] > $currentBalance) {
+            return redirect()->route('dashboard.earnings')
+                ->with('error', 'Insufficient balance for this withdrawal amount.');
+        }
+
+        \App\Models\WithdrawalRequest::create([
+            'user_id' => $user->id,
+            'amount' => $validated['amount'],
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('dashboard.earnings')
+            ->with('success', 'Withdrawal request submitted successfully.');
+    })->name('dashboard.earnings.withdraw');
 
     Route::get('/dashboard/activity', function () {
         $user = auth()->user();
@@ -524,8 +613,36 @@ Route::get('/admin/tasks/{id}', function ($id) {
 })->name('admin.task.show');
 
 Route::get('/admin/finance', function () {
-    return view('admin.finance.index');
+    $requests = \App\Models\WithdrawalRequest::with('user')
+        ->orderBy('created_at', 'desc')
+        ->paginate(15);
+
+    return view('admin.finance.index', [
+        'requests' => $requests,
+    ]);
 })->name('admin.finance');
+
+Route::post('/admin/finance/{id}/approve', function ($id) {
+    $request = \App\Models\WithdrawalRequest::findOrFail($id);
+
+    $request->update([
+        'status' => 'approved',
+        'processed_at' => now(),
+    ]);
+
+    return redirect()->route('admin.finance')->with('success', 'Withdrawal request approved.');
+})->name('admin.finance.approve');
+
+Route::post('/admin/finance/{id}/reject', function ($id) {
+    $request = \App\Models\WithdrawalRequest::findOrFail($id);
+
+    $request->update([
+        'status' => 'rejected',
+        'processed_at' => now(),
+    ]);
+
+    return redirect()->route('admin.finance')->with('success', 'Withdrawal request rejected.');
+})->name('admin.finance.reject');
 
 Route::get('/admin/testimonials', function () {
     $testimonials = \App\Models\Testimonial::orderBy('created_at', 'desc')->get();

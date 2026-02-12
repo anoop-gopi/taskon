@@ -62,6 +62,11 @@ class User extends Authenticatable
         return $this->hasMany(UserEarning::class);
     }
 
+    public function withdrawalRequests(): HasMany
+    {
+        return $this->hasMany(WithdrawalRequest::class);
+    }
+
     public function userStatus(): BelongsTo
     {
         return $this->belongsTo(UserStatus::class, 'status_id');

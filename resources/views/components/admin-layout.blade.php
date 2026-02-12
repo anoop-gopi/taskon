@@ -36,7 +36,7 @@
       </a>
       <a href="{{ route('admin.finance') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.finance*') ? 'bg-primary text-white' : 'hover:bg-primary/10 text-base-content' }} transition">
         <span class="icon-[tabler--wallet] size-5"></span>
-        <span>Finance</span>
+        <span>Payment Requests</span>
       </a>
       <a href="{{ route('admin.testimonials') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.testimonials*') ? 'bg-primary text-white' : 'hover:bg-primary/10 text-base-content' }} transition">
         <span class="icon-[tabler--message-star] size-5"></span>

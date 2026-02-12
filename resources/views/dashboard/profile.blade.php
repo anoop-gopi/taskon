@@ -55,19 +55,6 @@
               </div>
               <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
               <p class="text-base-content/70 text-sm">{{ $user->category->name }} Member</p>
-              <div class="mt-6 pt-6 border-t border-base-300">
-                <div class="flex justify-center gap-4">
-                  <div class="text-center">
-                    <p class="text-2xl font-bold text-primary">24</p>
-                    <p class="text-xs text-base-content/60">Tasks Completed</p>
-                  </div>
-                  <div class="text-center">
-                    <p class="text-2xl font-bold text-primary">4.8</p>
-                    <p class="text-xs text-base-content/60">Rating</p>
-                  </div>
-                </div>
-              </div>
-              <button class="btn btn-primary w-full mt-6">Edit Profile Picture</button>
             </div>
           </div>
         </div>

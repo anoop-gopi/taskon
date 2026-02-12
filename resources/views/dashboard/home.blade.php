@@ -20,34 +20,14 @@
   <!-- Stats Section -->
   <section class="py-12 bg-base-100">
     <div class="container mx-auto px-4">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="card bg-base-100 shadow-lg border border-primary/20">
-          <div class="card-body">
-            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-              <span class="icon-[tabler--clipboard-check] size-6 text-primary"></span>
-            </div>
-            <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Active Tasks</p>
-            <p class="text-3xl font-bold mt-2">3</p>
-          </div>
-        </div>
-
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
         <div class="card bg-base-100 shadow-lg border border-primary/20">
           <div class="card-body">
             <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <span class="icon-[tabler--wallet] size-6 text-primary"></span>
             </div>
             <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Total Earnings</p>
-            <p class="text-3xl font-bold mt-2">$2,450</p>
-          </div>
-        </div>
-
-        <div class="card bg-base-100 shadow-lg border border-primary/20">
-          <div class="card-body">
-            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-              <span class="icon-[tabler--star] size-6 text-primary"></span>
-            </div>
-            <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Rating</p>
-            <p class="text-3xl font-bold mt-2">4.8/5</p>
+            <p class="text-3xl font-bold mt-2">${{ number_format($totalEarnings, 2) }}</p>
           </div>
         </div>
 
@@ -56,8 +36,8 @@
             <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <span class="icon-[tabler--check] size-6 text-primary"></span>
             </div>
-            <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Completed</p>
-            <p class="text-3xl font-bold mt-2">24</p>
+            <p class="text-xs text-base-content/60 uppercase tracking-wide font-semibold">Completed Tasks</p>
+            <p class="text-3xl font-bold mt-2">{{ $completedTasks }}</p>
           </div>
         </div>
       </div>
@@ -119,7 +99,23 @@
                 <p class="text-xs text-base-content/60">Earnings</p>
                 <p class="text-xl font-bold text-primary">${{ number_format($task->earning, 2) }}</p>
               </div>
-              <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-sm btn-primary">Start Task</a>
+              @if($task->completion_status)
+                @if($task->completion_status === 'Pending')
+                  <span class="badge badge-warning gap-1">
+                    <span class="icon-[tabler--clock] size-4"></span>
+                    Awaiting Approval
+                  </span>
+                @elseif($task->completion_status === 'Accepted')
+                  <span class="badge badge-success gap-1">
+                    <span class="icon-[tabler--check] size-4"></span>
+                    Completed
+                  </span>
+                @elseif($task->completion_status === 'Rejected')
+                  <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-sm btn-error">Resubmit</a>
+                @endif
+              @else
+                <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-sm btn-primary">Start Task</a>
+              @endif
             </div>
           </div>
         </div>
