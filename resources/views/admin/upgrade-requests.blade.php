@@ -101,33 +101,13 @@
                       </td>
                       <td>
                         @if($request->payment_screenshot)
-                          <button 
-                            onclick="document.getElementById('viewScreenshot{{ $request->id }}').showModal()" 
-                            class="btn btn-sm btn-ghost gap-2"
+                          <label 
+                            for="viewScreenshot{{ $request->id }}"
+                            class="btn btn-sm btn-ghost gap-2 cursor-pointer"
                           >
                             <span class="icon-[tabler--photo] size-4"></span>
                             View
-                          </button>
-
-                          <!-- Screenshot Modal -->
-                          <dialog id="viewScreenshot{{ $request->id }}" class="modal">
-                            <div class="modal-box w-11/12 max-w-3xl">
-                              <h3 class="font-bold text-lg mb-4">Payment Screenshot</h3>
-                              <img 
-                                src="{{ asset('storage/' . $request->payment_screenshot) }}" 
-                                alt="Payment Screenshot"
-                                class="w-full rounded-lg"
-                              />
-                              <div class="modal-action">
-                                <form method="dialog">
-                                  <button class="btn">Close</button>
-                                </form>
-                              </div>
-                            </div>
-                            <form method="dialog" class="modal-backdrop">
-                              <button>close</button>
-                            </form>
-                          </dialog>
+                          </label>
                         @else
                           <span class="text-base-content/40 text-sm">No screenshot</span>
                         @endif
@@ -164,107 +144,30 @@
                       <td>
                         @if($request->status == 'pending_approval')
                           <div class="flex gap-2">
-                            <button 
-                              onclick="document.getElementById('approveModal{{ $request->id }}').showModal()" 
-                              class="btn btn-sm btn-success gap-2"
+                            <label 
+                              for="approveModal{{ $request->id }}"
+                              class="btn btn-sm btn-success gap-2 cursor-pointer"
                             >
                               <span class="icon-[tabler--check] size-4"></span>
                               Approve
-                            </button>
-                            <button 
-                              onclick="document.getElementById('rejectModal{{ $request->id }}').showModal()" 
-                              class="btn btn-sm btn-error gap-2"
+                            </label>
+                            <label 
+                              for="rejectModal{{ $request->id }}"
+                              class="btn btn-sm btn-error gap-2 cursor-pointer"
                             >
                               <span class="icon-[tabler--x] size-4"></span>
                               Reject
-                            </button>
+                            </label>
                           </div>
-
-                          <!-- Approve Modal -->
-                          <dialog id="approveModal{{ $request->id }}" class="modal">
-                            <div class="modal-box">
-                              <h3 class="font-bold text-lg mb-4">Approve Upgrade Request</h3>
-                              <p class="mb-4">Are you sure you want to approve this upgrade request?</p>
-                              <div class="bg-base-200 p-4 rounded-lg mb-4">
-                                <p class="text-sm"><strong>User:</strong> {{ $request->user->name }}</p>
-                                <p class="text-sm"><strong>Upgrade:</strong> {{ $request->fromCategory->name }} → {{ $request->toCategory->name }}</p>
-                                <p class="text-sm"><strong>Amount:</strong> ${{ number_format($request->amount, 0) }}</p>
-                              </div>
-                              <form action="{{ route('admin.upgrade-requests.approve', $request->id) }}" method="POST">
-                                @csrf
-                                <div class="form-control mb-4">
-                                  <label class="label">
-                                    <span class="label-text">Admin Notes (Optional)</span>
-                                  </label>
-                                  <textarea 
-                                    name="admin_notes" 
-                                    class="textarea textarea-bordered" 
-                                    placeholder="Add any notes..."
-                                  ></textarea>
-                                </div>
-                                <div class="modal-action">
-                                  <button type="button" onclick="document.getElementById('approveModal{{ $request->id }}').close()" class="btn btn-ghost">Cancel</button>
-                                  <button type="submit" class="btn btn-success gap-2">
-                                    <span class="icon-[tabler--check] size-4"></span>
-                                    Confirm Approval
-                                  </button>
-                                </div>
-                              </form>
-                            </div>
-                          </dialog>
-
-                          <!-- Reject Modal -->
-                          <dialog id="rejectModal{{ $request->id }}" class="modal">
-                            <div class="modal-box">
-                              <h3 class="font-bold text-lg mb-4">Reject Upgrade Request</h3>
-                              <p class="mb-4">Please provide a reason for rejecting this request:</p>
-                              <form action="{{ route('admin.upgrade-requests.reject', $request->id) }}" method="POST">
-                                @csrf
-                                <div class="form-control mb-4">
-                                  <label class="label">
-                                    <span class="label-text">Rejection Reason</span>
-                                  </label>
-                                  <textarea 
-                                    name="admin_notes" 
-                                    class="textarea textarea-bordered" 
-                                    placeholder="E.g., Invalid payment screenshot, payment not received..."
-                                    required
-                                  ></textarea>
-                                </div>
-                                <div class="modal-action">
-                                  <button type="button" onclick="document.getElementById('rejectModal{{ $request->id }}').close()" class="btn btn-ghost">Cancel</button>
-                                  <button type="submit" class="btn btn-error gap-2">
-                                    <span class="icon-[tabler--x] size-4"></span>
-                                    Confirm Rejection
-                                  </button>
-                                </div>
-                              </form>
-                            </div>
-                          </dialog>
                         @elseif($request->status == 'approved' || $request->status == 'rejected')
                           @if($request->admin_notes)
-                            <button 
-                              onclick="document.getElementById('notesModal{{ $request->id }}').showModal()" 
-                              class="btn btn-sm btn-ghost gap-2"
+                            <label 
+                              for="notesModal{{ $request->id }}"
+                              class="btn btn-sm btn-ghost gap-2 cursor-pointer"
                             >
                               <span class="icon-[tabler--notes] size-4"></span>
                               View Notes
-                            </button>
-
-                            <!-- Notes Modal -->
-                            <dialog id="notesModal{{ $request->id }}" class="modal">
-                              <div class="modal-box">
-                                <h3 class="font-bold text-lg mb-4">Admin Notes</h3>
-                                <div class="bg-base-200 p-4 rounded-lg">
-                                  <p class="text-sm">{{ $request->admin_notes }}</p>
-                                </div>
-                                <div class="modal-action">
-                                  <form method="dialog">
-                                    <button class="btn">Close</button>
-                                  </form>
-                                </div>
-                              </div>
-                            </dialog>
+                            </label>
                           @else
                             <span class="text-base-content/40 text-sm">No actions</span>
                           @endif
@@ -287,4 +190,171 @@
       </div>
     </div>
   </section>
+
+  <!-- Dialogs Container - Outside Table -->
+  <div id="dialogs-container">
+    @foreach($requests as $request)
+      <!-- Screenshot Modal - Checkbox based -->
+      @if($request->payment_screenshot)
+        <input type="checkbox" id="viewScreenshot{{ $request->id }}" class="modal-toggle" />
+        <div class="modal" role="dialog">
+          <div class="modal-box w-11/12 max-w-3xl">
+            <h3 class="font-bold text-lg mb-4">Payment Screenshot</h3>
+            <img 
+              src="{{ asset('storage/' . $request->payment_screenshot) }}" 
+              alt="Payment Screenshot"
+              class="w-full rounded-lg"
+            />
+            <div class="modal-action">
+              <label for="viewScreenshot{{ $request->id }}" class="btn">Close</label>
+            </div>
+          </div>
+          <label class="modal-backdrop" for="viewScreenshot{{ $request->id }}"></label>
+        </div>
+      @endif
+
+      <!-- Approve Modal -->
+      <input type="checkbox" id="approveModal{{ $request->id }}" class="modal-toggle" />
+      <div class="modal" role="dialog">
+        <div class="modal-box">
+          <label for="approveModal{{ $request->id }}" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</label>
+          <h3 class="font-bold text-lg mb-4">Approve Upgrade Request</h3>
+          <p class="mb-4">Are you sure you want to approve this upgrade request?</p>
+          <div class="bg-base-200 p-4 rounded-lg mb-4">
+            <p class="text-sm"><strong>User:</strong> {{ $request->user->name }}</p>
+            <p class="text-sm"><strong>Upgrade:</strong> {{ $request->fromCategory->name }} → {{ $request->toCategory->name }}</p>
+            <p class="text-sm"><strong>Amount:</strong> ${{ number_format($request->amount, 0) }}</p>
+          </div>
+          <form action="{{ route('admin.upgrade-requests.approve', $request->id) }}" method="POST">
+            @csrf
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Admin Notes (Optional)</span>
+              </label>
+              <textarea 
+                name="admin_notes" 
+                class="textarea textarea-bordered" 
+                placeholder="Add any notes..."
+              ></textarea>
+            </div>
+            <div class="modal-action">
+              <label for="approveModal{{ $request->id }}" class="btn btn-ghost">Cancel</label>
+              <button type="submit" class="btn btn-success gap-2">
+                <span class="icon-[tabler--check] size-4"></span>
+                Confirm Approval
+              </button>
+            </div>
+          </form>
+        </div>
+        <label class="modal-backdrop" for="approveModal{{ $request->id }}"></label>
+      </div>
+
+      <!-- Reject Modal -->
+      <input type="checkbox" id="rejectModal{{ $request->id }}" class="modal-toggle" />
+      <div class="modal" role="dialog">
+        <div class="modal-box">
+          <label for="rejectModal{{ $request->id }}" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</label>
+          <h3 class="font-bold text-lg mb-4">Reject Upgrade Request</h3>
+          <p class="mb-4">Please provide a reason for rejecting this request:</p>
+          <form action="{{ route('admin.upgrade-requests.reject', $request->id) }}" method="POST">
+            @csrf
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Rejection Reason</span>
+              </label>
+              <textarea 
+                name="admin_notes" 
+                class="textarea textarea-bordered" 
+                placeholder="E.g., Invalid payment screenshot, payment not received..."
+              ></textarea>
+            </div>
+            <div class="modal-action">
+              <label for="rejectModal{{ $request->id }}" class="btn btn-ghost">Cancel</label>
+              <button type="submit" class="btn btn-error gap-2">
+                <span class="icon-[tabler--x] size-4"></span>
+                Confirm Rejection
+              </button>
+            </div>
+          </form>
+        </div>
+        <label class="modal-backdrop" for="rejectModal{{ $request->id }}"></label>
+      </div>
+
+      <!-- Notes Modal -->
+      @if($request->admin_notes)
+        <input type="checkbox" id="notesModal{{ $request->id }}" class="modal-toggle" />
+        <div class="modal" role="dialog">
+          <div class="modal-box">
+            <label for="notesModal{{ $request->id }}" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</label>
+            <h3 class="font-bold text-lg mb-4">Admin Notes</h3>
+            <div class="bg-base-200 p-4 rounded-lg">
+              <p class="text-sm">{{ $request->admin_notes }}</p>
+            </div>
+            <div class="modal-action">
+              <label for="notesModal{{ $request->id }}" class="btn">Close</label>
+            </div>
+          </div>
+          <label class="modal-backdrop" for="notesModal{{ $request->id }}"></label>
+        </div>
+      @endif
+    @endforeach
+  </div>
+
+  <style>
+    /* Ensure modals show when checkbox is checked - use adjacent sibling combinator */
+    .modal-toggle:checked + .modal {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        position: fixed;
+        inset: 0;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    /* Modal box with solid background */
+    .modal-box {
+        background-color: white !important;
+        border-radius: 0.5rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        max-width: 512px;
+        width: 90vw;
+        padding: 1.5rem;
+        position: relative;
+        z-index: 1000;
+    }
+    
+    /* Ensure modal box is centered and visible */
+    .modal-toggle:checked + .modal .modal-box {
+        position: relative;
+        z-index: 1000;
+    }
+    
+    /* Backdrop styling */
+    .modal-backdrop {
+        background-color: transparent;
+    }
+  </style>
+
+  <script>
+    // Add event listeners to all checkboxes for debugging
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkboxes = document.querySelectorAll('.modal-toggle');
+      console.log('Modal toggle checkboxes found:', checkboxes.length);
+      
+      // Add change listeners to ALL checkboxes
+      checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+          console.log('Checkbox ' + this.id + ' changed to:', this.checked);
+        });
+      });
+      
+      // Log all modal divs
+      const modals = document.querySelectorAll('.modal');
+      console.log('Modal divs found:', modals.length);
+    });
+  </script>
 </x-admin-layout>

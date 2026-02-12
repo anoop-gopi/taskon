@@ -827,4 +827,5 @@ Route::post('/admin/upgrade-requests/{id}/reject', function (\Illuminate\Http\Re
     
     return redirect()->route('admin.upgrade-requests', ['status' => 'rejected'])
         ->with('success', 'Upgrade request rejected.');
-})->name('admin.upgrade-requests.reject');});
+})->name('admin.upgrade-requests.reject');
+});

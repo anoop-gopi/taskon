@@ -10,3 +10,25 @@
     themes: all;
 }
 @import "./../../node_modules/flyonui/variants.css";
+
+/* Hide modal toggle checkboxes but keep them functional */
+.modal-toggle {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* Ensure dialogs container doesn't constrain modals */
+#dialogs-container {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+}
+
+/* Explicit modal styling to ensure visibility */
+.modal-toggle:checked ~ .modal {
+    pointer-events: auto;
+}

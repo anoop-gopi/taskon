@@ -26,7 +26,7 @@
           <thead>
             <tr>
               <th>User Email</th>
-              <th>Task ID/Name</th>
+              <th>Task Name</th>
               <th>Completion Date</th>
               <th>Amount</th>
               <th>Action</th>
@@ -46,10 +46,7 @@
                   </div>
                 </td>
                 <td>
-                  <div>
-                    <p class="font-semibold text-primary">{{ $approval['task_id'] }}</p>
-                    <p class="text-base-content/60 text-sm">{{ $approval['task_name'] }}</p>
-                  </div>
+                  <span class="text-sm font-semibold">{{ $approval['task_name'] }}</span>
                 </td>
                 <td>
                   <div class="text-sm">
