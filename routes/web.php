@@ -541,7 +541,85 @@ Route::middleware(['auth', 'admin'])->group(function () {
             return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
         }
         
-        return view('admin.dashboard');
+        // Get stats for dashboard
+        $totalUsers = \App\Models\User::where('is_admin', false)->count();
+        
+        $totalRevenue = \App\Models\UpgradeRequest::where('status', 'approved')
+            ->sum('amount');
+        
+        $totalTasks = \App\Models\Task::count();
+        
+        $userEarnings = \App\Models\UserEarning::sum('earning');
+        
+        // Get recent activity (new users, payment requests, upgrade requests)
+        $recentActivity = [];
+        
+        // Recent user registrations
+        $recentUsers = \App\Models\User::where('is_admin', false)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get(['id', 'name', 'email', 'created_at']);
+        
+        foreach ($recentUsers as $newUser) {
+            $recentActivity[] = [
+                'type' => 'user',
+                'user_name' => $newUser->name,
+                'email' => $newUser->email,
+                'activity_type' => 'New User Registration',
+                'status' => 'active',
+                'date' => $newUser->created_at->format('Y-m-d'),
+            ];
+        }
+        
+        // Recent payment requests
+        $recentPayments = \App\Models\WithdrawalRequest::join('users', 'withdrawal_requests.user_id', '=', 'users.id')
+            ->orderBy('withdrawal_requests.created_at', 'desc')
+            ->limit(5)
+            ->get(['users.name', 'users.email', 'withdrawal_requests.status', 'withdrawal_requests.created_at']);
+        
+        foreach ($recentPayments as $payment) {
+            $recentActivity[] = [
+                'type' => 'payment',
+                'user_name' => $payment->name,
+                'email' => $payment->email,
+                'activity_type' => 'Payment Request',
+                'status' => $payment->status,
+                'date' => $payment->created_at->format('Y-m-d'),
+            ];
+        }
+        
+        // Recent upgrade requests
+        $recentUpgrades = \App\Models\UpgradeRequest::join('users', 'upgrade_requests.user_id', '=', 'users.id')
+            ->orderBy('upgrade_requests.created_at', 'desc')
+            ->limit(5)
+            ->get(['users.name', 'users.email', 'upgrade_requests.status', 'upgrade_requests.created_at']);
+        
+        foreach ($recentUpgrades as $upgrade) {
+            $recentActivity[] = [
+                'type' => 'upgrade',
+                'user_name' => $upgrade->name,
+                'email' => $upgrade->email,
+                'activity_type' => 'Upgrade Request',
+                'status' => $upgrade->status,
+                'date' => $upgrade->created_at->format('Y-m-d'),
+            ];
+        }
+        
+        // Sort by date descending
+        usort($recentActivity, function($a, $b) {
+            return strtotime($b['date']) - strtotime($a['date']);
+        });
+        
+        // Limit to 10 most recent
+        $recentActivity = array_slice($recentActivity, 0, 10);
+        
+        return view('admin.dashboard', [
+            'totalUsers' => $totalUsers,
+            'totalRevenue' => $totalRevenue,
+            'totalTasks' => $totalTasks,
+            'userEarnings' => $userEarnings,
+            'recentActivity' => $recentActivity,
+        ]);
     })->name('admin.dashboard');
 
     Route::get('/admin/users', function () {

@@ -87,10 +87,10 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-base-content/60 text-sm">Total Users</p>
-              <h3 class="text-3xl font-bold mt-2">12,480</h3>
-              <p class="text-success text-sm mt-1">
-                <span class="icon-[tabler--arrow-up] inline size-4"></span>
-                12% from last month
+              <h3 class="text-3xl font-bold mt-2">{{ $totalUsers }}</h3>
+              <p class="text-base-content/50 text-sm mt-1">
+                <span class="icon-[tabler--user-check] inline size-4"></span>
+                Active users
               </p>
             </div>
             <div class="bg-primary/10 rounded-lg p-3">
@@ -106,10 +106,10 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-base-content/60 text-sm">Total Revenue</p>
-              <h3 class="text-3xl font-bold mt-2">$48,500</h3>
-              <p class="text-success text-sm mt-1">
-                <span class="icon-[tabler--arrow-up] inline size-4"></span>
-                8% from last month
+              <h3 class="text-3xl font-bold mt-2">${{ number_format($totalRevenue, 0) }}</h3>
+              <p class="text-base-content/50 text-sm mt-1">
+                <span class="icon-[tabler--check-circle] inline size-4"></span>
+                From approved upgrades
               </p>
             </div>
             <div class="bg-success/10 rounded-lg p-3">
@@ -119,89 +119,46 @@
         </div>
       </div>
 
-      <!-- Active Orders Card -->
+      <!-- Total Tasks Card -->
       <div class="card bg-base-100 shadow-md">
         <div class="card-body">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-base-content/60 text-sm">Active Orders</p>
-              <h3 class="text-3xl font-bold mt-2">892</h3>
-              <p class="text-warning text-sm mt-1">
-                <span class="icon-[tabler--arrow-down] inline size-4"></span>
-                3% from last month
+              <p class="text-base-content/60 text-sm">Total Tasks</p>
+              <h3 class="text-3xl font-bold mt-2">{{ $totalTasks }}</h3>
+              <p class="text-base-content/50 text-sm mt-1">
+                <span class="icon-[tabler--checklist] inline size-4"></span>
+                Available tasks
               </p>
             </div>
             <div class="bg-warning/10 rounded-lg p-3">
-              <span class="icon-[tabler--shopping-cart] size-8 text-warning"></span>
+              <span class="icon-[tabler--tasks] size-8 text-warning"></span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Customer Satisfaction Card -->
+      <!-- User Earnings Card -->
       <div class="card bg-base-100 shadow-md">
         <div class="card-body">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-base-content/60 text-sm">Satisfaction</p>
-              <h3 class="text-3xl font-bold mt-2">98.5%</h3>
-              <p class="text-success text-sm mt-1">
-                <span class="icon-[tabler--arrow-up] inline size-4"></span>
-                2.5% from last month
+              <p class="text-base-content/60 text-sm">User Earnings</p>
+              <h3 class="text-3xl font-bold mt-2">${{ number_format($userEarnings, 0) }}</h3>
+              <p class="text-base-content/50 text-sm mt-1">
+                <span class="icon-[tabler--coin] inline size-4"></span>
+                Total distributed
               </p>
             </div>
             <div class="bg-info/10 rounded-lg p-3">
-              <span class="icon-[tabler--stars] size-8 text-info"></span>
+              <span class="icon-[tabler--coins] size-8 text-info"></span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Charts and Tables Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Revenue Chart -->
-      <div class="lg:col-span-2">
-        <div class="card bg-base-100 shadow-md">
-          <div class="card-body">
-            <h2 class="card-title text-lg">Revenue Overview</h2>
-            <p class="text-base-content/60 text-sm">Last 12 months revenue trend</p>
-            <div class="mt-6 h-64 flex items-center justify-center bg-base-200 rounded-lg">
-              <div class="text-center">
-                <span class="icon-[tabler--chart-line] size-12 text-base-content/30 mx-auto block mb-2"></span>
-                <p class="text-base-content/50">Chart placeholder</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Top Products -->
-      <div class="card bg-base-100 shadow-md">
-        <div class="card-body">
-          <h2 class="card-title text-lg">Top Products</h2>
-          <p class="text-base-content/60 text-sm">This month</p>
-          <div class="space-y-4 mt-4">
-            <div class="flex items-center justify-between">
-              <span class="text-sm">Product A</span>
-              <div class="badge badge-primary">4,250</div>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm">Product B</span>
-              <div class="badge badge-secondary">3,890</div>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm">Product C</span>
-              <div class="badge badge-accent">2,450</div>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm">Product D</span>
-              <div class="badge badge-info">1,890</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Recent Activity Table -->
     <div class="card bg-base-100 shadow-md">
@@ -212,124 +169,83 @@
             <thead>
               <tr>
                 <th>User</th>
-                <th>Action</th>
+                <th>Activity</th>
                 <th>Status</th>
                 <th>Date</th>
-                <th>Action</th>
               </tr>
             </thead>
             <tbody>
+              @forelse($recentActivity as $activity)
               <tr>
                 <td>
                   <div class="flex items-center gap-3">
                     <div class="avatar placeholder">
                       <div class="bg-primary text-white rounded-full w-10">
-                        <span>JD</span>
+                        <span>{{ substr($activity['user_name'], 0, 2) }}</span>
                       </div>
                     </div>
                     <div>
-                      <p class="font-semibold">John Doe</p>
-                      <p class="text-xs text-base-content/60">john@example.com</p>
+                      <p class="font-semibold">{{ $activity['user_name'] }}</p>
+                      <p class="text-xs text-base-content/60">{{ $activity['email'] }}</p>
                     </div>
                   </div>
                 </td>
                 <td>
-                  <span class="text-sm">Placed Order</span>
+                  <span class="text-sm">{{ $activity['activity_type'] }}</span>
                 </td>
                 <td>
-                  <div class="badge badge-success gap-2">
-                    <span class="icon-[tabler--check] size-3"></span>
-                    Completed
-                  </div>
+                  @if($activity['type'] === 'user')
+                    <div class="badge badge-success gap-2">
+                      <span class="icon-[tabler--check] size-3"></span>
+                      New User
+                    </div>
+                  @elseif($activity['type'] === 'payment')
+                    @if($activity['status'] === 'pending')
+                      <div class="badge badge-warning gap-2">
+                        <span class="icon-[tabler--clock] size-3"></span>
+                        Pending
+                      </div>
+                    @else
+                      <div class="badge badge-success gap-2">
+                        <span class="icon-[tabler--check] size-3"></span>
+                        {{ ucfirst($activity['status']) }}
+                      </div>
+                    @endif
+                  @elseif($activity['type'] === 'upgrade')
+                    @if($activity['status'] === 'pending_approval')
+                      <div class="badge badge-warning gap-2">
+                        <span class="icon-[tabler--clock] size-3"></span>
+                        Pending
+                      </div>
+                    @elseif($activity['status'] === 'approved')
+                      <div class="badge badge-success gap-2">
+                        <span class="icon-[tabler--check] size-3"></span>
+                        Approved
+                      </div>
+                    @elseif($activity['status'] === 'rejected')
+                      <div class="badge badge-error gap-2">
+                        <span class="icon-[tabler--x] size-3"></span>
+                        Rejected
+                      </div>
+                    @endif
+                  @endif
                 </td>
-                <td class="text-sm">2024-01-19</td>
-                <td>
-                  <button class="btn btn-ghost btn-xs">
-                    <span class="icon-[tabler--eye] size-4"></span>
-                  </button>
-                </td>
+                <td class="text-sm">{{ $activity['date'] }}</td>
               </tr>
+              @empty
               <tr>
-                <td>
-                  <div class="flex items-center gap-3">
-                    <div class="avatar placeholder">
-                      <div class="bg-secondary text-white rounded-full w-10">
-                        <span>SM</span>
-                      </div>
-                    </div>
-                    <div>
-                      <p class="font-semibold">Sarah Miller</p>
-                      <p class="text-xs text-base-content/60">sarah@example.com</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="text-sm">Updated Profile</span>
-                </td>
-                <td>
-                  <div class="badge badge-warning gap-2">
-                    <span class="icon-[tabler--clock] size-3"></span>
-                    Pending
-                  </div>
-                </td>
-                <td class="text-sm">2024-01-18</td>
-                <td>
-                  <button class="btn btn-ghost btn-xs">
-                    <span class="icon-[tabler--eye] size-4"></span>
-                  </button>
+                <td colspan="5" class="text-center py-8">
+                  <p class="text-base-content/60">No recent activity</p>
                 </td>
               </tr>
-              <tr>
-                <td>
-                  <div class="flex items-center gap-3">
-                    <div class="avatar placeholder">
-                      <div class="bg-accent text-white rounded-full w-10">
-                        <span>MJ</span>
-                      </div>
-                    </div>
-                    <div>
-                      <p class="font-semibold">Mike Johnson</p>
-                      <p class="text-xs text-base-content/60">mike@example.com</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="text-sm">Made Payment</span>
-                </td>
-                <td>
-                  <div class="badge badge-success gap-2">
-                    <span class="icon-[tabler--check] size-3"></span>
-                    Completed
-                  </div>
-                </td>
-                <td class="text-sm">2024-01-17</td>
-                <td>
-                  <button class="btn btn-ghost btn-xs">
-                    <span class="icon-[tabler--eye] size-4"></span>
-                  </button>
-                </td>
-              </tr>
+              @endforelse
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="mt-8 flex flex-col sm:flex-row gap-4">
-      <button class="btn btn-primary gap-2">
-        <span class="icon-[tabler--plus] size-5"></span>
-        Create Report
-      </button>
-      <button class="btn btn-outline gap-2">
-        <span class="icon-[tabler--download] size-5"></span>
-        Export Data
-      </button>
-      <button class="btn btn-ghost gap-2">
-        <span class="icon-[tabler--refresh] size-5"></span>
-        Refresh
-      </button>
-    </div>
+
   </div>
 </div>
 
