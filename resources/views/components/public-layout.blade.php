@@ -518,6 +518,15 @@
                         }),
                     });
                     
+                    // Check for CSRF token expiration (419 Unprocessable Entity)
+                    if (response.status === 419) {
+                        showToast('Your session expired. Please refresh the page and try again.', 'error', 4000);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                        return;
+                    }
+                    
                     const data = await response.json();
                     
                     if (data.success) {

@@ -22,7 +22,7 @@
                 Pending Payment
               </div>
               <h2 class="text-3xl font-bold mb-2">Invoice Amount</h2>
-              <p class="text-5xl font-bold text-primary">{{ number_format($upgradeRequest->amount, 0) }} USDT</p>
+              <p class="text-5xl font-bold text-primary">{{ number_format($upgradeRequest->amount, 0) }} USD</p>
               <p class="text-sm text-base-content/60 mt-4">
                 Invoice expires in 
                 <span class="font-semibold text-warning">
@@ -56,7 +56,7 @@
               <label class="label">
                 <span class="label-text font-semibold flex items-center gap-2">
                   <span class="icon-[tabler--link] size-5"></span>
-                  Share your link
+                  Wallet address
                 </span>
               </label>
               <div class="flex gap-2">
@@ -145,8 +145,8 @@
               Payment Instructions
             </h3>
             <ol class="list-decimal list-inside space-y-2 text-sm">
-              <li>Click the payment link above or scan the QR code with your USDT wallet</li>
-              <li>Complete the payment of <strong>{{ number_format($upgradeRequest->amount, 0) }} USDT</strong></li>
+              <li>Click the payment link above or scan the QR code with your crypto wallet</li>
+              <li>Complete the payment of <strong>{{ number_format($upgradeRequest->amount, 0) }} USD</strong></li>
               <li>Take a screenshot of your payment confirmation</li>
               <li>Upload the screenshot using the form above</li>
               <li>Wait for admin approval (usually within 24 hours)</li>
