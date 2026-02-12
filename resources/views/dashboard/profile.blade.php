@@ -208,69 +208,10 @@
               </form>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Account Security Card -->
-          <div class="card bg-base-100 shadow-lg border border-primary/20">
-            <div class="card-body">
-              <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-bold">Account Security</h3>
-                <button onclick="togglePasswordEdit()" class="btn btn-sm btn-primary gap-2" id="password-edit-btn">
-                  <span class="icon-[tabler--lock] size-4"></span>
-                  Change
-                </button>
-              </div>
-
-              <!-- Display Mode -->
-              <div id="password-display">
-                <div>
-                  <label class="label">
-                    <span class="label-text font-semibold text-base-content/80">Password</span>
-                  </label>
-                  <p class="text-base font-medium text-base-content">••••••••</p>
-                  <p class="text-sm text-base-content/60 mt-1">Last updated: Recently</p>
-                </div>
-              </div>
-
-              <!-- Edit Mode -->
-              <form id="password-edit" action="{{ route('dashboard.profile.update-password') }}" method="POST" class="hidden space-y-4">
-                @csrf
-                <div class="space-y-4">
-                  <!-- Current Password -->
-                  <div>
-                    <label class="label">
-                      <span class="label-text font-semibold text-base-content/80">Current Password</span>
-                    </label>
-                    <input type="password" name="current_password" class="input input-bordered w-full" required>
-                  </div>
-
-                  <!-- New Password -->
-                  <div>
-                    <label class="label">
-                      <span class="label-text font-semibold text-base-content/80">New Password</span>
-                    </label>
-                    <input type="password" name="new_password" class="input input-bordered w-full" required minlength="6">
-                    <p class="text-sm text-base-content/60 mt-1">Minimum 6 characters</p>
-                  </div>
-
-                  <!-- Confirm New Password -->
-                  <div>
-                    <label class="label">
-                      <span class="label-text font-semibold text-base-content/80">Confirm New Password</span>
-                    </label>
-                    <input type="password" name="new_password_confirmation" class="input input-bordered w-full" required minlength="6">
-                  </div>
-                </div>
-
-                <div class="flex justify-end gap-2 mt-4">
-                  <button type="button" onclick="togglePasswordEdit()" class="btn btn-ghost">Cancel</button>
-                  <button type="submit" class="btn btn-primary">Update Password</button>
-                </div>
-              </form>
-              </div>
-            </div>
-          </div>
-
-          <!-- Payment Information -->
+      <!-- Payment Methods and Account Security Grid -->
       <div class="grid md:grid-cols-2 gap-6 mb-8">
         <!-- Payment Methods Card -->
         <div class="card bg-base-100 shadow-lg border border-primary/20">
@@ -288,7 +229,7 @@
                   </div>
                   <div class="flex-1">
                     <p class="font-semibold flex items-center gap-2">
-                      USDT Wallet (TRC20)
+                      BTC Wallet
                       <span class="badge badge-warning badge-sm">Crypto</span>
                     </p>
                     @if($user->crypto_wallet)
@@ -305,7 +246,7 @@
                     <label class="label">
                       <span class="label-text text-sm">
                         <span class="icon-[tabler--info-circle] size-4 inline"></span>
-                        Enter your USDT (TRC20) wallet address
+                        Enter your Bitcoin (BTC) wallet address
                       </span>
                     </label>
                     <input 
@@ -313,7 +254,7 @@
                       name="crypto_wallet" 
                       value="{{ old('crypto_wallet', $user->crypto_wallet) }}"
                       class="input input-bordered input-sm w-full font-mono" 
-                      placeholder="TRC20 wallet address (e.g., TXXXxxx...)"
+                      placeholder="BTC wallet address (e.g., 1A1z7agoat...)"
                     />
                     @error('crypto_wallet')
                       <label class="label">
@@ -344,7 +285,7 @@
                 <div class="alert alert-info mt-4">
                   <span class="icon-[tabler--alert-circle] size-4"></span>
                   <span class="text-xs">
-                    <strong>Important:</strong> Only TRC20 (Tron) USDT addresses are supported. 
+                    <strong>Important:</strong> Only Bitcoin (BTC) addresses are supported. 
                     Double-check your address before saving to avoid loss of funds.
                   </span>
                 </div>
@@ -356,43 +297,60 @@
         <!-- Account Security Card -->
         <div class="card bg-base-100 shadow-lg border border-primary/20">
           <div class="card-body">
-            <h3 class="text-xl font-bold mb-6">Account Security</h3>
-
-            <div class="space-y-4">
-              <!-- Password -->
-              <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg">
-                <div>
-                  <p class="font-semibold">Password</p>
-                  <p class="text-sm text-base-content/70">Last changed 3 months ago</p>
-                </div>
-                <button class="btn btn-sm btn-ghost">Change</button>
-              </div>
-
-              <!-- Email Verification -->
-              <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg">
-                <div>
-                  <p class="font-semibold">Email Verification</p>
-                  <p class="text-sm text-base-content/70">Verified on Jan 10, 2026</p>
-                </div>
-                <div class="badge badge-success gap-1">
-                  <span class="icon-[tabler--check] size-4"></span>
-                  Verified
-                </div>
-              </div>
-
-              <!-- Phone Verification -->
-              <!-- <div class="flex items-center justify-between p-4 border border-base-300 rounded-lg">
-                <div>
-                  <p class="font-semibold">Phone Verification</p>
-                  <p class="text-sm text-base-content/70">Verified on Jan 15, 2026</p>
-                </div>
-                <div class="badge badge-success gap-1">
-                  <span class="icon-[tabler--check] size-4"></span>
-                  Verified
-                </div>
-              </div> -->
-
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold">Account Security</h3>
+              <button onclick="togglePasswordEdit()" class="btn btn-sm btn-primary gap-2" id="password-edit-btn">
+                <span class="icon-[tabler--lock] size-4"></span>
+                Change
+              </button>
             </div>
+
+            <!-- Display Mode -->
+            <div id="password-display">
+              <div>
+                <label class="label">
+                  <span class="label-text font-semibold text-base-content/80">Password</span>
+                </label>
+                <p class="text-base font-medium text-base-content">••••••••</p>
+                <p class="text-sm text-base-content/60 mt-1">Last updated: Recently</p>
+              </div>
+            </div>
+
+            <!-- Edit Mode -->
+            <form id="password-edit" action="{{ route('dashboard.profile.update-password') }}" method="POST" class="hidden space-y-4">
+              @csrf
+              <div class="space-y-4">
+                <!-- Current Password -->
+                <div>
+                  <label class="label">
+                    <span class="label-text font-semibold text-base-content/80">Current Password</span>
+                  </label>
+                  <input type="password" name="current_password" class="input input-bordered w-full" required>
+                </div>
+
+                <!-- New Password -->
+                <div>
+                  <label class="label">
+                    <span class="label-text font-semibold text-base-content/80">New Password</span>
+                  </label>
+                  <input type="password" name="new_password" class="input input-bordered w-full" required minlength="6">
+                  <p class="text-sm text-base-content/60 mt-1">Minimum 6 characters</p>
+                </div>
+
+                <!-- Confirm New Password -->
+                <div>
+                  <label class="label">
+                    <span class="label-text font-semibold text-base-content/80">Confirm New Password</span>
+                  </label>
+                  <input type="password" name="new_password_confirmation" class="input input-bordered w-full" required minlength="6">
+                </div>
+              </div>
+
+              <div class="flex justify-end gap-2 mt-4">
+                <button type="button" onclick="togglePasswordEdit()" class="btn btn-ghost">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Password</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

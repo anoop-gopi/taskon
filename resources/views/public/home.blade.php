@@ -10,7 +10,8 @@
             <span class="icon-[tabler--rocket] size-6"></span>
             Get Started
           </button>
-          <button class="btn btn-lg btn-secondary border-2 border-secondary">
+          <button class="btn btn-lg btn-primary gap-2 border-2 border-white">
+            <span class="icon-[tabler--book] size-6"></span>
             Learn More
           </button>
         </div>
@@ -217,7 +218,7 @@
       </div>
 
       @php
-        $videoTestimonials = \App\Models\Video::where('is_active', true)->orderBy('display_order')->limit(2)->get();
+        $videoTestimonials = \App\Models\Video::where('is_active', true)->orderBy('display_order','desc')->limit(2)->get();
       @endphp
 
       <div class="grid md:grid-cols-2 gap-8">

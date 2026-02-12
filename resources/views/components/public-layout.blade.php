@@ -135,8 +135,8 @@
                 <!-- Logo + Desktop Menu -->
                 <div class="flex items-center gap-12">
                     <!-- Logo -->
-                    <a href="{{ route('public.home') }}" class="text-2xl font-bold">
-                        Jobtrackingsys
+                    <a href="{{ route('public.home') }}" class="flex items-center h-full">
+                        <img src="{{ asset('assets/img/logo_job.jpg') }}" alt="Jobtrackingsys Logo" class="h-14 w-auto object-contain">
                     </a>
 
                     <!-- Desktop Menu -->
@@ -157,9 +157,10 @@
                 <!-- Auth Container: Sign In or User Menu -->
                 <div class="flex items-center gap-4">
                     <!-- Sign In (shown when not logged in) -->
-                    <a id="signin_link" href="javascript:void(0);" onclick="openAuthModal(event)" class="text-base-content/80 hover:text-primary transition hidden md:inline">
+                    <button id="signin_link" onclick="openAuthModal(event)" class="btn btn-md btn-primary gap-2 border-2 border-primary hidden md:flex">
+                        <span class="icon-[tabler--login] size-5"></span>
                         Sign In
-                    </a>
+                    </button>
 
                     <!-- Mobile Sign In (shown when not logged in) -->
                     <button id="signin_btn_mobile" class="btn btn-ghost btn-circle md:hidden" onclick="openAuthModal(event)">
