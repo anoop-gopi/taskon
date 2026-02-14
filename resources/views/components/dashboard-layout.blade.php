@@ -101,7 +101,7 @@
                 <div class="flex items-center gap-12">
                     <!-- Logo -->
                     <a href="{{ route('public.home') }}" class="flex items-center h-full">
-                        <img src="{{ asset('assets/img/logo_job.jpg') }}" alt="Jobtrackingsys Logo" class="h-14 w-auto object-contain">
+                        <img src="{{ asset('assets/img/logo_job.png') }}" alt="Jobtrackingsys Logo" class="h-14 w-auto object-contain">
                     </a>
 
                     <!-- Desktop Menu -->

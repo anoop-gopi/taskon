@@ -77,6 +77,7 @@
               <thead>
                 <tr>
                   <th>User Email</th>
+                  <th>Wallet Address</th>
                   <th>Date & Time</th>
                   <th>Amount</th>
                   <th>Status</th>
@@ -87,6 +88,7 @@
                 @forelse($requests as $request)
                   <tr>
                     <td class="font-medium">{{ $request->user->email }}</td>
+                    <td class="text-base-content/70">{{ $request->user->crypto_wallet ?? '—' }}</td>
                     <td>{{ $request->created_at->format('M d, Y H:i') }}</td>
                     <td class="font-semibold">${{ number_format($request->amount, 2) }}</td>
                     <td>
@@ -126,7 +128,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="5" class="text-center text-base-content/60">No withdrawal requests found.</td>
+                    <td colspan="6" class="text-center text-base-content/60">No withdrawal requests found.</td>
                   </tr>
                 @endforelse
               </tbody>
