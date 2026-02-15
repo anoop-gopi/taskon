@@ -108,7 +108,7 @@
                     <div class="hidden md:flex gap-8 items-center">
                         <a href="{{ route('public.earn-money') }}" class="text-lg font-bold text-base-content/80 hover:text-primary transition">Earn Money</a>
                         <a href="{{ route('public.how-it-works') }}" class="text-lg font-bold text-base-content/80 hover:text-primary transition">How It Works</a>
-                        <a href="{{ route('public.learn') }}" class="text-lg font-bold text-base-content/80 hover:text-primary transition">Learn</a>
+                        <a href="{{ route('public.faq') }}" class="text-lg font-bold text-base-content/80 hover:text-primary transition">FAQ</a>
                     </div>
                 </div>
 
@@ -162,7 +162,7 @@
                 <div class="container mx-auto px-4 py-4 flex flex-col gap-4">
                     <a href="{{ route('public.earn-money') }}" class="text-base-content/80 hover:text-primary transition">Earn Money</a>
                     <a href="{{ route('public.how-it-works') }}" class="text-base-content/80 hover:text-primary transition">How It Works</a>
-                    <a href="{{ route('public.learn') }}" class="text-base-content/80 hover:text-primary transition">Learn</a>
+                    <a href="{{ route('public.faq') }}" class="text-base-content/80 hover:text-primary transition">FAQ</a>
                     <a href="javascript:void(0);" onclick="openAuthModal(event)" class="text-base-content/80 hover:text-primary transition">Sign In</a>
                 </div>
             </div>
@@ -322,7 +322,7 @@
                         <ul class="space-y-2 text-sm">
                             <li><a href="{{ route('public.how-it-works') }}" class="link link-hover">How It Works</a></li>
                             <li><a href="{{ route('public.earn-money') }}" class="link link-hover">Earn Money</a></li>
-                            <li><a href="{{ route('public.learn') }}" class="link link-hover">Learn</a></li>
+                            <li><a href="{{ route('public.faq') }}" class="link link-hover">FAQ</a></li>
                         </ul>
                     </div>
 

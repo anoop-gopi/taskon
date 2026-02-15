@@ -48,7 +48,7 @@ Route::get('/how-it-works', function () {
 })->name('public.how-it-works');
 
 Route::get('/learn', function () {
-    return view('public.learn');
+    return redirect()->route('public.faq');
 })->name('public.learn');
 
 Route::get('/help-center', function () {

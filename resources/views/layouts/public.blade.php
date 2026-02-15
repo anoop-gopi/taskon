@@ -23,7 +23,7 @@
             <div class="flex-none gap-4 hidden md:flex">
                 <a href="#earn" class="btn btn-ghost">Earn Money</a>
                 <a href="#how-it-works" class="btn btn-ghost">How It Works</a>
-                <a href="#learn" class="btn btn-ghost">Learn</a>
+                <a href="{{ route('public.faq') }}" class="btn btn-ghost">FAQ</a>
             </div>
             <div class="flex-none gap-2">
                 <button class="btn btn-ghost" onclick="document.getElementById('auth_modal').classList.toggle('modal-open')">
