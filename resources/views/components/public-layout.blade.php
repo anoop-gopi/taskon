@@ -158,13 +158,13 @@
                 <div class="flex items-center gap-4">
                     <!-- Sign In (shown when not logged in) -->
                     <button id="signin_link" onclick="openAuthModal(event)" class="btn btn-md btn-primary gap-2 border-2 border-primary hidden md:flex">
-                        <span class="icon-[tabler--login] size-5"></span>
+                        <span class="icon-[tabler--user] size-5"></span>
                         Sign In
                     </button>
 
                     <!-- Mobile Sign In (shown when not logged in) -->
                     <button id="signin_btn_mobile" class="btn btn-ghost btn-circle md:hidden" onclick="openAuthModal(event)">
-                        <span class="icon-[tabler--login] size-5"></span>
+                        <span class="icon-[tabler--user] size-5"></span>
                     </button>
 
                     <!-- User Menu (shown when logged in) -->

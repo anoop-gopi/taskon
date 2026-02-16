@@ -27,7 +27,7 @@
             </div>
             <div class="flex-none gap-2">
                 <button class="btn btn-ghost" onclick="document.getElementById('auth_modal').classList.toggle('modal-open')">
-                    <span class="icon-[tabler--login] size-5"></span>
+                    <span class="icon-[tabler--user] size-5"></span>
                 </button>
             </div>
         </nav>

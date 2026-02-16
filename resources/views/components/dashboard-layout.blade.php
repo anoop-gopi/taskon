@@ -128,7 +128,7 @@
 
                     <!-- Mobile Sign In (shown when not logged in) -->
                     <button id="signin_btn_mobile" class="btn btn-ghost btn-circle md:hidden" onclick="openAuthModal(event)">
-                        <span class="icon-[tabler--login] size-5"></span>
+                        <span class="icon-[tabler--user] size-5"></span>
                     </button>
 
                     <!-- User Menu (shown when logged in) -->

@@ -162,7 +162,7 @@
             <div class="flex items-center justify-between border-b border-base-300 pb-3">
               <div class="flex items-center gap-3">
                 <div class="bg-primary/10 rounded-lg p-2">
-                  <span class="icon-[tabler--login] size-5 text-primary"></span>
+                  <span class="icon-[tabler--user] size-5 text-primary"></span>
                 </div>
                 <div>
                   <p class="font-semibold">Logged in</p>
