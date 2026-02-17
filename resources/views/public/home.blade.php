@@ -121,18 +121,13 @@
   <!-- Video Section -->
   <section class="py-16 bg-base-200">
     <div class="container mx-auto px-4">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Video Tutorials</h2>
-        <p class="text-xl text-base-content/70">Watch how to get started and learn from success stories</p>
-      </div>
-
       @php
         $video = \App\Models\Video::where('is_active', true)->orderBy('display_order')->first();
       @endphp
 
-      @if($video)
-        <div class="flex items-center justify-center">
-          <div class="w-full bg-black/10 rounded-lg overflow-hidden shadow-lg" style="height: 500px;">
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        @if($video)
+          <div class="bg-black/10 rounded-lg overflow-hidden shadow-lg" style="height: 360px;">
             <iframe
               src="{{ $video->embed_url }}"
               width="100%"
@@ -143,8 +138,14 @@
               referrerpolicy="no-referrer-when-downgrade">
             </iframe>
           </div>
+        @endif
+
+        <div>
+          <h2 class="text-4xl font-bold mb-4">Video Tutorials</h2>
+          <p class="text-xl text-base-content/70">Explore our comprehensive video tutorials designed to help you get started quickly and confidently. Each tutorial provides step-by-step guidance to walk you through key features and essential workflows. You’ll learn practical tips and best practices to maximize efficiency and productivity.</p>
+          <br> <p class="text-xl text-base-content/70">Our videos are suitable for both beginners and advanced users looking to refine their skills. Discover real-world success stories and see how others have achieved outstanding results using our platform. Stay updated with new features and enhancements through regularly added content.</p>
         </div>
-      @endif
+      </div>
     </div>
   </section>
 
