@@ -6,14 +6,14 @@
         <h1 class="text-5xl font-bold mb-6">Join the Decentralized Workforce Today</h1>
         <p class="text-lg text-white/90 mb-6">Access thousands of data entry project, and gig opportunities from vetted employers.</p>
         <div class="flex gap-4">
-          <button class="btn btn-lg btn-primary gap-2 border-2 border-white">
+          <button type="button" class="btn btn-lg btn-primary gap-2 border-2 border-white" onclick="openAuthModal(event)">
             <span class="icon-[tabler--rocket] size-6"></span>
             Get Started
           </button>
-          <button class="btn btn-lg btn-primary gap-2 border-2 border-white">
+          <a href="{{ route('public.how-it-works') }}" class="btn btn-lg btn-primary gap-2 border-2 border-white">
             <span class="icon-[tabler--book] size-6"></span>
             Learn More
-          </button>
+          </a>
         </div>
       </div>
       <div class="flex justify-center">
@@ -333,7 +333,7 @@
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-4xl font-bold mb-6">Ready to Start Earning?</h2>
       <p class="text-xl text-base-content/70 mb-8 max-w-2xl mx-auto">Join thousands of people making money online. Sign up today and get access to exclusive tasks.</p>
-      <button class="btn btn-lg btn-primary gap-2">
+      <button type="button" class="btn btn-lg btn-primary gap-2" onclick="openAuthModal(event)">
         <span class="icon-[tabler--rocket] size-6"></span>
         Create Free Account
       </button>

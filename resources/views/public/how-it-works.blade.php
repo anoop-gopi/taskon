@@ -203,7 +203,7 @@
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-4xl font-bold mb-6">Ready to Get Started?</h2>
       <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Join Jobtrackingsys today and start your earning journey. It's free and takes just a few minutes.</p>
-      <button class="btn btn-lg btn-secondary gap-2">
+      <button type="button" class="btn btn-lg btn-secondary gap-2" onclick="openAuthModal(event)">
         <span class="icon-[tabler--user-plus] size-6"></span>
         Sign Up Now
       </button>
