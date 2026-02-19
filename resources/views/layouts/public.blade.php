@@ -46,20 +46,6 @@
                             <span class="text-primary">Flyon</span>
                         </h3>
                         <p class="text-sm text-base-content/70 mb-4">Empower yourself to earn money online with flexible tasks and projects.</p>
-                        <div class="flex gap-3">
-                            <a href="#" class="btn btn-ghost btn-sm btn-circle">
-                                <span class="icon-[tabler--brand-facebook] size-5"></span>
-                            </a>
-                            <a href="#" class="btn btn-ghost btn-sm btn-circle">
-                                <span class="icon-[tabler--brand-twitter] size-5"></span>
-                            </a>
-                            <a href="#" class="btn btn-ghost btn-sm btn-circle">
-                                <span class="icon-[tabler--brand-instagram] size-5"></span>
-                            </a>
-                            <a href="#" class="btn btn-ghost btn-sm btn-circle">
-                                <span class="icon-[tabler--brand-linkedin] size-5"></span>
-                            </a>
-                        </div>
                     </div>
 
                     <!-- Quick Links -->
@@ -97,31 +83,33 @@
                 </div>
 
                 <!-- Contact Info -->
-                <div class="bg-base-300 rounded-lg p-6 mb-8">
+<div class="pt-8 mt-8 border-t border-base-300">
+                    <h4 class="font-bold text-sm mb-6 uppercase">Contact Us</h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="flex items-center gap-3">
-                            <span class="icon-[tabler--mail] size-6 text-primary"></span>
+                        <div class="flex items-start gap-3">
+                            <span class="icon-[tabler--mail] size-6 text-primary mt-1"></span>
                             <div>
-                                <p class="text-xs text-base-content/60">Email</p>
-                                <p class="font-semibold">support@jobtrackingsys.com</p>
+                                <p class="text-xs text-base-content/60 mb-1">Support</p>
+                                <p class="font-semibold text-sm">support@jobtrackingsys.com</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="icon-[tabler--phone] size-6 text-primary"></span>
+                        <div class="flex items-start gap-3">
+                            <span class="icon-[tabler--mail] size-6 text-primary mt-1"></span>
                             <div>
-                                <p class="text-xs text-base-content/60">Phone</p>
-                                <p class="font-semibold">+1 (555) 123-4567</p>
+                                <p class="text-xs text-base-content/60 mb-1">Sales</p>
+                                <p class="font-semibold text-sm">sales@jobtrackingsys.com</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="icon-[tabler--map-pin] size-6 text-primary"></span>
+                        <div class="flex items-start gap-3">
+                            <span class="icon-[tabler--mail] size-6 text-primary mt-1"></span>
                             <div>
-                                <p class="text-xs text-base-content/60">Address</p>
-                                <p class="font-semibold">123 Main St, USA</p>
+                                <p class="text-xs text-base-content/60 mb-1">Partnership</p>
+                                <p class="font-semibold text-sm">partners@jobtrackingsys.com</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </footer>
 
