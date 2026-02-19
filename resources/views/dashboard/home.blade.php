@@ -114,7 +114,13 @@
                   <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-sm btn-error">Resubmit</a>
                 @endif
               @else
-                <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-sm btn-primary">Start Task</a>
+                @if($userCategory && $task->category_id > $userCategory->id)
+                  <a href="{{ route('dashboard.upgrade') }}" class="btn btn-sm btn-warning">
+                    Upgrade to Start
+                  </a>
+                @else
+                  <a href="{{ route('dashboard.task.show', $task->id) }}" class="btn btn-sm btn-primary">Start Task</a>
+                @endif
               @endif
             </div>
           </div>

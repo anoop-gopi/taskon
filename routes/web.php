@@ -118,17 +118,9 @@ Route::middleware(['auth'])->group(function () {
         // Get user's category or default to free (1)
         $userCategory = $user->category_id;
         
-        // Fetch tasks that match user's category or lower
-        // Free users (category 1) see only category 1 tasks (limit 1)
-        // Premium users see tasks for their category and below
-        $tasks = \App\Models\Task::where('category_id', '<=', $userCategory)
-            ->orderBy('created_at', 'desc')
+        // Fetch all tasks for display
+        $tasks = \App\Models\Task::orderBy('created_at', 'desc')
             ->get();
-        
-        // If user is free (category_id = 1), limit to 1 task
-        if ($userCategory == 1) {
-            $tasks = $tasks->take(1);
-        }
         
         // Get user's completed tasks with status
         $completedTasksMap = \App\Models\TaskCompleted::where('user_id', $user->id)
