@@ -82,8 +82,13 @@
       </div>
 
       @if($tasks->count() > 0)
-        <div class="mt-6">
-          <p class="text-sm text-base-content/60">Showing {{ $tasks->count() }} of 8 tasks</p>
+        <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <p class="text-sm text-base-content/60">
+            Showing {{ $tasks->firstItem() }}–{{ $tasks->lastItem() }} of {{ $tasks->total() }} tasks
+          </p>
+          <div class="ml-auto">
+            {{ $tasks->links() }}
+          </div>
         </div>
       @endif
     </div>

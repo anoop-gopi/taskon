@@ -13,6 +13,11 @@ class TasksList extends Component
     public $search = '';
     protected $paginationTheme = 'tailwind';
 
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $tasks = Task::with('category')

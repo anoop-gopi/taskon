@@ -36,7 +36,7 @@ A complete payment verification system has been implemented for plan upgrades in
 
 Features:
 - ✅ Invoice header with amount display
-- ✅ Upgrade details (plan name, tasks/week, earning per task)
+- ✅ Upgrade details (plan name, tasks/month, earning per task)
 - ✅ Payment URL with copy button
 - ✅ QR Code generation for mobile wallet scanning
 - ✅ Expiration countdown timer

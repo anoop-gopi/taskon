@@ -105,8 +105,13 @@
       </div>
 
       @if($users->count() > 0)
-        <div class="mt-6">
-          <p class="text-sm text-base-content/60">Showing {{ $users->count() }} of 8 users</p>
+        <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <p class="text-sm text-base-content/60">
+            Showing {{ $users->firstItem() }}–{{ $users->lastItem() }} of {{ $users->total() }} users
+          </p>
+          <div class="ml-auto">
+            {{ $users->links() }}
+          </div>
         </div>
       @endif
     </div>

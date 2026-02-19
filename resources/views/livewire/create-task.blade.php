@@ -75,9 +75,9 @@
                         <option value="{{ $category->id }}">
                             {{ $category->name }} 
                             @if($category->id > 1)
-                                ({{ $category->tasks_per_week }} tasks/week, ${{ number_format($category->earning_per_task, 0) }}/task)
+                                ({{ $category->tasks_per_week }} tasks/month, ${{ number_format($category->earning_per_task, 0) }}/task)
                             @else
-                                ({{ $category->tasks_per_week }} task/week)
+                                ({{ $category->tasks_per_week }} task/month)
                             @endif
                         </option>
                     @endforeach

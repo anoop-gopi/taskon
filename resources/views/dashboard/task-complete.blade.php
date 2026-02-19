@@ -29,21 +29,21 @@
           <form method="POST" action="{{ route('dashboard.task.complete', $task->id) }}" enctype="multipart/form-data">
             @csrf
             
-            <!-- Image Upload -->
+            <!-- File Upload -->
             <div class="form-control mb-8">
               <label class="label">
-                <span class="label-text font-semibold text-base">Upload Image File</span>
+                <span class="label-text font-semibold text-base">Upload Image or File</span>
                 <span class="label-text-alt text-error">*</span>
               </label>
               <div class="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/60 transition cursor-pointer" onclick="document.getElementById('image_input').click()">
-                <input type="file" id="image_input" name="image" accept="image/jpeg,image/png,image/jpg,image/gif" class="hidden" required onchange="displayFileName(this)" />
+                <input type="file" id="image_input" name="image" accept="image/jpeg,image/png,image/jpg,image/gif,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden" required onchange="displayFileName(this)" />
                 <div class="flex justify-center mb-4">
                   <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                     <span class="icon-[tabler--cloud-upload] size-6 text-primary"></span>
                   </div>
                 </div>
                 <p class="text-base-content font-semibold mb-1">Click to upload or drag and drop</p>
-                <p class="text-sm text-base-content/70">JPG, PNG, GIF up to 10MB</p>
+                <p class="text-sm text-base-content/70">JPG, PNG, GIF, PDF, XLS, XLSX up to 10MB</p>
               </div>
               <div id="file_name_display" class="mt-2 text-sm text-primary font-semibold hidden">
                 <span class="icon-[tabler--file] size-4 inline-block"></span>
@@ -55,7 +55,7 @@
                 </label>
               @enderror
               <label class="label">
-                <span class="label-text-alt text-base-content/70">Supported formats: JPG, PNG, GIF</span>
+                <span class="label-text-alt text-base-content/70">Supported formats: JPG, PNG, GIF, PDF, XLS, XLSX</span>
               </label>
             </div>
 

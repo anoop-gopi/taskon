@@ -13,6 +13,11 @@ class ApprovalsList extends Component
     public $search = '';
     protected $paginationTheme = 'tailwind';
 
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $approvals = TaskCompleted::with(['task', 'user', 'taskStatus'])
@@ -27,8 +32,10 @@ class ApprovalsList extends Component
                 });
             })
             ->orderBy('date_time', 'desc')
-            ->paginate(10)
-            ->map(function ($approval) {
+            ->paginate(10);
+
+        $approvals->setCollection(
+            $approvals->getCollection()->map(function ($approval) {
                 return [
                     'id' => $approval->id,
                     'user_email' => $approval->user->email,
@@ -38,7 +45,8 @@ class ApprovalsList extends Component
                     'completion_date' => $approval->date_time,
                     'amount' => $approval->task->earning,
                 ];
-            });
+            })
+        );
 
         return view('livewire.approvals-list', [
             'approvals' => $approvals,

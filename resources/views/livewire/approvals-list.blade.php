@@ -82,8 +82,13 @@
       </div>
 
       @if($approvals->count() > 0)
-        <div class="mt-6">
-          <p class="text-sm text-base-content/60">Showing {{ $approvals->count() }} of 8 pending approvals</p>
+        <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <p class="text-sm text-base-content/60">
+            Showing {{ $approvals->firstItem() }}–{{ $approvals->lastItem() }} of {{ $approvals->total() }} pending approvals
+          </p>
+          <div class="ml-auto">
+            {{ $approvals->links() }}
+          </div>
         </div>
       @endif
     </div>

@@ -68,7 +68,7 @@
           @if($userCategory)
             <p class="text-sm text-base-content/60 mt-1">
               Your Plan: <span class="font-semibold">{{ $userCategory->name }}</span> 
-              ({{ $userCategory->tasks_per_week }} {{ $userCategory->tasks_per_week == 1 ? 'task' : 'tasks' }}/week)
+              ({{ $userCategory->tasks_per_week }} {{ $userCategory->tasks_per_week == 1 ? 'task' : 'tasks' }}/month)
             </p>
           @endif
         </div>

@@ -13,6 +13,11 @@ class UsersList extends Component
     public $search = '';
     protected $paginationTheme = 'tailwind';
 
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $users = User::with('userStatus')

@@ -500,7 +500,7 @@ Route::middleware(['auth'])->group(function () {
         }
         
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'image' => 'required|file|mimes:jpeg,png,jpg,gif,pdf,xls,xlsx|max:10240',
             'notes' => 'nullable|string',
         ]);
 
