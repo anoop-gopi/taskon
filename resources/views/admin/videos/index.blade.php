@@ -36,10 +36,6 @@
         <span class="icon-[tabler--video] size-5"></span>
         <span>Videos</span>
       </a>
-      <a href="{{ route('admin.testimonials') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
-        <span class="icon-[tabler--message-star] size-5"></span>
-        <span>Testimonials</span>
-      </a>
       <a href="#settings" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--settings] size-5"></span>
         <span>Settings</span>
@@ -71,18 +67,28 @@
         </div>
       @endif
 
-      <div class="card bg-base-100 shadow-lg">
+      @php
+        $bannerVideo = $videos->where('is_active', true)->sortBy('display_order')->first();
+        $testimonialVideos = $videos->filter(function ($video) use ($bannerVideo) {
+            return !$bannerVideo || $video->id !== $bannerVideo->id;
+        });
+      @endphp
+
+      <div class="card bg-base-100 shadow-lg mb-8">
         <div class="card-body">
           <div class="flex justify-between items-center mb-6">
-            <h2 class="card-title">Videos</h2>
-            <a href="{{ route('admin.videos.create') }}" class="btn btn-primary btn-sm">
+            <div>
+              <h2 class="card-title">Banner Video</h2>
+              <p class="text-base-content/60 text-sm">Shown on the homepage video tutorial section.</p>
+            </div>
+            <!-- <a href="{{ route('admin.videos.create') }}" class="btn btn-primary btn-sm">
               <span class="icon-[tabler--plus] size-4"></span>
               Add Video
-            </a>
+            </a> -->
           </div>
 
-          @if($videos->isEmpty())
-            <p class="text-base-content/60">No videos yet. Create your first video to display on the homepage.</p>
+          @if(!$bannerVideo)
+            <p class="text-base-content/60">No active banner video set. Create or activate one to show on the homepage.</p>
           @else
             <div class="overflow-x-auto">
               <table class="table w-full">
@@ -96,7 +102,66 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach($videos as $video)
+                  <tr class="hover:bg-base-200/50">
+                    <td>{{ $bannerVideo->display_order }}</td>
+                    <td class="font-semibold">{{ $bannerVideo->title }}</td>
+                    <td class="text-sm text-base-content/70">{{ Str::limit($bannerVideo->description, 50) }}</td>
+                    <td>
+                      @if($bannerVideo->is_active)
+                        <span class="badge badge-success">Active</span>
+                      @else
+                        <span class="badge badge-ghost">Inactive</span>
+                      @endif
+                    </td>
+                    <td class="flex gap-2">
+                      <a href="{{ route('admin.videos.edit', $bannerVideo->id) }}" class="btn btn-xs btn-ghost">
+                        <span class="icon-[tabler--edit] size-4"></span>
+                      </a>
+                      <!-- <form method="POST" action="{{ route('admin.videos.destroy', $bannerVideo->id) }}" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-xs btn-error" onclick="return confirm('Delete this video?')">
+                          <span class="icon-[tabler--trash] size-4"></span>
+                        </button>
+                      </form> -->
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          @endif
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="card-title">Testimonial Videos</h2>
+              <p class="text-base-content/60 text-sm">Shown in the "What Users Say" section on the homepage.</p>
+            </div>
+            <a href="{{ route('admin.videos.create') }}" class="btn btn-primary btn-sm">
+              <span class="icon-[tabler--plus] size-4"></span>
+              Add Video
+            </a>
+          </div>
+
+          @if($testimonialVideos->isEmpty())
+            <p class="text-base-content/60">No testimonial videos yet. Add more videos to show testimonials.</p>
+          @else
+            <div class="overflow-x-auto">
+              <table class="table w-full">
+                <thead class="bg-base-200">
+                  <tr>
+                    <th>Order</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach($testimonialVideos as $video)
                     <tr class="hover:bg-base-200/50">
                       <td>{{ $video->display_order }}</td>
                       <td class="font-semibold">{{ $video->title }}</td>

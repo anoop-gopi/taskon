@@ -32,10 +32,6 @@
         <span class="icon-[tabler--video] size-5"></span>
         <span>Videos</span>
       </a>
-      <a href="{{ route('admin.testimonials') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
-        <span class="icon-[tabler--message-star] size-5"></span>
-        <span>Testimonials</span>
-      </a>
       <a href="#settings" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--settings] size-5"></span>
         <span>Settings</span>

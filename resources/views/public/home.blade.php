@@ -122,14 +122,14 @@
   <section class="py-16 bg-base-200">
     <div class="container mx-auto px-4">
       @php
-        $video = \App\Models\Video::where('is_active', true)->orderBy('display_order')->first();
+        $bannerVideo = \App\Models\Video::where('is_active', true)->orderBy('display_order')->first();
       @endphp
 
       <div class="grid md:grid-cols-2 gap-10 items-center">
-        @if($video)
+        @if($bannerVideo)
           <div class="bg-black/10 rounded-lg overflow-hidden shadow-lg" style="height: 360px;">
             <iframe
-              src="{{ $video->embed_url }}"
+              src="{{ $bannerVideo->embed_url }}"
               width="100%"
               height="100%"
               style="border:0;"
@@ -219,7 +219,14 @@
       </div>
 
       @php
-        $videoTestimonials = \App\Models\Video::where('is_active', true)->orderBy('display_order','desc')->limit(2)->get();
+        $bannerVideo = $bannerVideo ?? \App\Models\Video::where('is_active', true)->orderBy('display_order')->first();
+        $videoTestimonials = \App\Models\Video::where('is_active', true)
+          ->when($bannerVideo, function ($query) use ($bannerVideo) {
+            $query->where('id', '!=', $bannerVideo->id);
+          })
+          ->orderBy('display_order', 'desc')
+          ->limit(2)
+          ->get();
       @endphp
 
       <div class="grid md:grid-cols-2 gap-8">
