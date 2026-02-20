@@ -42,7 +42,7 @@
                 <span class="font-semibold">{{ $upgradeRequest->toCategory->name }}</span>
               </div>
               <div class="flex justify-between text-sm mt-1">
-                <span class="text-base-content/70">Tasks per week:</span>
+                <span class="text-base-content/70">Tasks per month:</span>
                 <span class="font-semibold">{{ $upgradeRequest->toCategory->tasks_per_week }}</span>
               </div>
               <div class="flex justify-between text-sm mt-1">

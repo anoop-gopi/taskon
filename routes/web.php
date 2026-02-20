@@ -119,7 +119,12 @@ Route::middleware(['auth'])->group(function () {
         $userCategory = $user->category_id;
         
         // Fetch all tasks for display
-        $tasks = \App\Models\Task::orderBy('created_at', 'desc')
+        $tasks = \App\Models\Task::orderByRaw(
+                'CASE WHEN category_id = ? THEN 0 WHEN category_id > ? THEN 1 ELSE 2 END',
+                [$userCategory, $userCategory]
+            )
+            ->orderBy('category_id')
+            ->orderBy('created_at', 'desc')
             ->get();
         
         // Get user's completed tasks with status

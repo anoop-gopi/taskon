@@ -18,7 +18,7 @@
           <div>
             <h3 class="font-bold">Current Plan: {{ $currentCategory->name }}</h3>
             <div class="text-sm">
-              {{ $currentCategory->tasks_per_week }} {{ $currentCategory->tasks_per_week == 1 ? 'task' : 'tasks' }} per week
+              {{ $currentCategory->tasks_per_week }} {{ $currentCategory->tasks_per_week == 1 ? 'task' : 'tasks' }} per month
               @if($currentCategory->earning_per_task > 0)
                 • ${{ number_format($currentCategory->earning_per_task, 0) }} per task
               @endif
@@ -63,7 +63,7 @@
             <div class="space-y-3 mb-6">
               <div class="flex items-center gap-2">
                 <span class="icon-[tabler--check] size-5 text-success"></span>
-                <span><strong>{{ $category->tasks_per_week }}</strong> tasks per week</span>
+                <span><strong>{{ $category->tasks_per_week }}</strong> tasks per month</span>
               </div>
               <div class="flex items-center gap-2">
                 <span class="icon-[tabler--check] size-5 text-success"></span>
@@ -151,7 +151,7 @@
             <div class="card-body items-center text-center">
               <span class="icon-[tabler--calendar-check] size-12 text-primary mb-4"></span>
               <h3 class="card-title text-lg">More Tasks</h3>
-              <p class="text-base-content/70">Complete more tasks per week to maximize income</p>
+              <p class="text-base-content/70">Complete more tasks per month to maximize income</p>
             </div>
           </div>
           <div class="card bg-base-200">
@@ -193,7 +193,7 @@
             </table>
           </div>
           <p class="text-sm text-base-content/60 mt-4">
-            * Based on completing all available tasks per week for 4 weeks
+            * Based on completing all available tasks per month
           </p>
         </div>
       </div>
