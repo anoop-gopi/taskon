@@ -30,7 +30,7 @@
               <span class="icon-[tabler--question-mark] text-primary size-6 flex-shrink-0"></span>
               What payment methods are available?
             </h3>
-            <p class="text-base-content/70">We digital wallets now. Withdrawals are available once you reach the minimum threshold.</p>
+            <p class="text-base-content/70">We support cryptocurrency now. Withdrawals are available once you reach the minimum threshold.</p>
           </div>
         </div>
 
