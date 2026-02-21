@@ -184,9 +184,9 @@
                 <tr>
                   <td class="font-semibold">{{ $category->name }}</td>
                   <td>${{ number_format($category->price, 0) }}</td>
-                  <td class="text-success font-semibold">${{ number_format($category->tasks_per_week * $category->earning_per_task, 0) }}</td>
-                  <td class="text-primary font-bold">${{ number_format(($category->tasks_per_week * $category->earning_per_task) - $category->price, 0) }}</td>
-                  <td class="font-bold">{{ number_format(((($category->tasks_per_week * $category->earning_per_task) - $category->price) / $category->price) * 100, 0) }}%</td>
+                  <td class="text-success font-semibold">${{ number_format($category->tasks_per_week * $category->earning_per_task * 12, 0) }}</td>
+                  <td class="text-primary font-bold">${{ number_format(($category->tasks_per_week * $category->earning_per_task * 12) - $category->price, 0) }}</td>
+                  <td class="font-bold">{{ number_format(((($category->tasks_per_week * $category->earning_per_task * 12) - $category->price) / $category->price) * 100, 0) }}%</td>
                 </tr>
                 @endforeach
               </tbody>
