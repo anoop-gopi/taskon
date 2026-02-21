@@ -272,8 +272,8 @@
                 <div class="alert alert-info mt-4">
                   <span class="icon-[tabler--alert-circle] size-4"></span>
                   <span class="text-xs">
-                    <strong>Important:</strong> Only Bitcoin (BTC) addresses are supported. 
-                    Double-check your address before saving to avoid loss of funds.
+                    <strong>Account Protection:</strong> 
+To safeguard your funds, you may only withdraw to the same wallet address used for your account upgrade.
                   </span>
                 </div>
               </div>

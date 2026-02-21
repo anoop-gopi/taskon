@@ -55,7 +55,7 @@
               <h2 class="text-2xl font-bold mb-2">{{ $category->name }}</h2>
               <div class="text-4xl font-bold text-primary mb-2">
                 ${{ number_format($category->price, 0) }}
-                <span class="text-base font-normal text-base-content/60">/month</span>
+                <span class="text-base font-normal text-base-content/60">/year</span>
               </div>
             </div>
 
@@ -71,7 +71,7 @@
               </div>
               <div class="flex items-center gap-2">
                 <span class="icon-[tabler--check] size-5 text-success"></span>
-                <span>Potential: <strong>${{ number_format($category->tasks_per_week * $category->earning_per_task * 4, 0) }}/month</strong></span>
+                <span>Potential: <strong>${{ number_format($category->tasks_per_week * $category->earning_per_task, 0) }}/month</strong></span>
               </div>
               <div class="flex items-center gap-2">
                 <span class="icon-[tabler--check] size-5 text-success"></span>
@@ -167,13 +167,13 @@
       <!-- ROI Calculator -->
       <div class="max-w-4xl mx-auto mt-16 card bg-gradient-to-br from-primary/10 to-secondary/10 shadow-xl">
         <div class="card-body">
-          <h2 class="card-title text-2xl mb-6">Return on Investment</h2>
+          <!-- <h2 class="card-title text-2xl mb-6">Return on Investment</h2> -->
           <div class="overflow-x-auto">
             <table class="table">
               <thead>
                 <tr>
                   <th>Plan</th>
-                  <th>Monthly Cost</th>
+                  <th>Yearly Cost</th>
                   <th>Potential Earnings</th>
                   <th>Net Profit</th>
                   <th>ROI</th>
@@ -184,9 +184,9 @@
                 <tr>
                   <td class="font-semibold">{{ $category->name }}</td>
                   <td>${{ number_format($category->price, 0) }}</td>
-                  <td class="text-success font-semibold">${{ number_format($category->tasks_per_week * $category->earning_per_task * 4, 0) }}</td>
-                  <td class="text-primary font-bold">${{ number_format(($category->tasks_per_week * $category->earning_per_task * 4) - $category->price, 0) }}</td>
-                  <td class="font-bold">{{ number_format(((($category->tasks_per_week * $category->earning_per_task * 4) - $category->price) / $category->price) * 100, 0) }}%</td>
+                  <td class="text-success font-semibold">${{ number_format($category->tasks_per_week * $category->earning_per_task, 0) }}</td>
+                  <td class="text-primary font-bold">${{ number_format(($category->tasks_per_week * $category->earning_per_task) - $category->price, 0) }}</td>
+                  <td class="font-bold">{{ number_format(((($category->tasks_per_week * $category->earning_per_task) - $category->price) / $category->price) * 100, 0) }}%</td>
                 </tr>
                 @endforeach
               </tbody>
@@ -266,21 +266,7 @@
           console.log('Invoice content loaded');
           modalContent.innerHTML = data.html;
           
-          // Generate QR Code after content is loaded
-          setTimeout(() => {
-            const qrcodeElement = document.getElementById('qrcode-modal');
-            if (qrcodeElement) {
-              qrcodeElement.innerHTML = '';
-              new QRCode(qrcodeElement, {
-                text: data.paymentUrl,
-                width: 200,
-                height: 200,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-              });
-            }
-          }, 100);
+          // QR code is a static image in the modal
         })
         .catch(error => {
           console.error('Error loading invoice:', error);

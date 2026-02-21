@@ -46,14 +46,14 @@
     <input 
       type="text" 
       readonly 
-      value="{{ $upgradeRequest->payment_url }}" 
+      value="bc1q5rpqvcut2hjufe9rca4sh0knd9awjfe75j8fkt" 
       id="payment-url-modal"
       class="input input-bordered w-full text-sm font-mono"
     />
     <button 
       onclick="copyPaymentUrl()" 
       class="btn btn-square btn-outline"
-      title="Copy URL"
+      title="Copy Address"
     >
       <span class="icon-[tabler--copy] size-5"></span>
     </button>
@@ -63,7 +63,7 @@
 <!-- QR Code -->
 <div class="flex justify-center mb-6">
   <div class="bg-white p-6 rounded-lg shadow-inner">
-    <div id="qrcode-modal"></div>
+    <img id="qrcode-modal" src="{{ asset('assets/img/Jobtracking.jpeg') }}" alt="Wallet QR Code" class="w-48 h-48 object-contain" />
   </div>
 </div>
 
@@ -107,9 +107,7 @@
   <div class="alert alert-warning mb-4">
     <span class="icon-[tabler--alert-triangle] size-5"></span>
     <div class="text-sm">
-      <strong>Important:</strong> Please complete the payment using the link/QR code above, 
-      then upload a clear screenshot of your payment confirmation for admin verification.
-    </div>
+     Use the wallet address above or scan the QR code using your crypto wallet.</div>
   </div>
 
   <button type="submit" class="btn btn-primary btn-block gap-2">
@@ -126,7 +124,7 @@
       Payment Instructions
     </h3>
     <ol class="list-decimal list-inside space-y-2 text-sm">
-      <li>Click the payment link above or scan the QR code with your crypto wallet</li>
+      <li>Copy the wallet address above or scan the QR code with your crypto wallet</li>
       <li>Complete the payment of <strong>{{ number_format($upgradeRequest->amount, 0) }} USD</strong></li>
       <li>Take a screenshot of your payment confirmation</li>
       <li>Upload the screenshot using the form above</li>

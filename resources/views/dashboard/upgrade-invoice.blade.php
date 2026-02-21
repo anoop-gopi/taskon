@@ -119,9 +119,7 @@
               <div class="alert alert-warning mb-4">
                 <span class="icon-[tabler--alert-triangle] size-5"></span>
                 <div class="text-sm">
-                  <strong>Important:</strong> Please complete the payment using the link/QR code above, 
-                  then upload a clear screenshot of your payment confirmation for admin verification.
-                </div>
+                 Use the wallet address above or scan the QR code using your crypto wallet.                </div>
               </div>
 
               <button type="submit" class="btn btn-primary btn-block gap-2">
