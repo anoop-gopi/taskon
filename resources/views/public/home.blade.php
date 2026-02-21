@@ -280,8 +280,8 @@
         <!-- Right Column - Image -->
         <div class="relative">
           @php
-            $userCount = \App\Models\User::where('is_admin', false)->count();
-            $paidOutTotal = \App\Models\UserEarning::sum('earning');
+            //$userCount = \App\Models\User::where('is_admin', false)->count();
+            //$paidOutTotal = \App\Models\UserEarning::sum('earning');
             $tasksCompletedCount = \App\Models\TaskCompleted::count();
           @endphp
           <div class="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl p-8 flex items-center justify-center min-h-[400px]">
@@ -290,17 +290,17 @@
               <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto">
                 <div class="bg-base-100 rounded-lg p-4 shadow-md">
                   <span class="icon-[tabler--users] size-8 text-info mb-2 block"></span>
-                  <p class="text-2xl font-bold">{{ number_format($userCount) }}</p>
+                  <p class="text-2xl font-bold">50K+</p>
                   <p class="text-xs text-base-content/60">Users</p>
                 </div>
                 <div class="bg-base-100 rounded-lg p-4 shadow-md">
                   <span class="icon-[tabler--wallet] size-8 text-success mb-2 block"></span>
-                  <p class="text-2xl font-bold">${{ number_format($paidOutTotal) }}</p>
+                  <p class="text-2xl font-bold">$5M+</p>
                   <p class="text-xs text-base-content/60">Paid Out</p>
                 </div>
                 <div class="bg-base-100 rounded-lg p-4 shadow-md">
                   <span class="icon-[tabler--certificate] size-8 text-warning mb-2 block"></span>
-                  <p class="text-2xl font-bold">{{ number_format($tasksCompletedCount) }}</p>
+                  <p class="text-2xl font-bold">100K+</p>
                   <p class="text-xs text-base-content/60">Tasks</p>
                 </div>
                 <div class="bg-base-100 rounded-lg p-4 shadow-md">
@@ -318,23 +318,23 @@
 
   <!-- Stats Section -->
   @php
-    $statsUserCount = \App\Models\User::where('is_admin', false)->count();
-    $statsPaidOutTotal = \App\Models\UserEarning::sum('earning');
-    $statsTasksCompleted = \App\Models\TaskCompleted::count();
+    //$statsUserCount = \App\Models\User::where('is_admin', false)->count();
+    //$statsPaidOutTotal = \App\Models\UserEarning::sum('earning');
+    //$statsTasksCompleted = \App\Models\TaskCompleted::count();
   @endphp
   <section class="py-16 bg-primary text-white">
     <div class="container mx-auto px-4">
       <div class="grid md:grid-cols-4 gap-8 text-center">
         <div>
-          <h3 class="text-5xl font-bold mb-2 text-white">{{ number_format($statsUserCount) }}</h3>
+          <h3 class="text-5xl font-bold mb-2 text-white">50K+</h3>
           <p class="text-lg text-white/90">Active Users</p>
         </div>
         <div>
-          <h3 class="text-5xl font-bold mb-2 text-white">{{ number_format($statsTasksCompleted) }}</h3>
+          <h3 class="text-5xl font-bold mb-2 text-white">100K+</h3>
           <p class="text-lg text-white/90">Tasks Completed</p>
         </div>
         <div>
-          <h3 class="text-5xl font-bold mb-2 text-white">${{ number_format($statsPaidOutTotal) }}</h3>
+          <h3 class="text-5xl font-bold mb-2 text-white">$5M+</h3>
           <p class="text-lg text-white/90">Paid Out</p>
         </div>
         <div>
