@@ -213,11 +213,6 @@
   <!-- Testimonials Section -->
   <section id="learn" class="py-16 bg-base-200">
     <div class="container mx-auto px-4">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">What Users Say</h2>
-        <p class="text-xl text-base-content/70">Join thousands of happy earners</p>
-      </div>
-
       @php
         $bannerVideo = $bannerVideo ?? \App\Models\Video::where('is_active', true)->orderBy('display_order')->first();
         $videoTestimonials = \App\Models\Video::where('is_active', true)
@@ -229,9 +224,14 @@
           ->get();
       @endphp
 
-      <div class="grid md:grid-cols-2 gap-8">
+      <div class="grid md:grid-cols-4 gap-8">
+        <div class="md:col-span-2 flex flex-col justify-center items-center text-center h-full">
+          <h2 class="text-4xl font-bold mb-4">What Users Say</h2>
+          <p class="text-xl text-base-content/70">Join thousands of happy earners</p>
+        </div>
+
         @forelse($videoTestimonials as $video)
-        <div class="card bg-base-100 shadow-lg overflow-hidden">
+        <div class="card bg-base-100 shadow-lg overflow-hidden md:col-span-1">
           <div class="bg-black/10 flex items-center justify-center" style="height: 350px;">
             <iframe
               src="{{ $video->embed_url }}"
@@ -245,7 +245,7 @@
           </div>
         </div>
         @empty
-        <div class="card bg-base-100 shadow-lg">
+        <div class="card bg-base-100 shadow-lg md:col-span-2">
           <div class="card-body text-center">
             <p class="text-base-content/70">Video testimonials will be available soon. Check back later!</p>
           </div>
