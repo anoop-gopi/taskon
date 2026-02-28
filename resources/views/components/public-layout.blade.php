@@ -366,7 +366,7 @@
                             <span class="label-text">Currently, we’re only onboarding
 company-affiliated users. Please enter your employer's name below to continue.</span>
                         </label>
-                        <input type="text" id="signup_company_name" name="company_name" placeholder="Your Company" class="input input-bordered" required />
+                        <input type="text" id="signup_company_name" name="company_name" placeholder="Company Name" class="input input-bordered" required />
                         <span class="text-error text-sm hidden" id="signup_company_name_error"></span>
                     </div>
                     <div class="form-control">
