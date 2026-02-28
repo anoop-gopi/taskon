@@ -619,6 +619,39 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ]);
     })->name('admin.dashboard');
 
+    Route::get('/admin/change-password', function () {
+        $user = auth()->user();
+
+        if (!$user || !$user->is_admin) {
+            return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
+        }
+
+        return view('admin.change-password');
+    })->name('admin.password.edit');
+
+    Route::post('/admin/change-password', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+
+        if (!$user || !$user->is_admin) {
+            return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
+        }
+
+        $validated = $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if (!\Illuminate\Support\Facades\Hash::check($validated['current_password'], $user->password)) {
+            return redirect()->route('admin.password.edit')->with('error', 'Current password is incorrect.');
+        }
+
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['new_password']),
+        ]);
+
+        return redirect()->route('admin.password.edit')->with('success', 'Password changed successfully.');
+    })->name('admin.password.update');
+
     Route::get('/admin/users', function () {
         $user = auth()->user();
         

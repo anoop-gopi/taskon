@@ -16,9 +16,9 @@
         <span class="icon-[tabler--video] size-5"></span>
         <span>Videos</span>
       </a>
-      <a href="#settings" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
-        <span class="icon-[tabler--settings] size-5"></span>
-        <span>Settings</span>
+      <a href="{{ route('admin.password.edit') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
+        <span class="icon-[tabler--lock-password] size-5"></span>
+        <span>Change Password</span>
       </a>
     </nav>
 
