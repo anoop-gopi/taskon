@@ -177,8 +177,45 @@
             <div class="card-body">
               <h3 class="card-title text-lg mb-4">Submitted Work & Screenshot</h3>
               @if($approval->image_path)
+                @php
+                  $submittedFileUrl = route('admin.submitted-file', ['path' => $approval->image_path]);
+                  $submittedFileExtension = strtolower(pathinfo($approval->image_path, PATHINFO_EXTENSION));
+                  $isImageFile = in_array($submittedFileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                  $isPdfFile = $submittedFileExtension === 'pdf';
+                  $isExcelFile = in_array($submittedFileExtension, ['xls', 'xlsx']);
+                @endphp
                 <div class="bg-base-200 rounded-lg p-6 mb-4">
-                  <img src="{{ asset('storage/' . $approval->image_path) }}" alt="Task completion screenshot" class="w-full h-auto rounded-lg shadow-sm">
+                  @if($isImageFile)
+                    <img src="{{ $submittedFileUrl }}" alt="Task completion screenshot" class="w-full h-auto rounded-lg shadow-sm">
+                  @elseif($isPdfFile)
+                    <iframe src="{{ $submittedFileUrl }}" class="w-full h-[500px] rounded-lg shadow-sm" title="Submitted PDF"></iframe>
+                  @elseif($isExcelFile)
+                    <div class="flex flex-col items-center justify-center text-center min-h-[280px] border-2 border-dashed border-base-300 rounded-lg p-6">
+                      <span class="icon-[tabler--file-spreadsheet] size-16 text-success mb-3"></span>
+                      <p class="font-semibold mb-1">Excel File Submitted</p>
+                      <p class="text-sm text-base-content/60 mb-4">This file type cannot be previewed directly here.</p>
+                      <div class="flex flex-wrap gap-3 justify-center">
+                        <a href="{{ $submittedFileUrl }}" target="_blank" class="btn btn-primary btn-sm gap-2">
+                          <span class="icon-[tabler--external-link] size-4"></span>
+                          Open File
+                        </a>
+                        <a href="{{ $submittedFileUrl }}" download class="btn btn-outline btn-sm gap-2">
+                          <span class="icon-[tabler--download] size-4"></span>
+                          Download
+                        </a>
+                      </div>
+                    </div>
+                  @else
+                    <div class="flex flex-col items-center justify-center text-center min-h-[280px] border-2 border-dashed border-base-300 rounded-lg p-6">
+                      <span class="icon-[tabler--file] size-16 text-base-content/50 mb-3"></span>
+                      <p class="font-semibold mb-1">File Submitted</p>
+                      <p class="text-sm text-base-content/60 mb-4">Preview is not available for this file type.</p>
+                      <a href="{{ $submittedFileUrl }}" target="_blank" class="btn btn-primary btn-sm gap-2">
+                        <span class="icon-[tabler--external-link] size-4"></span>
+                        Open File
+                      </a>
+                    </div>
+                  @endif
                 </div>
               @else
                 <div class="bg-base-200 rounded-lg p-6 mb-4">
