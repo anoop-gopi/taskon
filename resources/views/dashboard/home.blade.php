@@ -12,7 +12,7 @@
   <!-- Hero Section -->
   <section class="bg-primary text-white py-12 -mx-4 md:-mx-0">
     <div class="container mx-auto px-4">
-      <h1 class="text-4xl md:text-5xl font-bold mb-2">Welcome back, John!</h1>
+      <h1 class="text-4xl md:text-5xl font-bold mb-2">Welcome back, {{ auth()->user()->name ?? 'User' }}!</h1>
       <p class="text-white/80">Browse available tasks and start earning today</p>
     </div>
   </section>

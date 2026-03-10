@@ -857,6 +857,20 @@ Route::post('/admin/users/{id}/reject', function ($id) {
     return redirect()->route('admin.users')->with('success', 'User rejected.');
 })->name('admin.user.reject');
 
+Route::get('/admin/submitted-file/{path}', function ($path) {
+    $normalizedPath = ltrim($path, '/');
+
+    if (str_contains($normalizedPath, '..')) {
+        abort(404);
+    }
+
+    if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($normalizedPath)) {
+        abort(404, 'File not found.');
+    }
+
+    return response()->file(\Illuminate\Support\Facades\Storage::disk('public')->path($normalizedPath));
+})->where('path', '.*')->name('admin.submitted-file');
+
 Route::get('/admin/approvals/{id}', function ($id) {
     $approval = \App\Models\TaskCompleted::with(['task', 'user', 'taskStatus'])->findOrFail($id);
     
