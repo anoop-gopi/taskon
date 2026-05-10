@@ -19,4 +19,9 @@ class MockTest extends Model
     {
         return $this->hasMany(MockTestQuestion::class);
     }
+
+    public function attempts(): HasMany
+    {
+        return $this->hasMany(MockTestAttempt::class);
+    }
 }

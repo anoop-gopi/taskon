@@ -44,6 +44,62 @@
     </div>
   </section>
 
+  <!-- Available Mock Tests Section -->
+  <section class="py-12 bg-base-100">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-3xl font-bold">Available Mock Tests</h2>
+          <p class="text-sm text-base-content/60 mt-1">Each correct answer gives 1 mark. Wrong answers give 0.</p>
+        </div>
+        <a href="{{ route('dashboard.mock-tests') }}" class="btn btn-outline btn-sm gap-2">
+          <span class="icon-[tabler--list] size-4"></span>
+          View All Tests
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse($mockTests as $mockTest)
+          @php
+            $latestScore = $latestMockTestScores->get($mockTest->id);
+          @endphp
+          <div class="card bg-base-100 shadow-lg border border-primary/20 hover:shadow-xl transition">
+            <div class="card-body">
+              <div class="flex items-start justify-between gap-3">
+                <h3 class="card-title text-lg">{{ $mockTest->title }}</h3>
+                <div class="badge badge-info gap-1 shrink-0">
+                  <span class="icon-[tabler--help-square-rounded] size-3"></span>
+                  {{ $mockTest->questions_count }}
+                </div>
+              </div>
+
+              <p class="text-base-content/70 text-sm">{{ Str::limit($mockTest->description, 100) ?: 'No description provided.' }}</p>
+
+              @if($latestScore)
+                <div class="mt-3 p-2 rounded-lg bg-primary/5 border border-primary/20 text-sm">
+                  <span class="text-base-content/70">Last Score:</span>
+                  <span class="font-bold text-primary">{{ $latestScore->score }}/{{ $latestScore->total_questions }}</span>
+                </div>
+              @endif
+
+              <div class="mt-4">
+                <a href="{{ route('dashboard.mock-tests.show', $mockTest->id) }}" class="btn btn-primary btn-sm gap-2">
+                  <span class="icon-[tabler--player-play] size-4"></span>
+                  {{ $latestScore ? 'Retake Test' : 'Start Test' }}
+                </a>
+              </div>
+            </div>
+          </div>
+        @empty
+          <div class="col-span-full text-center py-10">
+            <span class="icon-[tabler--inbox] size-12 text-base-content/30"></span>
+            <p class="text-base-content/60 mt-2">No mock tests available yet.</p>
+          </div>
+        @endforelse
+      </div>
+    </div>
+  </section>
+
   <!-- Available Tasks Section -->
   <section class="py-12 bg-base-200">
     <div class="container mx-auto px-4">
@@ -67,7 +123,7 @@
           <h2 class="text-3xl font-bold">Available Tasks</h2>
           @if($userCategory)
             <p class="text-sm text-base-content/60 mt-1">
-              Your Plan: <span class="font-semibold">{{ $userCategory->name }}</span> 
+              Your Plan: <span class="font-semibold">{{ $userCategory->name }}</span>
               ({{ $userCategory->tasks_per_week }} {{ $userCategory->tasks_per_week == 1 ? 'task' : 'tasks' }}/month)
             </p>
           @endif

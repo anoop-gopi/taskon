@@ -147,11 +147,26 @@ Route::middleware(['auth'])->group(function () {
         $completedTasks = \App\Models\UserEarning::where('user_id', $user->id)
             ->count();
 
+        $mockTests = \App\Models\MockTest::withCount('questions')
+            ->whereHas('questions')
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get();
+
+        $latestMockTestScores = \App\Models\MockTestAttempt::where('user_id', $user->id)
+            ->whereIn('mock_test_id', $mockTests->pluck('id'))
+            ->orderBy('completed_at', 'desc')
+            ->get()
+            ->unique('mock_test_id')
+            ->keyBy('mock_test_id');
+
         return view('dashboard.home', [
             'tasks' => $tasks,
             'userCategory' => $user->category,
             'totalEarnings' => $totalEarnings,
             'completedTasks' => $completedTasks,
+            'mockTests' => $mockTests,
+            'latestMockTestScores' => $latestMockTestScores,
         ]);
     })->name('dashboard.home');
 
@@ -387,6 +402,125 @@ Route::middleware(['auth'])->group(function () {
 
         return view('dashboard.tasks', ['completedTasks' => $completedTasks]);
     })->name('dashboard.tasks');
+
+    Route::get('/dashboard/mock-tests', function () {
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+
+        $mockTests = \App\Models\MockTest::withCount('questions')
+            ->whereHas('questions')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+
+        $latestAttempts = \App\Models\MockTestAttempt::where('user_id', $user->id)
+            ->whereIn('mock_test_id', $mockTests->pluck('id'))
+            ->orderBy('completed_at', 'desc')
+            ->get()
+            ->unique('mock_test_id')
+            ->keyBy('mock_test_id');
+
+        return view('dashboard.mock-tests', [
+            'mockTests' => $mockTests,
+            'latestAttempts' => $latestAttempts,
+        ]);
+    })->name('dashboard.mock-tests');
+
+    Route::get('/dashboard/mock-tests/{id}', function ($id) {
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+
+        $mockTest = \App\Models\MockTest::with(['questions' => function ($query) {
+            $query->orderBy('question_number');
+        }])->findOrFail($id);
+
+        if ($mockTest->questions->isEmpty()) {
+            return redirect()->route('dashboard.mock-tests')->with('error', 'This test has no questions yet.');
+        }
+
+        return view('dashboard.mock-test-attempt', [
+            'mockTest' => $mockTest,
+        ]);
+    })->name('dashboard.mock-tests.show');
+
+    Route::post('/dashboard/mock-tests/{id}/submit', function (\Illuminate\Http\Request $request, $id) {
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+
+        $mockTest = \App\Models\MockTest::with(['questions' => function ($query) {
+            $query->orderBy('question_number');
+        }])->findOrFail($id);
+
+        if ($mockTest->questions->isEmpty()) {
+            return redirect()->route('dashboard.mock-tests')->with('error', 'This test has no questions yet.');
+        }
+
+        $questionIds = $mockTest->questions->pluck('id')->all();
+
+        $request->validate([
+            'answers' => ['required', 'array'],
+            'answers.*' => ['required', 'in:A,B,C,D'],
+        ]);
+
+        $answers = $request->input('answers', []);
+
+        foreach ($questionIds as $questionId) {
+            if (!isset($answers[$questionId])) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Please answer all questions before submitting.');
+            }
+        }
+
+        $score = 0;
+        foreach ($mockTest->questions as $question) {
+            $selectedAnswer = $answers[$question->id] ?? null;
+            if ($selectedAnswer === $question->correct_option) {
+                $score++;
+            }
+        }
+
+        $attempt = \App\Models\MockTestAttempt::create([
+            'mock_test_id' => $mockTest->id,
+            'user_id' => $user->id,
+            'score' => $score,
+            'total_questions' => $mockTest->questions->count(),
+            'completed_at' => now(),
+        ]);
+
+        return redirect()->route('dashboard.mock-tests.result', [
+            'id' => $mockTest->id,
+            'attemptId' => $attempt->id,
+        ]);
+    })->name('dashboard.mock-tests.submit');
+
+    Route::get('/dashboard/mock-tests/{id}/result/{attemptId}', function ($id, $attemptId) {
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
+        }
+
+        $mockTest = \App\Models\MockTest::findOrFail($id);
+
+        $attempt = \App\Models\MockTestAttempt::where('id', $attemptId)
+            ->where('mock_test_id', $mockTest->id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        return view('dashboard.mock-test-result', [
+            'mockTest' => $mockTest,
+            'attempt' => $attempt,
+        ]);
+    })->name('dashboard.mock-tests.result');
 
     Route::get('/dashboard/earnings', function () {
         $user = auth()->user();

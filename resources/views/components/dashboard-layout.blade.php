@@ -194,6 +194,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('dashboard.mock-tests') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.mock-tests*') ? 'bg-primary text-white' : 'text-base-content' }}">
+                                <span class="icon-[tabler--checklist] size-5"></span>
+                                <span class="font-semibold">Mock Tests</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('dashboard.earnings') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary transition {{ request()->routeIs('dashboard.earnings') ? 'bg-primary text-white' : 'text-base-content' }}">
                                 <span class="icon-[tabler--wallet] size-5"></span>
                                 <span class="font-semibold">Earnings</span>
@@ -251,6 +257,10 @@
                         <li><a href="{{ route('dashboard.tasks') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
                             <span class="icon-[tabler--clipboard-list] size-5"></span>
                             <span class="font-semibold">Tasks</span>
+                        </a></li>
+                        <li><a href="{{ route('dashboard.mock-tests') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
+                            <span class="icon-[tabler--checklist] size-5"></span>
+                            <span class="font-semibold">Mock Tests</span>
                         </a></li>
                         <li><a href="{{ route('dashboard.earnings') }}" onclick="return checkSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 hover:text-primary text-base-content transition">
                             <span class="icon-[tabler--wallet] size-5"></span>

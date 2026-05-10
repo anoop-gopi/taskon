@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -75,5 +74,10 @@ class User extends Authenticatable
     public function category(): BelongsTo
     {
         return $this->belongsTo(UserCategory::class, 'category_id');
+    }
+
+    public function mockTestAttempts(): HasMany
+    {
+        return $this->hasMany(MockTestAttempt::class);
     }
 }
