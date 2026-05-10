@@ -18,7 +18,7 @@
       </a>
       <a href="{{ route('admin.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.tasks*') ? 'bg-primary text-white' : 'hover:bg-primary/10 text-base-content' }} transition">
         <span class="icon-[tabler--checklist] size-5"></span>
-        <span>Tasks</span>
+        <span>Mock Tests</span>
       </a>
       <a href="{{ route('admin.approvals') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.approvals*') ? 'bg-primary text-white' : 'hover:bg-primary/10 text-base-content' }} transition">
         <span class="icon-[tabler--checkbox] size-5"></span>

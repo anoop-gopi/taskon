@@ -18,7 +18,7 @@
       </a>
       <a href="{{ route('admin.tasks') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white font-medium">
         <span class="icon-[tabler--checklist] size-5"></span>
-        <span>Tasks</span>
+        <span>Mock Tests</span>
       </a>
       <a href="{{ route('admin.approvals') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--checkbox] size-5"></span>
@@ -60,8 +60,8 @@
       <div class="px-4 md:px-8 py-12">
         <div class="flex flex-col md:flex-row items-center justify-between">
           <div>
-            <h1 class="text-4xl font-bold text-white mb-2">Create New Task</h1>
-            <p class="text-white/80">Add a new task for users to complete</p>
+            <h1 class="text-4xl font-bold text-white mb-2">Create New Mock Test</h1>
+            <p class="text-white/80">Add a mock test with 30 questions</p>
           </div>
         </div>
       </div>

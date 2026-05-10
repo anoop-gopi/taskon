@@ -18,7 +18,7 @@
       </a>
       <a href="{{ route('admin.tasks') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--checklist] size-5"></span>
-        <span>Tasks</span>
+        <span>Mock Tests</span>
       </a>
       <a href="{{ route('admin.approvals') }}" onclick="return checkAdminSessionBeforeNavigate(event)" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-base-content transition">
         <span class="icon-[tabler--checkbox] size-5"></span>

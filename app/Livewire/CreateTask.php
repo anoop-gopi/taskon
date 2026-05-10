@@ -2,41 +2,35 @@
 
 namespace App\Livewire;
 
-use App\Models\Task;
-use App\Models\UserCategory;
+use App\Models\MockTest;
 use Livewire\Component;
 
 class CreateTask extends Component
 {
-    public $name = '';
+    public $title = '';
     public $description = '';
-    public $earning = '';
-    public $category_id = 1; // Default to Free
 
     protected $rules = [
-        'name' => 'required|string|max:255',
+        'title' => 'required|string|max:255',
         'description' => 'nullable|string',
-        'earning' => 'required|numeric|min:0',
-        'category_id' => 'required|exists:user_categories,id',
     ];
 
     public function save()
     {
         $validated = $this->validate();
 
-        Task::create($validated);
+        $mockTest = MockTest::create([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+        ]);
 
-        session()->flash('success', 'Task created successfully!');
+        session()->flash('success', 'Mock test created. Now add questions below.');
 
-        return redirect()->route('admin.tasks');
+        return redirect()->route('admin.task.show', $mockTest->id);
     }
 
     public function render()
     {
-        $categories = UserCategory::orderBy('id')->get();
-        
-        return view('livewire.create-task', [
-            'categories' => $categories,
-        ]);
+        return view('livewire.create-task');
     }
 }

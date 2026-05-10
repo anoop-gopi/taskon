@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Task;
+use App\Models\MockTest;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,10 +20,10 @@ class TasksList extends Component
 
     public function render()
     {
-        $tasks = Task::with('category')
+        $mockTests = MockTest::withCount('questions')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
+                    $q->where('title', 'like', '%' . $this->search . '%')
                       ->orWhere('description', 'like', '%' . $this->search . '%');
                 });
             })
@@ -31,7 +31,7 @@ class TasksList extends Component
             ->paginate(10);
 
         return view('livewire.tasks-list', [
-            'tasks' => $tasks,
+            'mockTests' => $mockTests,
         ]);
     }
 }

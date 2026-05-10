@@ -110,14 +110,14 @@ Route::get('/disclaimer', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         // Get user's category or default to free (1)
         $userCategory = $user->category_id;
-        
+
         // Fetch all tasks for display
         $tasks = \App\Models\Task::orderByRaw(
                 'CASE WHEN category_id = ? THEN 0 WHEN category_id > ? THEN 1 ELSE 2 END',
@@ -126,27 +126,27 @@ Route::middleware(['auth'])->group(function () {
             ->orderBy('category_id')
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         // Get user's completed tasks with status
         $completedTasksMap = \App\Models\TaskCompleted::where('user_id', $user->id)
             ->with('taskStatus')
             ->get()
             ->keyBy('task_id');
-        
+
         // Add completion status to each task
         $tasks = $tasks->map(function($task) use ($completedTasksMap) {
             $completed = $completedTasksMap->get($task->id);
             $task->completion_status = $completed ? $completed->taskStatus->name : null;
             return $task;
         });
-        
+
         // Get user earnings statistics
         $totalEarnings = \App\Models\UserEarning::where('user_id', $user->id)
             ->sum('earning');
-        
+
         $completedTasks = \App\Models\UserEarning::where('user_id', $user->id)
             ->count();
-        
+
         return view('dashboard.home', [
             'tasks' => $tasks,
             'userCategory' => $user->category,
@@ -157,11 +157,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/profile', function () {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         return view('dashboard.profile', [
             'user' => $user,
         ]);
@@ -169,92 +169,92 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/dashboard/profile/update-wallet', function (\Illuminate\Http\Request $request) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $validated = $request->validate([
             'crypto_wallet' => 'nullable|string|max:255',
         ]);
-        
+
         $user->update([
             'crypto_wallet' => $validated['crypto_wallet'],
         ]);
-        
+
         return redirect()->route('dashboard.profile')->with('success', 'Crypto wallet updated successfully!');
     })->name('dashboard.profile.update-wallet');
 
     Route::post('/dashboard/profile/update-personal', function (\Illuminate\Http\Request $request) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'company_name' => 'nullable|string|max:255',
         ]);
-        
+
         $user->update($validated);
-        
+
         return redirect()->route('dashboard.profile')->with('success', 'Personal information updated successfully!');
     })->name('dashboard.profile.update-personal');
 
     Route::post('/dashboard/profile/update-contact', function (\Illuminate\Http\Request $request) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $validated = $request->validate([
             'phone' => 'nullable|string|max:20',
             'alternative_email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:500',
         ]);
-        
+
         $user->update($validated);
-        
+
         return redirect()->route('dashboard.profile')->with('success', 'Contact information updated successfully!');
     })->name('dashboard.profile.update-contact');
 
     Route::post('/dashboard/profile/update-password', function (\Illuminate\Http\Request $request) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $validated = $request->validate([
             'current_password' => 'required|string',
             'new_password' => 'required|string|min:6|confirmed',
         ]);
-        
+
         // Check if current password matches
         if (!\Illuminate\Support\Facades\Hash::check($validated['current_password'], $user->password)) {
             return redirect()->route('dashboard.profile')->with('error', 'Current password is incorrect.');
         }
-        
+
         // Update password
         $user->update([
             'password' => \Illuminate\Support\Facades\Hash::make($validated['new_password']),
         ]);
-        
+
         return redirect()->route('dashboard.profile')->with('success', 'Password updated successfully!');
     })->name('dashboard.profile.update-password');
 
     Route::get('/dashboard/upgrade', function () {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $categories = \App\Models\UserCategory::where('id', '>', 1)->orderBy('id')->get();
         $currentCategory = $user->category;
-        
+
         return view('dashboard.upgrade', [
             'categories' => $categories,
             'currentCategory' => $currentCategory,
@@ -263,16 +263,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/dashboard/upgrade/{categoryId}', function ($categoryId) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Session expired. Please sign in again.',
             ], 401);
         }
-        
+
         $category = \App\Models\UserCategory::findOrFail($categoryId);
-        
+
         // Create upgrade request
         $upgradeRequest = \App\Models\UpgradeRequest::create([
             'user_id' => $user->id,
@@ -283,7 +283,7 @@ Route::middleware(['auth'])->group(function () {
             'expires_at' => now()->addHours(2),
             'status' => 'pending_payment',
         ]);
-        
+
         return response()->json([
             'success' => true,
             'upgradeRequestId' => $upgradeRequest->id,
@@ -292,18 +292,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/upgrade/invoice/{id}', function ($id) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $upgradeRequest = \App\Models\UpgradeRequest::with(['toCategory'])->findOrFail($id);
-        
+
         // Check if user owns this request
         if ($upgradeRequest->user_id != $user->id) {
             abort(403);
         }
-        
+
         return view('dashboard.upgrade-invoice', [
             'upgradeRequest' => $upgradeRequest,
         ]);
@@ -311,25 +311,25 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/upgrade/invoice/{id}/content', function ($id) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Session expired. Please sign in again.',
             ], 401);
         }
-        
+
         $upgradeRequest = \App\Models\UpgradeRequest::with(['toCategory'])->findOrFail($id);
-        
+
         // Check if user owns this request
         if ($upgradeRequest->user_id != $user->id) {
             abort(403);
         }
-        
+
         $html = view('dashboard.upgrade-invoice-modal', [
             'upgradeRequest' => $upgradeRequest,
         ])->render();
-        
+
         return response()->json([
             'success' => true,
             'html' => $html,
@@ -339,34 +339,34 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/dashboard/upgrade/invoice/{id}/submit', function (\Illuminate\Http\Request $request, $id) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Session expired. Please sign in again.',
             ], 401);
         }
-        
+
         $upgradeRequest = \App\Models\UpgradeRequest::findOrFail($id);
-        
+
         // Check if user owns this request
         if ($upgradeRequest->user_id != $user->id) {
             abort(403);
         }
-        
+
         $validated = $request->validate([
             'payment_screenshot' => 'required|image|max:5120', // 5MB max
         ]);
-        
+
         // Store the screenshot
         $path = $request->file('payment_screenshot')->store('payment-screenshots', 'public');
-        
+
         // Update upgrade request
         $upgradeRequest->update([
             'payment_screenshot' => $path,
             'status' => 'pending_approval',
         ]);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Payment screenshot submitted! Your upgrade request is pending admin approval.',
@@ -375,26 +375,26 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/tasks', function () {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $completedTasks = \App\Models\TaskCompleted::where('user_id', $user->id)
             ->with(['task', 'taskStatus'])
             ->orderBy('date_time', 'desc')
             ->get();
-        
+
         return view('dashboard.tasks', ['completedTasks' => $completedTasks]);
     })->name('dashboard.tasks');
 
     Route::get('/dashboard/earnings', function () {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $totalEarnings = \App\Models\UserEarning::where('user_id', $user->id)
             ->sum('earning');
 
@@ -467,43 +467,43 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/activity', function () {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         return view('dashboard.activity');
     })->name('dashboard.activity');
 
     Route::get('/dashboard/task/{taskId}', function ($taskId) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $task = \App\Models\Task::findOrFail($taskId);
         return view('dashboard.task-detail', ['task' => $task]);
     })->name('dashboard.task.show');
 
     Route::get('/dashboard/task/{taskId}/complete', function ($taskId) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $task = \App\Models\Task::findOrFail($taskId);
         return view('dashboard.task-complete', ['task' => $task]);
     })->name('dashboard.task.complete.form');
 
     Route::post('/dashboard/task/{taskId}/complete', function (\Illuminate\Http\Request $request, $taskId) {
         $user = auth()->user();
-        
+
         if (!$user) {
             return redirect()->route('public.home')->with('error', 'Session expired. Please sign in again.');
         }
-        
+
         $request->validate([
             'image' => 'required|file|mimes:jpeg,png,jpg,gif,pdf,xls,xlsx|max:10240',
             'notes' => 'nullable|string',
@@ -533,30 +533,30 @@ Route::get('/components', function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
         $user = auth()->user();
-        
+
         if (!$user || !$user->is_admin) {
             return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
         }
-        
+
         // Get stats for dashboard
         $totalUsers = \App\Models\User::where('is_admin', false)->count();
-        
+
         $totalRevenue = \App\Models\UpgradeRequest::where('status', 'approved')
             ->sum('amount');
-        
+
         $totalTasks = \App\Models\Task::count();
-        
+
         $userEarnings = \App\Models\UserEarning::sum('earning');
-        
+
         // Get recent activity (new users, payment requests, upgrade requests)
         $recentActivity = [];
-        
+
         // Recent user registrations
         $recentUsers = \App\Models\User::where('is_admin', false)
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get(['id', 'name', 'email', 'created_at']);
-        
+
         foreach ($recentUsers as $newUser) {
             $recentActivity[] = [
                 'type' => 'user',
@@ -567,13 +567,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
                 'date' => $newUser->created_at->format('Y-m-d'),
             ];
         }
-        
+
         // Recent payment requests
         $recentPayments = \App\Models\WithdrawalRequest::join('users', 'withdrawal_requests.user_id', '=', 'users.id')
             ->orderBy('withdrawal_requests.created_at', 'desc')
             ->limit(5)
             ->get(['users.name', 'users.email', 'withdrawal_requests.status', 'withdrawal_requests.created_at']);
-        
+
         foreach ($recentPayments as $payment) {
             $recentActivity[] = [
                 'type' => 'payment',
@@ -584,13 +584,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
                 'date' => $payment->created_at->format('Y-m-d'),
             ];
         }
-        
+
         // Recent upgrade requests
         $recentUpgrades = \App\Models\UpgradeRequest::join('users', 'upgrade_requests.user_id', '=', 'users.id')
             ->orderBy('upgrade_requests.created_at', 'desc')
             ->limit(5)
             ->get(['users.name', 'users.email', 'upgrade_requests.status', 'upgrade_requests.created_at']);
-        
+
         foreach ($recentUpgrades as $upgrade) {
             $recentActivity[] = [
                 'type' => 'upgrade',
@@ -601,15 +601,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
                 'date' => $upgrade->created_at->format('Y-m-d'),
             ];
         }
-        
+
         // Sort by date descending
         usort($recentActivity, function($a, $b) {
             return strtotime($b['date']) - strtotime($a['date']);
         });
-        
+
         // Limit to 10 most recent
         $recentActivity = array_slice($recentActivity, 0, 10);
-        
+
         return view('admin.dashboard', [
             'totalUsers' => $totalUsers,
             'totalRevenue' => $totalRevenue,
@@ -654,21 +654,21 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/admin/users', function () {
         $user = auth()->user();
-        
+
         if (!$user || !$user->is_admin) {
             return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
         }
-        
+
         return view('admin.users.index');
     })->name('admin.users');
 
     Route::get('/admin/users/{id}', function ($id) {
         $user = auth()->user();
-        
+
         if (!$user || !$user->is_admin) {
             return redirect()->route('admin.login')->with('error', 'Session expired or unauthorized access.');
         }
-        
+
         // Mock user data - in production, fetch from database
         $users = [
             1 => ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'joined_date' => '2023-06-15', 'earnings' => 2450.50],
@@ -680,13 +680,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
         7 => ['id' => 7, 'name' => 'David Taylor', 'email' => 'david@example.com', 'joined_date' => '2024-02-14', 'earnings' => 2100.60],
         8 => ['id' => 8, 'name' => 'Amanda White', 'email' => 'amanda@example.com', 'joined_date' => '2024-03-20', 'earnings' => 3850.75],
     ];
-    
+
     $user = $users[$id] ?? null;
-    
+
     if (!$user) {
         abort(404, 'User not found');
     }
-    
+
     return view('admin.users.show', ['user' => $user]);
 })->name('admin.user.show');
 
@@ -699,25 +699,9 @@ Route::get('/admin/tasks/create', function () {
 })->name('admin.tasks.create');
 
 Route::get('/admin/tasks/{id}', function ($id) {
-    // Mock task data - in production, fetch from database
-    $tasks = [
-        1 => ['id' => 1, 'name' => 'Website Design', 'description' => 'Design a modern website layout', 'fee' => 500.00, 'count' => 3],
-        2 => ['id' => 2, 'name' => 'API Development', 'description' => 'Build RESTful API endpoints', 'fee' => 750.00, 'count' => 5],
-        3 => ['id' => 3, 'name' => 'Database Setup', 'description' => 'Configure database schema', 'fee' => 300.00, 'count' => 2],
-        4 => ['id' => 4, 'name' => 'Mobile App', 'description' => 'Develop iOS and Android app', 'fee' => 1200.00, 'count' => 8],
-        5 => ['id' => 5, 'name' => 'Content Writing', 'description' => 'Write product descriptions', 'fee' => 150.00, 'count' => 12],
-        6 => ['id' => 6, 'name' => 'SEO Optimization', 'description' => 'Optimize website for search', 'fee' => 400.00, 'count' => 4],
-        7 => ['id' => 7, 'name' => 'Testing & QA', 'description' => 'Test application functionality', 'fee' => 350.00, 'count' => 6],
-        8 => ['id' => 8, 'name' => 'Deployment', 'description' => 'Deploy to production server', 'fee' => 200.00, 'count' => 1],
-    ];
-    
-    $task = $tasks[$id] ?? null;
-    
-    if (!$task) {
-        abort(404, 'Task not found');
-    }
-    
-    return view('admin.tasks.show', ['task' => $task]);
+    $mockTest = \App\Models\MockTest::findOrFail($id);
+
+    return view('admin.tasks.show', ['mockTest' => $mockTest]);
 })->name('admin.task.show');
 
 Route::get('/admin/finance', function () {
@@ -789,7 +773,7 @@ Route::get('/admin/testimonials/{id}/edit', function ($id) {
 
 Route::put('/admin/testimonials/{id}', function (\Illuminate\Http\Request $request, $id) {
     $testimonial = \App\Models\Testimonial::findOrFail($id);
-    
+
     $validated = $request->validate([
         'customer_name' => 'required|string|max:255',
         'job_title' => 'required|string|max:255',
@@ -816,12 +800,12 @@ Route::put('/admin/testimonials/{id}', function (\Illuminate\Http\Request $reque
 
 Route::delete('/admin/testimonials/{id}', function ($id) {
     $testimonial = \App\Models\Testimonial::findOrFail($id);
-    
+
     // Delete photo if exists and not default
     if ($testimonial->photo !== 'default_profile_pic.jpg' && \Storage::disk('public')->exists($testimonial->photo)) {
         \Storage::disk('public')->delete($testimonial->photo);
     }
-    
+
     $testimonial->delete();
 
     return redirect()->route('admin.testimonials')->with('success', 'Testimonial deleted successfully!');
@@ -843,17 +827,17 @@ Route::delete('/admin/testimonials/{id}', function ($id) {
 Route::post('/admin/users/{id}/approve', function ($id) {
     $user = \App\Models\User::findOrFail($id);
     $user->update(['status_id' => 2]); // 2 = Approved
-    
+
     // Send approval email
     \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserApproved($user));
-    
+
     return redirect()->route('admin.users')->with('success', 'User approved successfully! Approval email sent.');
 })->name('admin.user.approve');
 
 Route::post('/admin/users/{id}/reject', function ($id) {
     $user = \App\Models\User::findOrFail($id);
     $user->update(['status_id' => 3]); // 3 = Rejected
-    
+
     return redirect()->route('admin.users')->with('success', 'User rejected.');
 })->name('admin.user.reject');
 
@@ -873,7 +857,7 @@ Route::get('/admin/submitted-file/{path}', function ($path) {
 
 Route::get('/admin/approvals/{id}', function ($id) {
     $approval = \App\Models\TaskCompleted::with(['task', 'user', 'taskStatus'])->findOrFail($id);
-    
+
     return view('admin.approvals.show', ['approval' => $approval]);
 })->name('admin.approval.show');
 
@@ -881,14 +865,14 @@ Route::get('/admin/approvals/{id}', function ($id) {
 Route::post('/admin/approvals/{id}/approve', function ($id) {
     $approval = \App\Models\TaskCompleted::with('task')->findOrFail($id);
     $approval->update(['status' => 2]); // 2 = Accepted
-    
+
     // Create user earning record with current task earning value
     \App\Models\UserEarning::create([
         'user_id' => $approval->user_id,
         'task_id' => $approval->task_id,
         'earning' => $approval->task->earning,
     ]);
-    
+
     return redirect()->route('admin.approvals')->with('success', 'Task completion approved successfully!');
 })->name('admin.approval.approve');
 
@@ -896,21 +880,21 @@ Route::post('/admin/approvals/{id}/approve', function ($id) {
 Route::post('/admin/approvals/{id}/reject', function ($id) {
     $approval = \App\Models\TaskCompleted::findOrFail($id);
     $approval->update(['status' => 3]); // 3 = Rejected
-    
+
     return redirect()->route('admin.approvals')->with('success', 'Task completion rejected.');
 })->name('admin.approval.reject');
 
 // Admin upgrade requests routes
 Route::get('/admin/upgrade-requests', function (\Illuminate\Http\Request $request) {
     $status = $request->get('status', 'pending_approval');
-    
+
     $requests = \App\Models\UpgradeRequest::with(['user', 'fromCategory', 'toCategory'])
         ->where('status', $status)
         ->orderBy('created_at', 'desc')
         ->paginate(15);
-    
+
     $pendingCount = \App\Models\UpgradeRequest::where('status', 'pending_approval')->count();
-    
+
     return view('admin.upgrade-requests', [
         'requests' => $requests,
         'pendingCount' => $pendingCount,
@@ -919,35 +903,36 @@ Route::get('/admin/upgrade-requests', function (\Illuminate\Http\Request $reques
 
 Route::post('/admin/upgrade-requests/{id}/approve', function (\Illuminate\Http\Request $request, $id) {
     $upgradeRequest = \App\Models\UpgradeRequest::with('user')->findOrFail($id);
-    
+
     // Update user's category
     $upgradeRequest->user->update([
         'category_id' => $upgradeRequest->to_category_id,
     ]);
-    
+
     // Update request status
     $upgradeRequest->update([
         'status' => 'approved',
         'admin_notes' => $request->admin_notes,
     ]);
-    
+
     return redirect()->route('admin.upgrade-requests', ['status' => 'approved'])
         ->with('success', 'Upgrade request approved! User has been upgraded to ' . $upgradeRequest->toCategory->name . ' plan.');
 })->name('admin.upgrade-requests.approve');
 
 Route::post('/admin/upgrade-requests/{id}/reject', function (\Illuminate\Http\Request $request, $id) {
     $upgradeRequest = \App\Models\UpgradeRequest::findOrFail($id);
-    
+
     $request->validate([
         'admin_notes' => 'required|string',
     ]);
-    
+
     $upgradeRequest->update([
         'status' => 'rejected',
         'admin_notes' => $request->admin_notes,
     ]);
-    
+
     return redirect()->route('admin.upgrade-requests', ['status' => 'rejected'])
         ->with('success', 'Upgrade request rejected.');
 })->name('admin.upgrade-requests.reject');
 });
+

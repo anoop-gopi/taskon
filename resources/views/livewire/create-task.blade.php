@@ -7,92 +7,44 @@
 
     <form wire:submit.prevent="save">
         <div class="space-y-6">
-            <!-- Task Name -->
+            <!-- Mock Test Title -->
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-semibold">Task Name *</span>
-                </label>
-                <input 
-                    type="text" 
-                    wire:model="name" 
-                    class="input input-bordered w-full @error('name') input-error @enderror" 
-                    placeholder="Enter task name"
+                <div class="label">
+                    <span class="label-text font-semibold">Mock Test Title *</span>
+                </div>
+                <input
+                    type="text"
+                    wire:model="title"
+                    class="input input-bordered w-full @error('title') input-error @enderror"
+                    placeholder="Enter mock test title"
                 />
-                @error('name')
-                    <label class="label">
+                @error('title')
+                    <div class="label">
                         <span class="label-text-alt text-error">{{ $message }}</span>
-                    </label>
+                    </div>
                 @enderror
             </div>
 
             <!-- Description -->
             <div class="form-control">
-                <label class="label">
+                <div class="label">
                     <span class="label-text font-semibold">Description</span>
-                </label>
-                <textarea 
-                    wire:model="description" 
-                    class="textarea textarea-bordered w-full h-32 @error('description') textarea-error @enderror" 
-                    placeholder="Enter task description"
+                </div>
+                <textarea
+                    wire:model="description"
+                    class="textarea textarea-bordered w-full h-32 @error('description') textarea-error @enderror"
+                    placeholder="Enter mock test description (optional)"
                 ></textarea>
                 @error('description')
-                    <label class="label">
+                    <div class="label">
                         <span class="label-text-alt text-error">{{ $message }}</span>
-                    </label>
+                    </div>
                 @enderror
             </div>
 
-            <!-- Earning -->
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-semibold">Earning (USD) *</span>
-                </label>
-                <input 
-                    type="number" 
-                    step="0.01"
-                    wire:model="earning" 
-                    class="input input-bordered w-full @error('earning') input-error @enderror" 
-                    placeholder="0.00"
-                />
-                @error('earning')
-                    <label class="label">
-                        <span class="label-text-alt text-error">{{ $message }}</span>
-                    </label>
-                @enderror
-            </div>
-
-            <!-- User Category -->
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-semibold">Available For *</span>
-                    <span class="label-text-alt">Which user category can see this task?</span>
-                </label>
-                <select 
-                    wire:model="category_id" 
-                    class="select select-bordered w-full @error('category_id') select-error @enderror"
-                >
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}">
-                            {{ $category->name }} 
-                            @if($category->id > 1)
-                                ({{ $category->tasks_per_week }} tasks/month, ${{ number_format($category->earning_per_task, 0) }}/task)
-                            @else
-                                ({{ $category->tasks_per_week }} task/month)
-                            @endif
-                        </option>
-                    @endforeach
-                </select>
-                @error('category_id')
-                    <label class="label">
-                        <span class="label-text-alt text-error">{{ $message }}</span>
-                    </label>
-                @enderror
-                <label class="label">
-                    <span class="label-text-alt text-info">
-                        <span class="icon-[tabler--info-circle] size-4 inline"></span>
-                        Tasks are visible to selected category and all higher tiers
-                    </span>
-                </label>
+            <div class="alert alert-info">
+                <span class="icon-[tabler--info-circle] size-5"></span>
+                <span>After creating the test, you will be taken to the test page where you can add questions one by one.</span>
             </div>
 
             <!-- Buttons -->
@@ -101,10 +53,11 @@
                     Cancel
                 </a>
                 <button type="submit" class="btn btn-primary gap-2">
-                    <span class="icon-[tabler--device-floppy] size-5"></span>
-                    Create Task
+                    <span class="icon-[tabler--arrow-right] size-5"></span>
+                    Create &amp; Add Questions
                 </button>
             </div>
         </div>
     </form>
 </div>
+
